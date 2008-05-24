@@ -25,6 +25,8 @@ __PACKAGE__->mk_ro_accessors(qw(messageid));
 use vars qw($VERSION);
 $VERSION = '1.11';
 
+=encoding utf8
+
 =head1 NAME
 
 Mail::Builder - Easily create plaintext/html e-mail messages with attachments
@@ -152,7 +154,7 @@ sub stringify {
  # Stringify the entire message:
  print $entity->stringify; 
 
-Returns the e-mail message as a L<MIME::Entity> object. You can mess arround 
+Returns the e-mail message as a L<MIME::Entity> object. You can mess around 
 with the object, change parts, ... as you wish. 
 
 Every time you call build_message the MIME::Entity object will be created, 
@@ -242,7 +244,6 @@ sub build_message {
     }
     return $mime_entity;
 }
-
 
 =head2 Accessors 
 
@@ -355,7 +356,7 @@ C<build_message> or C<stingify> methods have been called.
 
 =head3 organization
  
-Accessor for the name of the senders organisation. This header field is not
+Accessor for the name of the sender's organisation. This header field is not
 part of the RFC 4021, however supported by many mailer applications.
 
 =head3 priority
@@ -770,7 +771,7 @@ sub _build_html
 }
 
 
-=head1 CAVEATS
+=head1 EXAMPLE
 
 If you want to send multiple e-mail messages from one Mail::Builder object
 (e.g. a solicited mailing to multiple recipients) you have to pay special
@@ -796,6 +797,8 @@ recipients lists.
      # Send $mail ... 
  }
  
+=head1 CAVEATS 
+ 
 From 1.10 on Mail::Builder only supports utf-8 charsets for mails. Supporting
 multiple encodings turned out to be error prone and not necessary since all
 modern mail clients support utf-8.
@@ -813,8 +816,9 @@ for more details.
 
 Please report any bugs or feature requests to 
 C<bug-mail-builder@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be 
-notified of progress on your bug as I make changes.
+L<http://rt.cpan.org/Public/Bug/Report.html?Queue=Mail::Builder>.  
+I will be notified, and then you'll automatically be notified of progress on 
+your report as I make changes.
 
 =head1 AUTHOR
 
@@ -822,6 +826,13 @@ notified of progress on your bug as I make changes.
     CPAN ID: MAROS
     maros [at] k-1.com
     http://www.k-1.com
+
+=head1 ACKNOWLEDGEMENTS 
+
+This module was written for my old employer the Centre for Social Innovation
+L<http://www.zsi.at> and is currently advanced by Revdev 
+L<http://www.revdev.at>, a nice litte software company I run with Koki and 
+Domm (L<http://search.cpan.org/~domm/>).
 
 =head1 COPYRIGHT
 

@@ -9,6 +9,8 @@ use Carp;
 use vars qw($VERSION);
 $VERSION = $Mail::Builder::VERSION;
 
+=encoding utf8
+
 =head1 NAME
 
 Mail::Builder::List - Helper module for handling various lists 
@@ -63,6 +65,7 @@ Constructor that converts an array reference into a Mail::Builder::List
 object. The list type is defined by the first element of the array.
 
 =cut
+
 sub convert {
     my $class = shift;
     my $list_data = shift; 
@@ -237,8 +240,7 @@ sub has {
     return 0;
 }
 
-
-=head2 Accessor
+=head2 Accessors
 
 =head3 type
 
@@ -264,7 +266,6 @@ sub list {
 
 
 1;
-
 
 __END__
 

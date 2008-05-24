@@ -11,7 +11,7 @@ use Email::Valid;
 use vars qw($VERSION);
 $VERSION = $Mail::Builder::VERSION;
 
-
+=encoding utf8
 =head1 NAME
 
 Mail::Builder::Address - Helper module for handling e-mail addresses
