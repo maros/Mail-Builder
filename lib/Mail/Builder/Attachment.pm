@@ -10,6 +10,7 @@ use vars qw($VERSION);
 $VERSION = $Mail::Builder::VERSION;
 
 =encoding utf8
+
 =head1 NAME
 
 Mail::Builder::Attachment - Helper module for handling attachments
@@ -26,6 +27,8 @@ This is a simple module for handling attachments with Mail::Builder.
 =head1 METHODS
 
 =head2 Constructor
+
+=head3 new
 
 Shortcut to the constructor from L<Mail::Builder::Attachment::File>.
 

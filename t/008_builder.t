@@ -2,7 +2,7 @@
 
 # t/008_builder.t - check if everything works well toghether
 
-use Test::More tests => 63;
+use Test::More tests => 70;
 
 use Mail::Builder;
 
@@ -13,6 +13,8 @@ ok($object->returnpath('return@test.com'),'Set returnpath');
 isa_ok($object->returnpath,'Mail::Builder::Address');
 ok($object->organization('organization'),'Set organization');
 is($object->organization,'organization');
+ok($object->language('de'),'Set language');
+is($object->language,'de');
 my $replyaddress = Mail::Builder::Address->new('reply@test.com','Reply name');
 ok($object->reply($replyaddress),'Set reply address');
 isa_ok($object->reply(),'Mail::Builder::Address');
@@ -36,16 +38,20 @@ is($object->cc->length,2);
 eval {
 	$object->build_message();
 };
-like($@,qr/Sender address missing/);
+like($@,qr/From address missing/);
 ok($object->from('from@test.com'),'Set sender');
+ok($object->sender('sender@test.com'),'Set sender');
 isa_ok($object->from,'Mail::Builder::Address');
+isa_ok($object->sender,'Mail::Builder::Address');
 is($object->from->email,'from@test.com');
+ok($object->sender->name('boss'));
 eval {
 	$object->build_message();
 };
 like($@,qr/e-mail subject missing/);
 ok($object->subject('subject'),'Set subject');
 is($object->subject,'subject');
+
 eval {
 	$mime = $object->build_message();
 };
@@ -107,8 +113,9 @@ like($object->{'plaintext'},qr/Test1\s\sTest2\s\sTest3/);
 like($object->{'plaintext'},qr/Test21\s{8}Test23/);
 
 isa_ok($mime->head,'MIME::Head');
-is($mime->head->get('To'),'<recipient1@test.com>'."\n");
-is($mime->head->get('Cc'),'<cc1@test.com>,<cc2@test.com>'."\n");
+is($mime->head->get('To'),'recipient1@test.com'."\n");
+is($mime->head->get('Cc'),'cc1@test.com,cc2@test.com'."\n");
+is($mime->head->get('Sender'),'"boss" <sender@test.com>'."\n");
 is($mime->head->get('X-Priority'),'4'."\n");
 is($mime->head->get('Subject'),'subject'."\n");
 is($mime->parts,2);
@@ -121,6 +128,7 @@ ok($object2->to->add('recipient2@test.com','nice üft-8 nämé'));
 ok($object2->from('from2@test.com','me'));
 ok($object2->subject('Testmail'));
 ok($object2->plaintext(qq[Text]));
+ok($object2->language(q[de]));
 ok($object2->attachment->add(qq[t/testfile.pdf],q[test.pdf]));
 is($object2->attachment->length,1);
 ok($mime = $object2->build_message(),'Build Message');

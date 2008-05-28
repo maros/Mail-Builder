@@ -170,7 +170,7 @@ sub build_message {
     
     croak(q[Recipient address missing]) 
         unless ($obj->{'to'}->length());
-    croak(q[Sender address missing]) 
+    croak(q[From address missing]) 
         unless (defined $obj->{'from'});
     croak(q[e-mail subject missing]) 
         unless ($obj->{'subject'});

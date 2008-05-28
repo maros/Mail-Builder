@@ -16,6 +16,7 @@ $VERSION = $Mail::Builder::VERSION;
 use MIME::Types;
 
 =encoding utf8
+
 =head1 NAME
 
 Mail::Builder::Attachment - Helper module for handling attachments from files

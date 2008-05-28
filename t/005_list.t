@@ -20,7 +20,7 @@ isa_ok(scalar($list->list),'ARRAY');
 isa_ok($list->item(0),'Mail::Builder::Address');
 isa_ok($list->item(1),'Mail::Builder::Address');
 is($list->item(2),undef);
-is($list->join(', '),'<test@test.com>, "test" <test2@test2.com>');
+is($list->join(', '),'test@test.com, "test" <test2@test2.com>');
 my $address1 = new Mail::Builder::Address('test2@test2.com');
 ok($list->has($address1),'Has item');
 ok($list->reset,'Reset list');

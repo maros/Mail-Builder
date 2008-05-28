@@ -10,6 +10,7 @@ use vars qw($VERSION);
 $VERSION = $Mail::Builder::VERSION;
 
 =encoding utf8
+
 =head1 NAME
 
 Mail::Builder::Image - Helper module for handling inline images
