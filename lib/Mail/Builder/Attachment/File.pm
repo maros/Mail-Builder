@@ -19,7 +19,7 @@ use MIME::Types;
 
 =head1 NAME
 
-Mail::Builder::Attachment - Helper module for handling attachments from files
+Mail::Builder::Attachment::File - Helper module for handling attachments from files
 
 =head1 SYNOPSIS
 
@@ -44,7 +44,7 @@ This is a simple module for handling attachments with Mail::Builder.
 
 =head3 new
 
- my $obj = Mail::Builder::Attachment->new(PATH[,NAME,MIME]);
+ my $obj = Mail::Builder::Attachment::File->new(PATH[,NAME,MIME]);
  
 Takes the path to the attached file on the local filesystem. Optionally takes 
 the file name as it should be diplayed in the e-mail message and a mime type. 
