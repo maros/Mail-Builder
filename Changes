@@ -3,41 +3,43 @@ Revision history for Perl module Mail::Builder
 1.00 Sun Oct 7 2007
     - original version; created by ExtUtils::ModuleMaker 0.49
 1.01 Sun Oct 14 2007
-    - updated META.yml and documentation
-    - Included some files necessary for testing
+    - EXTENDED: updated META.yml and documentation
+    - CORRECTED: Included some files necessary for testing
 1.02 Mon Oct 22 2007
-    - updated documentation
+    - EXTENDED: updated documentation
 1.03 Mon Nov 19 2007
-	- corrected META.yml
-    - Changed custom mime type recognition: Now uses MIME::Types
+	- CORRECTED: corrected META.yml
+    - CHANGED:  custom mime type recognition: Now uses MIME::Types
 1.04 Mon Nov 19 2007
-    - corrected Makefile.pm
-    - corrected META.yml
+    - CORRECTED: Makefile.pm
+    - CORRECTED:  META.yml
 1.05 Mon Feb 11 2008
     - CHANGED: Split M::B::Attachment into M::B::Attachment::File and
       M::B::Attachment::Data
     - EXTENDED: Additional M::B::List utility methods
     - EXTENDED: Better documentation
 1.07 Wed Feb 20 2008
-    - CHANGED: Slightly changed behavior of to,cc,bcc,attachment and image accessors
+    - CHANGED: Slightly changed behavior of to,cc,bcc,attachment and image 
+      accessors
     - EXTENDED: Documentation
     - CORRECTED: Repaired broken deps
 1.08 Wed Feb 21 2008
     - CORRECTED: Fixed broken metayaml test
 1.09 Tue May 6 2008
     - CHANGED: Switched to Module::Install
-    - OTHER: Fixed typos in documentation
     - IMPROVED: Improved handling of '<a href="..">' tags in text conversion
     - CORRECTED: Fixed bug in item list removal
     - EXTENDED: Additional tests
     - IMPROVED: Multipart parts now specify Encoding = 'binary'
 1.10 Tue May 13 2008
-    - IMPROVED: Lazy/runtime loading of rarely used modules (require in code instead of use)
+    - IMPROVED: Lazy/runtime loading of rarely used modules (require in 
+      code instead of use)
     - CHANGED: Only support for utf-8 charset
     - CORRECTED: non ascii characters in the header will be properly encoded
     - IMPROVED: Mail::Builder::Image now creates nicer image IDs
     - IMPROVED: Convert HTML tables to text tables with Text::Table
-1.11 Tue May 13 2008
+1.11 Mon Jun 2 2008
     - EXTENDED: sender address accessor
     - EXTENDED: documentation
+    - CORRECTED: Pod for M::B::Attachment
     

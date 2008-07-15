@@ -1,13 +1,13 @@
 NAME
     Mail::Builder - Easily create plaintext/html e-mail messages with
-    attachments, inline images
+    attachments and inline images
 
 SYNOPSIS
       use Mail::Builder;
-  
-      my $mail = Mail::Builder->new();
-  
-      $mail->from('mightypirate@meele-island.mq','Guybrush Threepwood');
+      
+  my $mail = Mail::Builder->new();
+      
+  $mail->from('mightypirate@meele-island.mq','Guybrush Threepwood');
       $mail->to->add('manuel.calavera@dod.mx','Manuel Calavera');
       $mail->cc->add('glotis@dod.mx');
       $mail->subject('Party at Sam\'s place');
@@ -16,38 +16,46 @@ SYNOPSIS
 
       # Send it with your favourite module (e.g. Email::Send)
       my $mailer = Email::Send->new({mailer => 'Sendmail'})->send($mail->stringify);
-  
-      # Or mess with MIME::Entity objects
-      my $mime = $mail->build_message; 
+      
+  # Or mess with MIME::Entity objects
+      my $mime = $mail->build_message;
+      $mime-> ....
 
 DESCRIPTION
-    This module helps you to build e-mails with attachments, inline images,
-    multiple recipients, ... without having to worry about the underlying
-    MIME stuff and encoding issues. Mail::Builder relies heavily on the
-    MIME::Entity module from the MIME::Tools distribution.
+    This module helps you to build correct e-mails with attachments, inline
+    images, multiple recipients, ... without having to worry about the
+    underlying MIME stuff and encoding issues. Mail::Builder relies heavily
+    on the MIME::Entity module from the MIME::Tools distribution.
 
     The module will create the correct MIME bodies, headers and containers
     (multipart/mixed, multipart/related, multipart/alternative) depending on
     if you use attachments, HTML text and inline images.
 
+    Furthermore it will encode non-ascii header data and autogenerate
+    plaintext messages from html content.
+
     Addresses, attachments and inline images are handled as objects by
     helper classes:
 
-    * Mail::Builder::Address
+    *   Mail::Builder::Address
+
         Stores an e-mail address and a display name.
 
-    * Attachments: Mail::Builder::Attachment::File and
-    Mail::Builder::Attachment::Data
-        This classes manages attachments which can be created either from
+    *   Attachments: Mail::Builder::Attachment::File and
+        Mail::Builder::Attachment::Data
+
+        This classes manage attachments which can be created either from
         files in the filesystem or from data in memory.
 
-    * Inline images:Mail::Builder::Image
-        The Address: Mail::Builder::Image class manages images that should
-        be displayed in the e-mail body.
+    *   Inline images:Mail::Builder::Image
 
-    * Mail::Builder::List
-        Helper class for handling list of varoius items (recipient lists,
-        attachment lists, ...)
+        The Mail::Builder::Image class manages images that should be
+        displayed in the html e-mail body. (<img src="cid:imageid" />)
+
+    *   Mail::Builder::List
+
+        Helper class for handling list of varoius items (recipients lists,
+        attachments list, images list)
 
 METHODS
   Constructors
@@ -62,8 +70,16 @@ METHODS
     This method is just a shortcut to "$mb->build_message->stringify"
 
    build_message
-    Returns the e-mail message as a MIME::Entity object. You can mess
-    arround with the object, change parts, ... as you wish.
+     my $entity = $mb->build_message();
+     
+ # Print the entire message:
+     $entity->print(\*STDOUT);
+     
+ # Stringify the entire message:
+     print $entity->stringify;
+
+    Returns the e-mail message as a MIME::Entity object. You can mess around
+    with the object, change parts, ... as you wish.
 
     Every time you call build_message the MIME::Entity object will be
     created, which can take some time if you are sending bulk e-mails. In
@@ -72,9 +88,9 @@ METHODS
     something has changed.
 
   Accessors
-   from, returnpath, reply
-    These accessors set/return the from and reply address as well as the
-    returnpath for bounced messages.
+   from, returnpath, reply, sender
+    These accessors set/return the from, sender and reply address as well as
+    the returnpath for bounced messages.
 
      $obj->from(EMAIL[,NAME])
      OR
@@ -100,11 +116,16 @@ METHODS
 
     To alter the values you can either
 
-    * Manipulate the Mail::Builder::List object (add, remove, ...)
-    * Supply a Mail::Builder::Address object. This will reset the current
-    list and add the object to the list.
-    * Supply a Mail::Builder::List object. The object replaces the old one.
-    * Scalar values will be passed to "Mail::Builder::Address->new"
+    *   Manipulate the Mail::Builder::List object (add, remove, ...)
+
+    *   Supply a Mail::Builder::Address object. This will reset the current
+        list and add the object to the list.
+
+    *   Supply a Mail::Builder::List object. The list object replaces the
+        old one if the list types match
+
+    *   Scalar values will be passed to "Mail::Builder::Address->new". The
+        returned object will be added to the object list.
 
     The Mail::Builder::List package provides some basic methods for
     manipulating the list of recipients. e.g.
@@ -121,7 +142,8 @@ METHODS
     "build_message" or "stingify" methods have been called.
 
    organization
-    Accessor for the name of the senders organisation.
+    Accessor for the name of the sender's organisation. This header field is
+    not part of the RFC 4021, however supported by many mailer applications.
 
    priority
     Priority accessor. Accepts values from 1 to 5. The default priority is
@@ -140,34 +162,45 @@ METHODS
 
     The following html tags will be transformed:
 
-    * I, EM
-        Italic text will be surounded by underscores. (_italic text_)
+    *   I, EM
 
-    * H1, H2, H3, ...
-        Headlines will be replaced with two equal signs (== Headline)
+        Italic text will be surrounded by underscores. (_italic text_)
 
-    * STRONG, B
+    *   H1, H2, H3, ...
+
+        Two equal signs are prepended to headlines (== Headline)
+
+    *   STRONG, B
+
         Bold text will be marked by stars (*bold text*)
 
-    * HR
+    *   HR
+
         A horizontal rule is replaced with 60 dashes.
 
-    * BR
+    *   BR
+
         Single linebreak
 
-    * P, DIV
+    *   P, DIV
+
         Two linebreaks
 
-    * IMG
+    *   IMG
+
         Prints the alt text of the image if any.
 
-    * A Prints the link url surrounded by brackets ([http://myurl.com text])
+    *   A
 
-    * UL, OL
+        Prints the link url surrounded by brackets ([http://myurl.com text])
+
+    *   UL, OL
+
         All list items will be indented with a tab and prefixed with a start
         (*) or an index number.
 
-    * TABLE, TR, TD, TH
+    *   TABLE, TR, TD, TH
+
         Tables are converted into text using Text::Table.
 
    attachment
@@ -176,7 +209,7 @@ METHODS
      $obj->attachment(Mail::Builder::Attachment)
      OR
      $obj->attachment(PATH[,NAME,MIME])
- 
+
     This accessor always returns a Mail::Builder::List object. If you supply
     a Mail::Builder::List the list will be replaced.
 
@@ -199,7 +232,7 @@ METHODS
      $obj->image(Mail::Builder::Image)
      OR
      $obj->image(PATH[,ID])
- 
+
     This accessor always returns a Mail::Builder::List object. If you supply
     a Mail::Builder::List the list will be replaced.
 
@@ -224,7 +257,7 @@ METHODS
 
     Only jpg, gif and png images may be added as inline images.
 
-CAVEATS
+EXAMPLE
     If you want to send multiple e-mail messages from one Mail::Builder
     object (e.g. a solicited mailing to multiple recipients) you have to pay
     special attention, or else you might end up with mixed contents and
@@ -233,37 +266,54 @@ CAVEATS
      # Example for a mass mailing
      foreach my $recipient (@recipients) {
          $mb->to->reset; # Remove all recipients
-     
-         $mb->to->add($recipient); # Add current recipuent
-     
-         # Alternatively you could use $mb->to($recipient); which has the
+         $mb->to->add($recipient); # Add current recipient
+         
+     # Alternatively you could use $mb->to($recipient); which has the
          # same effect as the two previous commands. Same goes for 'cc' and 'bcc'
-     
-         $mb->plaintext(undef);
+         
+     $mb->plaintext(undef);
          # Reset plaintext, otherwise it will not be autogenerated from htmltext
-     
-         $mb->htmltext(qq[<h1>Hello $recipient!</h1> Text, yadda yadda! ]);
-     
-         my $mail = $mb->stringify();
-     
-         # Send $mail ,,,
+         # after the first run
+         
+     $mb->htmltext(qq[<h1>Hello $recipient!</h1> Text, yadda yadda! ]);
+         
+     my $mail = $mb->stringify();
+         
+     # Send $mail ... 
      }
- 
+
+CAVEATS
     From 1.10 on Mail::Builder only supports utf-8 charsets for mails.
     Supporting multiple encodings turned out to be error prone and not
     necessary since all modern mail clients support utf-8.
 
+    Watch out when sending Mail::Builder generated mails with
+    Email::Send::SMTP: The 'Return-Path' headers are ignored by the MTA
+    since Email::Send::SMTP uses the 'From' header for SMTP handshake.
+    Postfix (any maybe some other MTAs) overwrites the 'Return-Path' field
+    in the data with the e-mail used in the handshake ('From'). The
+    behaviour of Email::Send::SMTP may however be modified by replacing the
+    "get_env_sender" and "get_env_recipients" methods. See Email::Send::SMTP
+    for more details.
+
 SUPPORT
     Please report any bugs or feature requests to
     "bug-mail-builder@rt.cpan.org", or through the web interface at
-    <http://rt.cpan.org>. I will be notified, and then you'll automatically
-    be notified of progress on your bug as I make changes.
+    <http://rt.cpan.org/Public/Bug/Report.html?Queue=Mail::Builder>. I will
+    be notified, and then you'll automatically be notified of progress on
+    your report as I make changes.
 
 AUTHOR
         Maroš Kollár
         CPAN ID: MAROS
         maros [at] k-1.com
         http://www.k-1.com
+
+ACKNOWLEDGEMENTS
+    This module was written for my old employer the Centre for Social
+    Innovation <http://www.zsi.at> and is currently advanced by Revdev
+    <http://www.revdev.at>, a nice litte software company I run with Koki
+    and Domm (<http://search.cpan.org/~domm/>).
 
 COPYRIGHT
     Mail::Builder is Copyright (c) 2007,2008 Maroš Kollár.
