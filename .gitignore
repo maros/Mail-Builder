@@ -12,3 +12,4 @@ Makefile.old
 cover_db/
 Mail-Builder-*.tar.gz
 .DS_Store
+MANIFEST.bak

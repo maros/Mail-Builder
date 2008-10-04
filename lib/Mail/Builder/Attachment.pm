@@ -13,7 +13,7 @@ $VERSION = $Mail::Builder::VERSION;
 
 =head1 NAME
 
-Mail::Builder::Attachment - Helper module for handling attachments
+Mail::Builder::Attachment - Abstract class for handling attachments
 
 =head1 SYNOPSIS
 

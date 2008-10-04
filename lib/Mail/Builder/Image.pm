@@ -13,7 +13,7 @@ $VERSION = $Mail::Builder::VERSION;
 
 =head1 NAME
 
-Mail::Builder::Image - Helper module for handling inline images
+Mail::Builder::Image - Module for handling inline images
 
 =head1 SYNOPSIS
 

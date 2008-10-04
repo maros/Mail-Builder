@@ -19,6 +19,7 @@ Mail::Builder::List - Helper module for handling various lists
 
   use Mail::Builder;
   
+  # Create a list that accepts Mail::Builder::Address objects
   my $list = Mail::Builder::List->new('Mail::Builder::Address');
   $list->add($address_object);
   $list->add($another_address_object);
@@ -78,6 +79,11 @@ sub convert {
     
     croak(qq[Uanble to determine list type: List must hold objects])
         unless ($list_type);
+    
+    foreach my $list_item (@{$list_data}) {
+        croak(qq[Tried to create a Mail::Builder::List object with mixed objects: Must be only of one type]) 
+            unless ref $list_item && $list_item->isa($list_type);
+    }
     
     my $obj = $class->new($list_type);
     

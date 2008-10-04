@@ -6,7 +6,7 @@ use inc::Module::Install;
 name            'Mail-Builder';
 all_from        'lib/Mail/Builder.pm';
 
-perl_version    '5.000';
+perl_version    '5.008';
 
 # Specific dependencies
 requires        'MIME::Tools'           => '5.4';
@@ -17,6 +17,7 @@ requires        'MIME::Types'           => 0;
 requires        'Email::MessageID'      => 0;
 requires        'Encode'                => 0;
 requires        'Text::Table'           => 0;
+requires        'IO::Lines'             => 0;
 build_requires  'Test::Pod'             => 0;
 build_requires  'Test::Pod::Coverage'   => 0;
 

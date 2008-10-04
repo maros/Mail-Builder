@@ -19,7 +19,7 @@ use MIME::Types;
 
 =head1 NAME
 
-Mail::Builder::Attachment::File - Helper module for handling attachments from files
+Mail::Builder::Attachment::File - Module for handling attachments from files
 
 =head1 SYNOPSIS
 

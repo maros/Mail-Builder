@@ -15,14 +15,14 @@ $VERSION = $Mail::Builder::VERSION;
 
 =head1 NAME
 
-Mail::Builder::Address - Helper module for handling e-mail addresses
+Mail::Builder::Address - Module for handling e-mail addresses
 
 =head1 SYNOPSIS
 
   use Mail::Builder;
   
   my $mail = Mail::Builder::Address->new('mightypirate@meele-island.mq','Gaybrush Thweedwood');
-  # Now correct the display name and address
+  # Now correct type in the display name and address
   $mail->name('Guybrush Threepwood');
   $mail->email('verymightypirate@meele-island.mq');
   # Serialize

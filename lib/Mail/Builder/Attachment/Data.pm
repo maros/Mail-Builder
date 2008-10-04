@@ -17,7 +17,7 @@ $VERSION = $Mail::Builder::VERSION;
 
 =head1 NAME
 
-Mail::Builder::Attachment::Data - Helper module for handling attachments from data
+Mail::Builder::Attachment::Data - Module for handling attachments from data
 
 =head1 SYNOPSIS
 
