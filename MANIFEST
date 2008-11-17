@@ -1,12 +1,6 @@
+.gitignore
 Changes
-inc/Module/Install.pm
-inc/Module/Install/Base.pm
-inc/Module/Install/Can.pm
-inc/Module/Install/Fetch.pm
-inc/Module/Install/Makefile.pm
-inc/Module/Install/Metadata.pm
-inc/Module/Install/Win32.pm
-inc/Module/Install/WriteAll.pm
+example/mailer.pl
 lib/Mail/Builder.pm
 lib/Mail/Builder/Address.pm
 lib/Mail/Builder/Attachment.pm
@@ -15,8 +9,9 @@ lib/Mail/Builder/Attachment/File.pm
 lib/Mail/Builder/Image.pm
 lib/Mail/Builder/List.pm
 LICENSE
+Mail-Builder-1.12.tar.gz
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 META.yml
 README
 t/001_load.t
