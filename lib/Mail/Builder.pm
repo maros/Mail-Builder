@@ -5,8 +5,9 @@ use strict;
 use warnings;
 
 use vars qw($VERSION);
-$VERSION = version->new("1.12");
 
+use version;
+$VERSION = version->new("1.13");
 
 use base qw(Class::Accessor);
 use version;
