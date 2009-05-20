@@ -6,7 +6,7 @@ use warnings;
 
 use Carp;
 
-use base qw(Mail::Builder::Attachment);
+use parent qw(Mail::Builder::Attachment);
 
 use Encode qw(encode decode); 
 

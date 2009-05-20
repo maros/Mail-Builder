@@ -6,7 +6,7 @@ use warnings;
 
 use Carp;
 
-use base qw(Mail::Builder::Attachment);
+use parent qw(Mail::Builder::Attachment);
 
 use Encode qw(encode decode); 
 
@@ -149,7 +149,7 @@ sub path {
     my $obj = shift;
     if (@_) {
         $obj->{'path'} = shift;
-        croak(qq[Could not find/open file: $obj->{'path'}]) unless (-r $obj->{'path'});
+        croak(qq[Could not find/open file: $obj->{'path'}]) unless (-f -r $obj->{'path'});
         undef $obj->{'cache'};
     }
     return $obj->{'path'};

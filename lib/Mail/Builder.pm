@@ -4,13 +4,11 @@ package Mail::Builder;
 use strict;
 use warnings;
 
+use version;
 use vars qw($VERSION);
+$VERSION = version->new("1.20");
 
-use version;
-$VERSION = version->new("1.13");
-
-use base qw(Class::Accessor);
-use version;
+use parent qw(Class::Accessor);
 use Carp;
 
 use Encode qw(encode decode); 
@@ -23,6 +21,8 @@ use Mail::Builder::Attachment;
 use Mail::Builder::Attachment::File;
 use Mail::Builder::Attachment::Data;
 use Mail::Builder::Image;
+use Mail::Builder::Image::File;
+use Mail::Builder::Image::Data;
 
 __PACKAGE__->mk_accessors(qw(plaintext htmltext subject organization priority language mailer autotext));
 __PACKAGE__->mk_ro_accessors(qw(messageid));
