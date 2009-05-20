@@ -19,7 +19,11 @@ requires        'Encode'                => 0;
 requires        'Text::Table'           => 0;
 requires        'IO::Lines'             => 0;
 requires        'version'               => 0;
+requires        'parent'                => 0;
+
 build_requires  'Test::Pod'             => 0;
 build_requires  'Test::Pod::Coverage'   => 0;
+
+repository 'git://github.com/maros/Mail-Builder.git';
 
 WriteAll;
