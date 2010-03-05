@@ -2,7 +2,7 @@
 
 # t/007_image.t - check module handling the images
 
-use Test::More tests => 15;
+use Test::More tests => 16;
 
 use Mail::Builder;
 
