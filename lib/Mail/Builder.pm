@@ -196,7 +196,7 @@ sub build_message {
         'Cc'            => $obj->{'cc'}->join,
         'Bcc'           => $obj->{'bcc'}->join,
         'Subject'       => encode('MIME-Header',$obj->{'subject'}),
-        'Message-ID'    => $obj->{'messageid'},
+        'Message-ID'    => $obj->{'messageid'}->in_brackets(),
         'X-Priority'    => $obj->{'priority'},
         'X-Mailer'      => encode('MIME-Header', $obj->{'mailer'}),
     );
