@@ -47,15 +47,15 @@ the assigned type later.
 =cut
 
 sub new {
-	my $class = shift;
-	my $list_type = shift || 'Mail::Builder::Address';
-	
-	my $obj = bless {
-		type	=> $list_type,
-		list	=> [],
-	},$class;
-	bless $obj,$class;
-	return $obj;
+    my $class = shift;
+    my $list_type = shift || 'Mail::Builder::Address';
+    
+    my $obj = bless {
+        type    => $list_type,
+        list    => [],
+    },$class;
+    bless $obj,$class;
+    return $obj;
 }
 
 =head3 convert 
@@ -102,8 +102,8 @@ Returns the number of items in the list.
 =cut
 
 sub length {
-	my $obj = shift;
-	return scalar @{$obj->{'list'}};
+    my $obj = shift;
+    return scalar @{$obj->{'list'}};
 }
 
 =head3 add
@@ -119,22 +119,22 @@ list type class.
 =cut
 
 sub add {
-	my $obj = shift;
-	my $value = shift;
-	if (ref($value)) {
-		croak(qq[Invalid item added to list: Must be of $obj->{'type'}]) 
-		    unless ($value->isa($obj->{'type'}));
-		
-		push @{$obj->{'list'}}, $value;
-	} else {
-		my $object = $obj->{'type'}->new($value,@_);
-		return 0 unless ($object 
-			&& ref $object 
-			&& $object->isa($obj->{'type'}));
-		push @{$obj->{'list'}}, $object;
-	}
-	
-	return 1;
+    my $obj = shift;
+    my $value = shift;
+    if (ref($value)) {
+        croak(qq[Invalid item added to list: Must be of $obj->{'type'}]) 
+            unless ($value->isa($obj->{'type'}));
+        
+        push @{$obj->{'list'}}, $value;
+    } else {
+        my $object = $obj->{'type'}->new($value,@_);
+        return 0 unless ($object 
+            && ref $object 
+            && $object->isa($obj->{'type'}));
+        push @{$obj->{'list'}}, $object;
+    }
+    
+    return 1;
 }
 
 =head3 push

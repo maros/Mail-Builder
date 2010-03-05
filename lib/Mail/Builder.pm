@@ -107,31 +107,31 @@ This is a simple constructor. It does not expect any parameters.
 =cut
 
 sub new {
-	my $class = shift;
-	
-	my $obj = bless {
-		boundary	=> 0,
-		from		=> undef,
-		reply		=> undef,
-		organization=> undef,
-		returnpath	=> undef,
-		sender      => undef,
-		to			=> Mail::Builder::List->new('Mail::Builder::Address'),
-		cc			=> Mail::Builder::List->new('Mail::Builder::Address'),
-		bcc			=> Mail::Builder::List->new('Mail::Builder::Address'),
-		priority	=> 3,
-		subject		=> '',
-		plaintext	=> undef,
-		htmltext	=> undef,
-		language    => undef,
-		attachment	=> Mail::Builder::List->new('Mail::Builder::Attachment'),
-		image		=> Mail::Builder::List->new('Mail::Builder::Image'),
-		mailer      => "Mail::Builder $VERSION with MIME::Tools",
-		messageid   => undef,
-		autotext    => 1,
-	},$class;
-	bless $obj,$class;
-	return $obj;
+    my $class = shift;
+    
+    my $obj = bless {
+        boundary    => 0,
+        from        => undef,
+        reply       => undef,
+        organization=> undef,
+        returnpath  => undef,
+        sender      => undef,
+        to          => Mail::Builder::List->new('Mail::Builder::Address'),
+        cc          => Mail::Builder::List->new('Mail::Builder::Address'),
+        bcc         => Mail::Builder::List->new('Mail::Builder::Address'),
+        priority    => 3,
+        subject     => '',
+        plaintext   => undef,
+        htmltext    => undef,
+        language    => undef,
+        attachment  => Mail::Builder::List->new('Mail::Builder::Attachment'),
+        image       => Mail::Builder::List->new('Mail::Builder::Image'),
+        mailer      => "Mail::Builder $VERSION with MIME::Tools",
+        messageid   => undef,
+        autotext    => 1,
+    },$class;
+    bless $obj,$class;
+    return $obj;
 }
 
 =head2 Public methods 
@@ -515,19 +515,19 @@ sub _address
 # Returnvalue: Mail::Builder::Address OR UNDEF
 # -------------------------------------------------------------
 {
-	my $obj = shift;
-	my $field = shift;
-	
-	if (@_) {
-		my $param = shift;
-		if (ref($param)
-			&& $param->isa('Mail::Builder::Address')) {
-			$obj->{$field} = $param;		
-		} else {
-			$obj->{$field} = Mail::Builder::Address->new($param,@_);
-		}
-	}
-	return $obj->{$field};
+    my $obj = shift;
+    my $field = shift;
+    
+    if (@_) {
+        my $param = shift;
+        if (ref($param)
+            && $param->isa('Mail::Builder::Address')) {
+            $obj->{$field} = $param;        
+        } else {
+            $obj->{$field} = Mail::Builder::Address->new($param,@_);
+        }
+    }
+    return $obj->{$field};
 }
 
 # -------------------------------------------------------------
@@ -537,22 +537,22 @@ sub _list
 # Returnvalue: Mail::Builder::Address OR UNDEF
 # -------------------------------------------------------------
 {
-	my $obj = shift;
-	my $field = shift;
-	
-	if (@_) {
-	    # Replace list object
-		if (ref($_[0])
-			&& $_[0]->isa('Mail::Builder::List')) {
-			croak('List types do not match') unless ($_[0]->type eq $obj->{$field}->type);				
-			$obj->{$field} = $_[0];
-		# Reset list and add new value
-	    } else {
-	        $obj->{$field}->reset();
-			$obj->{$field}->add(@_);
-		}
-	}
-	return $obj->{$field};
+    my $obj = shift;
+    my $field = shift;
+    
+    if (@_) {
+        # Replace list object
+        if (ref($_[0])
+            && $_[0]->isa('Mail::Builder::List')) {
+            croak('List types do not match') unless ($_[0]->type eq $obj->{$field}->type);              
+            $obj->{$field} = $_[0];
+        # Reset list and add new value
+        } else {
+            $obj->{$field}->reset();
+            $obj->{$field}->add(@_);
+        }
+    }
+    return $obj->{$field};
 }
 
 # -------------------------------------------------------------
@@ -562,9 +562,9 @@ sub _get_boundary
 # Returnvalue: Boundary string
 # -------------------------------------------------------------
 {
-	my $obj = shift;
-	$obj->{'boundary'} ++;
-	return qq[----_=_NextPart_00$obj->{'boundary'}_].(sprintf '%lx',time);
+    my $obj = shift;
+    $obj->{'boundary'} ++;
+    return qq[----_=_NextPart_00$obj->{'boundary'}_].(sprintf '%lx',time);
 }
 
 # -------------------------------------------------------------
@@ -574,47 +574,47 @@ sub _convert_text
 # Returnvalue: String
 # -------------------------------------------------------------
 {
-	my $html_element = shift;
-	my $params = shift;
-	my $plain_text = q[];
-	
-	$params ||= {};
-	
-	# Loop all children of the HTML element  
-	foreach my $html_content ($html_element->content_list) {
-	    # HTML element
-		if (ref($html_content) 
-			&& $html_content->isa('HTML::Element')) {
-			my $html_tagname = $html_content->tag;
-			if ($html_tagname eq 'i' || $html_tagname eq 'em') {
-				$plain_text .= '_'._convert_text($html_content,$params).'_';
-			} elsif ($html_tagname =~ m/^h\d$/) {
-				$plain_text .= '=='._convert_text($html_content,$params).qq[\n];
-			} elsif ($html_tagname eq 'strong' || $html_tagname eq 'b') {
-				$plain_text .= '*'._convert_text($html_content,$params).'*';
-			} elsif ($html_tagname eq 'hr') {
-				$plain_text .= qq[\n---------------------------------------------------------\n];
-			} elsif ($html_tagname eq 'br') {
-				$plain_text .= qq[\n];
-			} elsif ($html_tagname eq 'ul' || $html_tagname eq 'ol') {
+    my $html_element = shift;
+    my $params = shift;
+    my $plain_text = q[];
+    
+    $params ||= {};
+    
+    # Loop all children of the HTML element  
+    foreach my $html_content ($html_element->content_list) {
+        # HTML element
+        if (ref($html_content) 
+            && $html_content->isa('HTML::Element')) {
+            my $html_tagname = $html_content->tag;
+            if ($html_tagname eq 'i' || $html_tagname eq 'em') {
+                $plain_text .= '_'._convert_text($html_content,$params).'_';
+            } elsif ($html_tagname =~ m/^h\d$/) {
+                $plain_text .= '=='._convert_text($html_content,$params).qq[\n];
+            } elsif ($html_tagname eq 'strong' || $html_tagname eq 'b') {
+                $plain_text .= '*'._convert_text($html_content,$params).'*';
+            } elsif ($html_tagname eq 'hr') {
+                $plain_text .= qq[\n---------------------------------------------------------\n];
+            } elsif ($html_tagname eq 'br') {
+                $plain_text .= qq[\n];
+            } elsif ($html_tagname eq 'ul' || $html_tagname eq 'ol') {
                 my $count_old = $params->{count};    
-			    $params->{count} = ($html_tagname eq 'ol') ? 1:'*';
-				$plain_text .= qq[\n]._convert_text($html_content,$params).qq[\n\n];
-				if (defined $count_old) {
-				    $params->{count} = $count_old;
-				} else {
-				    delete $params->{count};
-				}
-			} elsif ($html_tagname eq 'div' || $html_tagname eq 'p') {
-				$plain_text .= _convert_text($html_content,$params).qq[\n\n];
-			} elsif ($html_tagname eq 'table') {
-			    require Text::Table; # Load Text::Table lazily
-			    	
-			    my $table_old = $params->{table}; 
-			    $params->{table} = Text::Table->new();
-			    _convert_text($html_content,$params);
-			    $params->{table}->body_rule('-','+');
-			    $params->{table}->rule('-','+');
+                $params->{count} = ($html_tagname eq 'ol') ? 1:'*';
+                $plain_text .= qq[\n]._convert_text($html_content,$params).qq[\n\n];
+                if (defined $count_old) {
+                    $params->{count} = $count_old;
+                } else {
+                    delete $params->{count};
+                }
+            } elsif ($html_tagname eq 'div' || $html_tagname eq 'p') {
+                $plain_text .= _convert_text($html_content,$params).qq[\n\n];
+            } elsif ($html_tagname eq 'table') {
+                require Text::Table; # Load Text::Table lazily
+                    
+                my $table_old = $params->{table}; 
+                $params->{table} = Text::Table->new();
+                _convert_text($html_content,$params);
+                $params->{table}->body_rule('-','+');
+                $params->{table}->rule('-','+');
                 $plain_text .= qq[\n].$params->{table}->rule('-').$params->{table}.$params->{table}->rule('-').qq[\n];
                 if (defined $table_old) {
                     $params->{table} = $table_old;
@@ -642,19 +642,19 @@ sub _convert_text
                 }
             } elsif ($html_tagname eq 'img' && $html_content->attr('alt')) {
                 $plain_text .= '['.$html_content->attr('alt').']';  
-			} elsif ($html_tagname eq 'a' && $html_content->attr('href')) {
-			    $plain_text .= '['.$html_content->attr('href').' '._convert_text($html_content,$params).']';	
-			} elsif ($html_tagname eq 'li') {
-				$plain_text .= qq[\n\t];
-				$params->{count} ||= '*';
-				if ($params->{count} eq '*') {
-					$plain_text .= '*';
-				} elsif ($params->{count} =~ /^\d+$/) {
-					$plain_text .= $params->{count}.'.';
-					$params->{count} ++;
-				}
-				$plain_text .= q[ ]._convert_text($html_content);
-			} elsif ($html_tagname eq 'pre') {
+            } elsif ($html_tagname eq 'a' && $html_content->attr('href')) {
+                $plain_text .= '['.$html_content->attr('href').' '._convert_text($html_content,$params).']';    
+            } elsif ($html_tagname eq 'li') {
+                $plain_text .= qq[\n\t];
+                $params->{count} ||= '*';
+                if ($params->{count} eq '*') {
+                    $plain_text .= '*';
+                } elsif ($params->{count} =~ /^\d+$/) {
+                    $plain_text .= $params->{count}.'.';
+                    $params->{count} ++;
+                }
+                $plain_text .= q[ ]._convert_text($html_content);
+            } elsif ($html_tagname eq 'pre') {
                 $params->{pre} = 1;
                 $plain_text .= qq[\n]._convert_text($html_content,$params).qq[\n\n];
                 delete $params->{pre};
@@ -663,20 +663,20 @@ sub _convert_text
                 || $html_tagname eq 'frameset'
                 || $html_tagname eq 'style') {
                 next;
-			} else {
-				$plain_text .= _convert_text($html_content,$params);
-			}
-	    # CDATA
-		} else {
-		    unless ($params->{pre}) {
-    			$html_element =~ s/(\n|\n)//g;
-    			$html_element =~ s/(\t|\n)/ /g;
-		    }
-			$plain_text .= $html_content;
-		}
-	}
-	
-	return $plain_text;
+            } else {
+                $plain_text .= _convert_text($html_content,$params);
+            }
+        # CDATA
+        } else {
+            unless ($params->{pre}) {
+                $html_element =~ s/(\n|\n)//g;
+                $html_element =~ s/(\t|\n)/ /g;
+            }
+            $plain_text .= $html_content;
+        }
+    }
+    
+    return $plain_text;
 }
 
 # -------------------------------------------------------------
@@ -686,58 +686,58 @@ sub _build_text
 # Returnvalue: MIME::Entity
 # -------------------------------------------------------------
 {
-	my $obj = shift;
-	my %mime_params = @_;
+    my $obj = shift;
+    my %mime_params = @_;
     
     # Build plaintext message from HTML
-	if (defined $obj->{'htmltext'}
-		&& ! defined($obj->{'plaintext'})
-		&& $obj->{autotext}) {
-		# Parse HTML tree. Load HTML::TreeBuilder lazily
-		require HTML::TreeBuilder;
-		
-		my $html_tree = HTML::TreeBuilder->new_from_content($obj->{'htmltext'});
-		# Only use the body
-		my $html_body = $html_tree->find('body');
-		# And now convert all elements
-		$obj->{'plaintext'} = _convert_text($html_body);
-	}
-	
-	my $mime_part;
-	
-	# We have HTML and plaintext
-	if (defined $obj->{'htmltext'}
-		&& defined $obj->{'plaintext'}) {
-		
-		# Build multipart/alternative envelope for HTML and plaintext
-		$mime_part = build MIME::Entity(
-			%mime_params,
-			Type		=> q[multipart/alternative],
-			Boundary	=> $obj->_get_boundary(),
-			Encoding    => 'binary',
-		);
-		
-		# Add the plaintext entity first
-		$mime_part->add_part(build MIME::Entity (
-			Top 		=> 0,
-			Type		=> qq[text/plain; charset="utf-8"],
-			Data		=> $obj->{'plaintext'},
-			Encoding	=> 'quoted-printable',
-		));
-		
-		# Add the html entity (the last entity is prefered in multipart/alternative context)
-		$mime_part->add_part($obj->_build_html(Top => 0));
+    if (defined $obj->{'htmltext'}
+        && ! defined($obj->{'plaintext'})
+        && $obj->{autotext}) {
+        # Parse HTML tree. Load HTML::TreeBuilder lazily
+        require HTML::TreeBuilder;
+        
+        my $html_tree = HTML::TreeBuilder->new_from_content($obj->{'htmltext'});
+        # Only use the body
+        my $html_body = $html_tree->find('body');
+        # And now convert all elements
+        $obj->{'plaintext'} = _convert_text($html_body);
+    }
+    
+    my $mime_part;
+    
+    # We have HTML and plaintext
+    if (defined $obj->{'htmltext'}
+        && defined $obj->{'plaintext'}) {
+        
+        # Build multipart/alternative envelope for HTML and plaintext
+        $mime_part = build MIME::Entity(
+            %mime_params,
+            Type        => q[multipart/alternative],
+            Boundary    => $obj->_get_boundary(),
+            Encoding    => 'binary',
+        );
+        
+        # Add the plaintext entity first
+        $mime_part->add_part(build MIME::Entity (
+            Top         => 0,
+            Type        => qq[text/plain; charset="utf-8"],
+            Data        => $obj->{'plaintext'},
+            Encoding    => 'quoted-printable',
+        ));
+        
+        # Add the html entity (the last entity is prefered in multipart/alternative context)
+        $mime_part->add_part($obj->_build_html(Top => 0));
     # We only have plaintext
-	} else {
-		$mime_part = build MIME::Entity (
-			%mime_params,
-			Type		=> qq[text/plain; charset="utf-8"],
-			Data		=> $obj->{'plaintext'},
-			Encoding	=> 'quoted-printable',
-		);
-	}
-	
-	return $mime_part;
+    } else {
+        $mime_part = build MIME::Entity (
+            %mime_params,
+            Type        => qq[text/plain; charset="utf-8"],
+            Data        => $obj->{'plaintext'},
+            Encoding    => 'quoted-printable',
+        );
+    }
+    
+    return $mime_part;
 }
 
 
@@ -748,41 +748,41 @@ sub _build_html
 # Returnvalue: MIME::Entity
 # -------------------------------------------------------------
 {
-	my $obj = shift;
-	my %mime_params = @_;
-	
-	my $mime_part;
-	
-	# We have inline images
-	if ($obj->{'image'}->length()) {
-	    # So we need a multipart/related envelope first
-		$mime_part = build MIME::Entity(
-			%mime_params,
-			Type		=> q[multipart/related],
-			Boundary	=> $obj->_get_boundary(),
-			Encoding    => 'binary',
-		);
-		# Add the html body
-		$mime_part->add_part(build MIME::Entity (
-			Top 		=> 0,
-			Type		=> qq[text/html; charset="utf-8"],
-			Data		=> $obj->{'htmltext'},
-			Encoding	=> 'quoted-printable',
-		));
-		# And now all the inline images
-		foreach ($obj->{'image'}->list) {
-			$mime_part->add_part($_->serialize);
-		}
+    my $obj = shift;
+    my %mime_params = @_;
+    
+    my $mime_part;
+    
+    # We have inline images
+    if ($obj->{'image'}->length()) {
+        # So we need a multipart/related envelope first
+        $mime_part = build MIME::Entity(
+            %mime_params,
+            Type        => q[multipart/related],
+            Boundary    => $obj->_get_boundary(),
+            Encoding    => 'binary',
+        );
+        # Add the html body
+        $mime_part->add_part(build MIME::Entity (
+            Top         => 0,
+            Type        => qq[text/html; charset="utf-8"],
+            Data        => $obj->{'htmltext'},
+            Encoding    => 'quoted-printable',
+        ));
+        # And now all the inline images
+        foreach ($obj->{'image'}->list) {
+            $mime_part->add_part($_->serialize);
+        }
     # We don't have any inline images
-	} else {
-		$mime_part = build MIME::Entity (
-			%mime_params,
-			Type		=> qq[text/html; charset="utf-8"],
-			Data		=> $obj->{'htmltext'},
-			Encoding	=> 'quoted-printable',
-		);
-	}	
-	return $mime_part;
+    } else {
+        $mime_part = build MIME::Entity (
+            %mime_params,
+            Type        => qq[text/html; charset="utf-8"],
+            Data        => $obj->{'htmltext'},
+            Encoding    => 'quoted-printable',
+        );
+    }   
+    return $mime_part;
 }
 
 

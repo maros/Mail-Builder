@@ -51,16 +51,16 @@ Simple constructor
 =cut
 
 sub new {
-	my $class = shift;
-	my $obj = bless {
-		email	=> undef,
-		name	=> undef,
-	},$class;
-	
-	$obj->email(shift);
-	$obj->name(shift) if (@_);
-	
-	return $obj;
+    my $class = shift;
+    my $obj = bless {
+        email   => undef,
+        name    => undef,
+    },$class;
+    
+    $obj->email(shift);
+    $obj->name(shift) if (@_);
+    
+    return $obj;
 }
 
 =head2 Public Methods
@@ -134,16 +134,16 @@ Display name
 =cut
 
 sub name {
-	my $obj = shift;
- 	if(@_) {
-		$obj->{'name'} = shift;
-		return unless $obj->{'name'};
-		$obj->{'name'} =~ s/\\/\\\\/g;
-		$obj->{'name'} =~ s/"/\\"/g;
-	}
-	return $obj->{'name'};
+    my $obj = shift;
+    if(@_) {
+        $obj->{'name'} = shift;
+        return unless $obj->{'name'};
+        $obj->{'name'} =~ s/\\/\\\\/g;
+        $obj->{'name'} =~ s/"/\\"/g;
+    }
+    return $obj->{'name'};
 }
-	
+    
 =head3 email
 
 E-mail address. Will be checked with L<Email::Valid>
@@ -151,14 +151,14 @@ E-mail address. Will be checked with L<Email::Valid>
 =cut
 
 sub email {
-	my $obj = shift;
- 	if(@_) {
-		my $email_address = shift;
-		croak(q[e-mail address missing]) unless ($email_address);
-		croak(q[e-mail address is not valid]) unless (Email::Valid->address($email_address));
-		$obj->{'email'} = $email_address;
-	}
-	return $obj->{'email'};
+    my $obj = shift;
+    if(@_) {
+        my $email_address = shift;
+        croak(q[e-mail address missing]) unless ($email_address);
+        croak(q[e-mail address is not valid]) unless (Email::Valid->address($email_address));
+        $obj->{'email'} = $email_address;
+    }
+    return $obj->{'email'};
 }
 
 1;
