@@ -21,7 +21,7 @@ Mail::Builder::Image::Data - Module for handling inline images from data
 
   use Mail::Builder;
   
-  my $image = Mail::Builder::Image::Data($data,'invitation');
+  my $image = new Mail::Builder::Image::Data($data,'invitation');
   # Change CID
   $image->id('invitation_location');
   

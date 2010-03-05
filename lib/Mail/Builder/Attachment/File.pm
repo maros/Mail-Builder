@@ -25,7 +25,7 @@ Mail::Builder::Attachment::File - Module for handling attachments from files
 
   use Mail::Builder;
   
-  my $attachment = Mail::Builder::Attachment::File('/home/guybrush/2007_10_11_invitation.pdf','invitation.pdf','application/pdf');
+  my $attachment = new Mail::Builder::Attachment::File('/home/guybrush/2007_10_11_invitation.pdf','invitation.pdf','application/pdf');
   $attachment->name('party_invitation.pdf');
   print $attachment->serialize;
   
@@ -72,9 +72,9 @@ sub new {
 
 =head3 compare
 
- $obj->compara(OBJECT);
+ $obj->compare(OBJECT);
  or 
- $obj->compara(PATH);
+ $obj->compare(PATH);
 
 Checks if two attachment objectscontain the same file. Returns true or false.
 The compare method does not check if the mime types and name attributes of the
