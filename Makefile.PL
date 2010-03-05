@@ -2,9 +2,14 @@
 use strict;
 use inc::Module::Install;
 
+my $from = 'lib/Mail/Builder.pm';
+
 # Define metadata
 name            'Mail-Builder';
-all_from        'lib/Mail/Builder.pm';
+all_from        $from;
+readme_from     $from;
+readme_markdown_from $from;
+
 
 perl_version    '5.008';
 

@@ -5,8 +5,8 @@ use strict;
 use warnings;
 
 use version;
-use vars qw($VERSION);
-$VERSION = version->new("1.20");
+our $AUTHORITY = 'cpan:MAROS';
+our $VERSION = version->new("1.20");
 
 use parent qw(Class::Accessor);
 use Carp;
