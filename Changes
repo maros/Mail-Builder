@@ -1,5 +1,13 @@
 Revision history for Perl module Mail::Builder
 
+1.13 Sat Mar 6 2010
+    - EXTENDED: Make Mail::Builder::Image an abstract class; 
+    - Add Mail::Builder::Image::Data and Mail::Builder::Image::File classes
+    - CORRECTED: Documentation typos and wrong examples
+    - CORRECTED: RT 55258 Message ID
+    - CORRECTED: RT 40953 Makefile dependency missing
+    - CORRECTED: Some dist housekeeping
+
 1.12 Mon Jun 2 2008
     - EXTENDED: added autotext option
     - EXTENDED: documentation
