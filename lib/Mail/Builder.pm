@@ -1,22 +1,23 @@
 # ============================================================================
 package Mail::Builder;
 # ============================================================================
-use strict;
-use warnings;
 
 use version;
 our $AUTHORITY = 'cpan:MAROS';
-our $VERSION = version->new("1.13");
+our $VERSION = version->new("2.00");
 
-use parent qw(Class::Accessor);
+use Moose;
+use Moose::Util::TypeConstraints;
+
 use Carp;
 
 use Encode qw(encode decode); 
 use MIME::Entity;
+
 use Email::MessageID;
+use Email::Address;
 
 use Mail::Builder::List;
-use Mail::Builder::Address;
 use Mail::Builder::Attachment;
 use Mail::Builder::Attachment::File;
 use Mail::Builder::Attachment::Data;
@@ -24,8 +25,192 @@ use Mail::Builder::Image;
 use Mail::Builder::Image::File;
 use Mail::Builder::Image::Data;
 
-__PACKAGE__->mk_accessors(qw(plaintext htmltext subject organization priority language mailer autotext));
-__PACKAGE__->mk_ro_accessors(qw(messageid));
+subtype 'Address'
+    => as 'Email::Address';
+
+coerce 'Address'
+    => from 'Str'
+    => via { Email::Address->parse($_[0]) };
+
+subtype 'AddressList'
+    => as 'Mail::Builder::List'
+    => where { $_->type eq 'Email::Address' }
+    => message { "Must be Mail::Builder::List of Email::Address" };
+
+coerce 'AddressList'
+    => from 'Email::Address'
+    => via { Mail::Builder::List->new( type => 'Email::Address', list => [ $_ ] ) }
+    => from 'ArrayRef'
+    => via { 
+        my $param = $_;
+        my $result = [];
+        foreach my $element (@$param) {
+            if (blessed $element
+                && $element->isa('Email::Address')) {
+                push(@{$result},$element);
+            } else {
+                push(@{$result},Email::Address->parse($element));
+            }
+        }
+        return Mail::Builder::List->new( type => 'Email::Address', list => $result ) 
+    };
+
+#coerce 'Address'
+#    => from 'Str'
+#    => via { Email::Address->parse($_) };
+
+subtype 'AttachmentList'
+    => as 'Mail::Builder::List'
+    => where { $_->type eq 'Mail::Builder::Attachment' }
+    => message { "Must be Mail::Builder::List of Mail::Builder::Attachment" };
+
+subtype 'ImageList'
+    => as 'Mail::Builder::List'
+    => where { $_->type eq 'Mail::Builder::Image' }
+    => message { "Must be Mail::Builder::List of Mail::Builder::Image" };
+
+has 'plaintext' => (
+    is              => 'rw',
+    isa             => 'Str',
+    predicate       => 'has_plaintext',
+    clearer         => 'clear_plaintext',
+);
+
+has 'htmltext' => (
+    is              => 'rw',
+    isa             => 'Str',
+    predicate       => 'has_htmltext',
+    clearer         => 'clear_htmltext',
+    trigger         => '_generate_plaintext',
+);
+
+has 'subject' => (
+    is              => 'rw',
+    isa             => 'Str',
+    required        => 1,
+);
+
+has 'organization' => (
+    is              => 'rw',
+    isa             => 'Str',
+    clearer         => 'clear_organization',
+);
+
+has 'priority' => (
+    is              => 'rw',
+    isa             => enum([qw(1 2 3 4 5)]),
+    default         => 3,
+);
+
+has 'language' => (
+    is              => 'rw',
+    isa             => 'Str',
+    clearer         => 'clear_language',
+);
+
+has 'mailer' => (
+    is              => 'rw',
+    isa             => 'Str',
+    default         => "Mail::Builder $VERSION",
+);
+
+has 'autotext' => (
+    is              => 'rw',
+    isa             => 'Bool',
+    default         => 1,
+);
+
+has 'messageid' => (
+    is              => 'rw',
+    isa             => 'Email::MessageID',
+    default         => sub { Email::MessageID->new },
+);
+
+has '_boundary' => (
+    is              => 'rw',
+    isa             => 'Int',
+    default         => 0,
+);
+
+has 'from' => (
+    is              => 'rw',
+    isa             => 'Address',
+#    coerce          => 1,
+);
+
+has 'reply' => (
+    is              => 'rw',
+    isa             => 'Address',
+#    coerce          => 1,
+);
+
+has 'returnpath' => (
+    is              => 'rw',
+    isa             => 'Address',
+#    coerce          => 1,
+);
+
+has 'sender' => (
+    is              => 'rw',
+    isa             => 'Address',
+#    coerce          => 1,
+);
+
+has 'to' => (
+    is              => 'rw',
+    isa             => 'AddressList',
+    coerce          => 1,
+);
+
+has 'cc' => (
+    is              => 'rw',
+    isa             => 'AddressList',
+    coerce          => 1,
+);
+
+has 'bcc' => (
+    is              => 'rw',
+    isa             => 'AddressList',
+    coerce          => 1,
+);
+
+has 'attachment' => (
+    is              => 'rw',
+    isa             => 'AttachmentList',
+);
+
+has 'image' => (
+    is              => 'rw',
+    isa             => 'ImageList',
+);
+
+around 'from' => \&_address_accessor;
+around 'returnpath' => \&_address_accessor;
+around 'sender' => \&_address_accessor;
+around 'reply' => \&_address_accessor;
+
+#around 'to' => \&_address_list_accessor;
+#around 'cc' => \&_address_list_accessor;
+#around 'bcc' => \&_address_list_accessor;
+
+sub _address_accessor {
+    my ($method,$self,@params) = @_;
+    
+    if (my $params_length = scalar @params) {
+        if ($params_length == 1) {
+            if (blessed $params[0] && $params[0]->isa('Email::Address')) {
+                return $method->($self,$params[0]);
+            } else {
+                return $method->($self,Email::Address->parse($params[0]));
+            }
+        } else {
+            # DEPRECATED
+            return $method->($self,Email::Address->new($params[1],$params[0]));
+        }
+    } else {
+        return $method->($self);
+    }
+}
 
 
 =encoding utf8
