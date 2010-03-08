@@ -212,6 +212,152 @@ sub _address_accessor {
     }
 }
 
+#sub _address_list_accessor {
+#    my ($method,$self,@params) = @_;
+#    
+#    if (my $params_length = scalar @params) {
+#        if ($params_length == 1
+#            && ref $params[0] eq 'ARRAY') {
+#            return $method->($self,Email::Address->parse($params[0]));
+#        } 
+#        my @result;
+#        foreach my $param (@params) {
+#            if (blessed $params[0] && $params[0]->isa('Email::Address')) {
+#        }
+#        if ($params_length == 1) {
+#            if (blessed $params[0] && $params[0]->isa('Email::Address')) {
+#                return $method->($self,$params[0]);
+#            } else {
+#                return $method->($self,Email::Address->parse($params[0]));
+#            }
+#        } else {
+#            return $method->($self,Email::Address->new($params[1],$params[0]));
+#        }
+#    } else {
+#        return $method->($self);
+#    }
+#}
+
+sub _generate_plaintext {
+    my ($self,$htmltext) = @_;
+    $htmltext ||= $self->htmltext;
+    
+    if ($self->autotext) {
+        Class::MOP::load_class('HTML::TreeBuilder');
+        
+        my $html_tree = HTML::TreeBuilder->new_from_content($self->htmltext);
+        # Only use the body
+        my $html_body = $html_tree->find('body');
+        # And now convert all elements
+        $self->plaintext($self->_convert_text($html_body));
+    }
+}
+
+sub _convert_text {
+    my ($self,$html_element,$params) = @_;
+
+    my $plain_text = q[];
+    $params ||= {};
+    
+    # Loop all children of the HTML element  
+    foreach my $html_content ($html_element->content_list) {
+        # HTML element
+        if (ref($html_content) 
+            && $html_content->isa('HTML::Element')) {
+            my $html_tagname = $html_content->tag;
+            if ($html_tagname eq 'i' || $html_tagname eq 'em') {
+                $plain_text .= '_'.$self->_convert_text($html_content,$params).'_';
+            } elsif ($html_tagname =~ m/^h\d$/) {
+                $plain_text .= '=='.$self->_convert_text($html_content,$params).qq[\n];
+            } elsif ($html_tagname eq 'strong' || $html_tagname eq 'b') {
+                $plain_text .= '*'.$self->_convert_text($html_content,$params).'*';
+            } elsif ($html_tagname eq 'hr') {
+                $plain_text .= qq[\n---------------------------------------------------------\n];
+            } elsif ($html_tagname eq 'br') {
+                $plain_text .= qq[\n];
+            } elsif ($html_tagname eq 'ul' || $html_tagname eq 'ol') {
+                my $count_old = $params->{count};    
+                $params->{count} = ($html_tagname eq 'ol') ? 1:'*';
+                $plain_text .= qq[\n].$self->_convert_text($html_content,$params).qq[\n\n];
+                if (defined $count_old) {
+                    $params->{count} = $count_old;
+                } else {
+                    delete $params->{count};
+                }
+            } elsif ($html_tagname eq 'div' || $html_tagname eq 'p') {
+                $plain_text .= $self->_convert_text($html_content,$params).qq[\n\n];
+            } elsif ($html_tagname eq 'table') {
+                require Text::Table; # Load Text::Table lazily
+                    
+                my $table_old = $params->{table}; 
+                $params->{table} = Text::Table->new();
+                $self->_convert_text($html_content,$params);
+                $params->{table}->body_rule('-','+');
+                $params->{table}->rule('-','+');
+                $plain_text .= qq[\n].$params->{table}->rule('-').$params->{table}.$params->{table}->rule('-').qq[\n];
+                if (defined $table_old) {
+                    $params->{table} = $table_old;
+                } else {
+                    delete $params->{table};
+                }
+            } elsif ($html_tagname eq 'tr' 
+                && defined $params->{table}) { 
+                my $tablerow_old = $params->{tablerow}; 
+                $params->{tablerow} = [];
+                $self->_convert_text($html_content,$params);
+                $params->{table}->add(@{$params->{tablerow}});
+                if (defined $tablerow_old) {
+                    $params->{tablerow} = $tablerow_old;
+                } else {
+                    delete $params->{tablerow};
+                }
+            } elsif (($html_tagname eq 'td' || $html_tagname eq 'th') && $params->{tablerow}) {
+                push @{$params->{tablerow}},$self->_convert_text($html_content,$params);     
+                if ($html_content->attr('colspan')) {
+                    my $colspan = $html_content->attr('colspan') || 1;
+                    $colspan --;
+                    push @{$params->{tablerow}},''
+                        for (1..$colspan);
+                }
+            } elsif ($html_tagname eq 'img' && $html_content->attr('alt')) {
+                $plain_text .= '['.$html_content->attr('alt').']';  
+            } elsif ($html_tagname eq 'a' && $html_content->attr('href')) {
+                $plain_text .= '['.$html_content->attr('href').' '.$self->_convert_text($html_content,$params).']';    
+            } elsif ($html_tagname eq 'li') {
+                $plain_text .= qq[\n\t];
+                $params->{count} ||= '*';
+                if ($params->{count} eq '*') {
+                    $plain_text .= '*';
+                } elsif ($params->{count} =~ /^\d+$/) {
+                    $plain_text .= $params->{count}.'.';
+                    $params->{count} ++;
+                }
+                $plain_text .= q[ ].$self->_convert_text($html_content);
+            } elsif ($html_tagname eq 'pre') {
+                $params->{pre} = 1;
+                $plain_text .= qq[\n].$self->_convert_text($html_content,$params).qq[\n\n];
+                delete $params->{pre};
+            } elsif ($html_tagname eq 'head'
+                || $html_tagname eq 'script'
+                || $html_tagname eq 'frameset'
+                || $html_tagname eq 'style') {
+                next;
+            } else {
+                $plain_text .= $self->_convert_text($html_content,$params);
+            }
+        # CDATA
+        } else {
+            unless ($params->{pre}) {
+                $html_element =~ s/(\n|\n)//g;
+                $html_element =~ s/(\t|\n)/ /g;
+            }
+            $plain_text .= $html_content;
+        }
+    }
+    
+    return $plain_text;
+}
+
 
 =encoding utf8
 
@@ -291,33 +437,6 @@ This is a simple constructor. It does not expect any parameters.
 
 =cut
 
-sub new {
-    my $class = shift;
-    
-    my $obj = bless {
-        boundary    => 0,
-        from        => undef,
-        reply       => undef,
-        organization=> undef,
-        returnpath  => undef,
-        sender      => undef,
-        to          => Mail::Builder::List->new('Mail::Builder::Address'),
-        cc          => Mail::Builder::List->new('Mail::Builder::Address'),
-        bcc         => Mail::Builder::List->new('Mail::Builder::Address'),
-        priority    => 3,
-        subject     => '',
-        plaintext   => undef,
-        htmltext    => undef,
-        language    => undef,
-        attachment  => Mail::Builder::List->new('Mail::Builder::Attachment'),
-        image       => Mail::Builder::List->new('Mail::Builder::Image'),
-        mailer      => "Mail::Builder $VERSION with MIME::Tools",
-        messageid   => undef,
-        autotext    => 1,
-    },$class;
-    bless $obj,$class;
-    return $obj;
-}
 
 =head2 Public methods 
 
@@ -456,25 +575,6 @@ name)
 
 =cut
 
-sub from {
-    my $obj = shift;
-    return $obj->_address('from',@_);
-}
-
-sub returnpath {
-    my $obj = shift;
-    return $obj->_address('returnpath',@_);
-}
-
-sub sender {
-    my $obj = shift;
-    return $obj->_address('sender',@_);
-}
-
-sub reply {
-    my $obj = shift;
-    return $obj->_address('reply',@_);
-}
 
 =head3 charset (DEPRECATED)
 
@@ -693,27 +793,7 @@ sub image {
 }
 
 
-# -------------------------------------------------------------
-sub _address
-# Type: Private accessor
-# Parameters: FIELD,[Mail::Builder::Address OR EMAIL[,NAME]
-# Returnvalue: Mail::Builder::Address OR UNDEF
-# -------------------------------------------------------------
-{
-    my $obj = shift;
-    my $field = shift;
-    
-    if (@_) {
-        my $param = shift;
-        if (ref($param)
-            && $param->isa('Mail::Builder::Address')) {
-            $obj->{$field} = $param;        
-        } else {
-            $obj->{$field} = Mail::Builder::Address->new($param,@_);
-        }
-    }
-    return $obj->{$field};
-}
+
 
 # -------------------------------------------------------------
 sub _list
@@ -750,118 +830,6 @@ sub _get_boundary
     my $obj = shift;
     $obj->{'boundary'} ++;
     return qq[----_=_NextPart_00$obj->{'boundary'}_].(sprintf '%lx',time);
-}
-
-# -------------------------------------------------------------
-sub _convert_text
-# Type: Private class method
-# Parameters: HTML::Element[,LIST OPTION]
-# Returnvalue: String
-# -------------------------------------------------------------
-{
-    my $html_element = shift;
-    my $params = shift;
-    my $plain_text = q[];
-    
-    $params ||= {};
-    
-    # Loop all children of the HTML element  
-    foreach my $html_content ($html_element->content_list) {
-        # HTML element
-        if (ref($html_content) 
-            && $html_content->isa('HTML::Element')) {
-            my $html_tagname = $html_content->tag;
-            if ($html_tagname eq 'i' || $html_tagname eq 'em') {
-                $plain_text .= '_'._convert_text($html_content,$params).'_';
-            } elsif ($html_tagname =~ m/^h\d$/) {
-                $plain_text .= '=='._convert_text($html_content,$params).qq[\n];
-            } elsif ($html_tagname eq 'strong' || $html_tagname eq 'b') {
-                $plain_text .= '*'._convert_text($html_content,$params).'*';
-            } elsif ($html_tagname eq 'hr') {
-                $plain_text .= qq[\n---------------------------------------------------------\n];
-            } elsif ($html_tagname eq 'br') {
-                $plain_text .= qq[\n];
-            } elsif ($html_tagname eq 'ul' || $html_tagname eq 'ol') {
-                my $count_old = $params->{count};    
-                $params->{count} = ($html_tagname eq 'ol') ? 1:'*';
-                $plain_text .= qq[\n]._convert_text($html_content,$params).qq[\n\n];
-                if (defined $count_old) {
-                    $params->{count} = $count_old;
-                } else {
-                    delete $params->{count};
-                }
-            } elsif ($html_tagname eq 'div' || $html_tagname eq 'p') {
-                $plain_text .= _convert_text($html_content,$params).qq[\n\n];
-            } elsif ($html_tagname eq 'table') {
-                require Text::Table; # Load Text::Table lazily
-                    
-                my $table_old = $params->{table}; 
-                $params->{table} = Text::Table->new();
-                _convert_text($html_content,$params);
-                $params->{table}->body_rule('-','+');
-                $params->{table}->rule('-','+');
-                $plain_text .= qq[\n].$params->{table}->rule('-').$params->{table}.$params->{table}->rule('-').qq[\n];
-                if (defined $table_old) {
-                    $params->{table} = $table_old;
-                } else {
-                    delete $params->{table};
-                }
-            } elsif ($html_tagname eq 'tr' 
-                && defined $params->{table}) { 
-                my $tablerow_old = $params->{tablerow}; 
-                $params->{tablerow} = [];
-                _convert_text($html_content,$params);
-                $params->{table}->add(@{$params->{tablerow}});
-                if (defined $tablerow_old) {
-                    $params->{tablerow} = $tablerow_old;
-                } else {
-                    delete $params->{tablerow};
-                }
-            } elsif (($html_tagname eq 'td' || $html_tagname eq 'th') && $params->{tablerow}) {
-                push @{$params->{tablerow}},_convert_text($html_content,$params);     
-                if ($html_content->attr('colspan')) {
-                    my $colspan = $html_content->attr('colspan') || 1;
-                    $colspan --;
-                    push @{$params->{tablerow}},''
-                        for (1..$colspan);
-                }
-            } elsif ($html_tagname eq 'img' && $html_content->attr('alt')) {
-                $plain_text .= '['.$html_content->attr('alt').']';  
-            } elsif ($html_tagname eq 'a' && $html_content->attr('href')) {
-                $plain_text .= '['.$html_content->attr('href').' '._convert_text($html_content,$params).']';    
-            } elsif ($html_tagname eq 'li') {
-                $plain_text .= qq[\n\t];
-                $params->{count} ||= '*';
-                if ($params->{count} eq '*') {
-                    $plain_text .= '*';
-                } elsif ($params->{count} =~ /^\d+$/) {
-                    $plain_text .= $params->{count}.'.';
-                    $params->{count} ++;
-                }
-                $plain_text .= q[ ]._convert_text($html_content);
-            } elsif ($html_tagname eq 'pre') {
-                $params->{pre} = 1;
-                $plain_text .= qq[\n]._convert_text($html_content,$params).qq[\n\n];
-                delete $params->{pre};
-            } elsif ($html_tagname eq 'head'
-                || $html_tagname eq 'script'
-                || $html_tagname eq 'frameset'
-                || $html_tagname eq 'style') {
-                next;
-            } else {
-                $plain_text .= _convert_text($html_content,$params);
-            }
-        # CDATA
-        } else {
-            unless ($params->{pre}) {
-                $html_element =~ s/(\n|\n)//g;
-                $html_element =~ s/(\t|\n)/ /g;
-            }
-            $plain_text .= $html_content;
-        }
-    }
-    
-    return $plain_text;
 }
 
 # -------------------------------------------------------------
