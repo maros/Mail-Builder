@@ -2,7 +2,7 @@
 
 # t/008_builder.t - check if everything works well toghether
 
-use Test::More tests => 70;
+use Test::More tests => 72;
 
 use Mail::Builder;
 
@@ -137,6 +137,9 @@ isa_ok($mime->head,'MIME::Head');
 is($mime->head->get('To'),'"=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?=" <recipient2@test.com>'."\n");
 is($mime->head->get('Subject'),'Testmail'."\n");
 is($mime->head->get('From'),'"me" <from2@test.com>'."\n");
+
+is($mime->head->get('Content-Language'),'de'."\n");
+like($mime->head->get('Message-ID'),qr/<[0-9A-Za-z.@]+>/);
 is($mime->parts,2);
 is($mime->parts(0)->mime_type,'application/pdf');
 is($mime->parts(1)->mime_type,'text/plain');
