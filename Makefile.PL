@@ -29,6 +29,9 @@ requires        'parent'                => 0;
 build_requires  'Test::Pod'             => 0;
 build_requires  'Test::Pod::Coverage'   => 0;
 
+author_requires 'Module::Install::ReadmeMarkdownFromPod'=> 0;
+author_requires 'Module::Install::ReadmeFromPod'        => 0;
+
 repository 'git://github.com/maros/Mail-Builder.git';
 
 WriteAll;
