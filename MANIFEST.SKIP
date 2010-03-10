@@ -1,6 +1,5 @@
 # Avoid version control files.
 \bRCS\b
-\binc\b
 \bCVS\b
 ,v$
 \B\.svn\b
