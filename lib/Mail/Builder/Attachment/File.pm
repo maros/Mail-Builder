@@ -149,7 +149,7 @@ sub path {
     my $obj = shift;
     if (@_) {
         $obj->{'path'} = shift;
-        croak(qq[Could not find/open file: $obj->{'path'}]) unless (-f -r $obj->{'path'});
+        croak(qq[Could not find/open file: $obj->{'path'}]) unless (-f $obj->{'path'} && -r $obj->{'path'});
         undef $obj->{'cache'};
     }
     return $obj->{'path'};

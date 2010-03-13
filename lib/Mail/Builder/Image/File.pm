@@ -164,7 +164,7 @@ sub path {
         croak(qq[Invalid file type: $obj->{'path'}]) 
             unless ($obj->{'path'} =~ /.(JPE?G|GIF|PNG)$/i);
         croak(qq[Could not find/open file: $obj->{'path'}]) 
-            unless (-r -f $obj->{'path'});
+            unless (-r $obj->{'path'} && -f $obj->{'path'});
          
         $obj->{'cache'} = undef;
         $obj->{'type'} = lc($1);
