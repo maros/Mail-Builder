@@ -1,5 +1,9 @@
 Revision history for Perl module Mail::Builder
 
+1.14 & 1.16 Sat Mar 13 2010
+    - CORRECTED: Fixed test failiures on some hosts
+    - CORRECTED: Fixed bug on perl 5.8
+
 1.14 & 1.15 Wed Mar 10 2010
     - CORRECTED: Add missing Module::Install plugin, fixed broken dist file
 
