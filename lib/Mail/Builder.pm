@@ -18,6 +18,7 @@ use Email::MessageID;
 use Email::Address;
 
 use Mail::Builder::List;
+use Mail::Builder::Address;
 use Mail::Builder::Attachment;
 use Mail::Builder::Attachment::File;
 use Mail::Builder::Attachment::Data;
@@ -26,48 +27,86 @@ use Mail::Builder::Image::File;
 use Mail::Builder::Image::Data;
 
 subtype 'Address'
-    => as 'Email::Address';
-
-coerce 'Address'
-    => from 'Str'
-    => via { Email::Address->parse($_[0]) };
+    => as 'Mail::Builder::Address';
 
 subtype 'AddressList'
     => as 'Mail::Builder::List'
-    => where { $_->type eq 'Email::Address' }
-    => message { "Must be Mail::Builder::List of Email::Address" };
+    => where { $_->type eq 'Mail::Builder::Address' }
+    => message { "Must be Mail::Builder::List of Mail::Builder::Address" };
 
 coerce 'AddressList'
-    => from 'Email::Address'
-    => via { Mail::Builder::List->new( type => 'Email::Address', list => [ $_ ] ) }
+    => from 'Mail::Builder::Address'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ $_ ] ) }
     => from 'ArrayRef'
     => via { 
         my $param = $_;
         my $result = [];
         foreach my $element (@$param) {
-            if (blessed $element
-                && $element->isa('Email::Address')) {
-                push(@{$result},$element);
+            if (blessed $element) {
+                if ($element->isa('Mail::Builder::Address')) {
+                    push(@{$result},$element);
+                } elsif ($element->isa('Email::Address')) {
+                    # TODO
+                }
             } else {
+                # TODO
                 push(@{$result},Email::Address->parse($element));
             }
         }
-        return Mail::Builder::List->new( type => 'Email::Address', list => $result ) 
+        return Mail::Builder::List->new( type => 'Mail::Builder::Address', list => $result ) 
     };
 
-#coerce 'Address'
-#    => from 'Str'
-#    => via { Email::Address->parse($_) };
+subtype 'Mail::Builder::Attachment'
+    => as 'Mail::Builder::Attachment';
+
+subtype 'Mail::Builder::Image'
+    => as 'Mail::Builder::Image';
 
 subtype 'AttachmentList'
     => as 'Mail::Builder::List'
     => where { $_->type eq 'Mail::Builder::Attachment' }
     => message { "Must be Mail::Builder::List of Mail::Builder::Attachment" };
 
+coerce 'AttachmentList'
+    => from 'Mail::Builder::Attachment'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => [ $_ ] ) }
+    => from 'ArrayRef'
+    => via { 
+        my $param = $_;
+        my $result = [];
+        foreach my $element (@$param) {
+            if (blessed $element
+                && $element->isa('Mail::Builder::Attachment')) {
+                push(@{$result},$element);
+            } else {
+                push(@{$result},Mail::Builder::Attachment->new(file => $element));
+            }
+        }
+        return Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => $result ) 
+    };
+
 subtype 'ImageList'
     => as 'Mail::Builder::List'
     => where { $_->type eq 'Mail::Builder::Image' }
     => message { "Must be Mail::Builder::List of Mail::Builder::Image" };
+
+coerce 'ImageList'
+    => from 'Mail::Builder::Image'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Image', list => [ $_ ] ) }
+    => from 'ArrayRef'
+    => via { 
+        my $param = $_;
+        my $result = [];
+        foreach my $element (@$param) {
+            if (blessed $element
+                && $element->isa('Mail::Builder::Image')) {
+                push(@{$result},$element);
+            } else {
+                push(@{$result},Mail::Builder::Image->new(file => $element));
+            }
+        }
+        return Mail::Builder::List->new( type => 'Mail::Builder::Image', list => $result ) 
+    };
 
 has 'plaintext' => (
     is              => 'rw',
@@ -81,18 +120,20 @@ has 'htmltext' => (
     isa             => 'Str',
     predicate       => 'has_htmltext',
     clearer         => 'clear_htmltext',
-    trigger         => '_generate_plaintext',
+    trigger         => \&_generate_plaintext,
 );
 
 has 'subject' => (
     is              => 'rw',
     isa             => 'Str',
     required        => 1,
+    predicate       => 'has_subject',
 );
 
 has 'organization' => (
     is              => 'rw',
     isa             => 'Str',
+    predicate       => 'has_organization',
     clearer         => 'clear_organization',
 );
 
@@ -106,6 +147,7 @@ has 'language' => (
     is              => 'rw',
     isa             => 'Str',
     clearer         => 'clear_language',
+    predicate       => 'has_language',
 );
 
 has 'mailer' => (
@@ -129,37 +171,40 @@ has 'messageid' => (
 has '_boundary' => (
     is              => 'rw',
     isa             => 'Int',
-    default         => 0,
+    default         => 1,
 );
 
 has 'from' => (
     is              => 'rw',
     isa             => 'Address',
-#    coerce          => 1,
+    predicate       => 'has_from',
+    clearer         => 'clear_from',
 );
 
 has 'reply' => (
     is              => 'rw',
     isa             => 'Address',
-#    coerce          => 1,
+    predicate       => 'has_reply',
+    clearer         => 'clear_reply',
 );
 
 has 'returnpath' => (
     is              => 'rw',
     isa             => 'Address',
-#    coerce          => 1,
+    predicate       => 'has_returnpath',
+    clearer         => 'clear_returnpath',
 );
 
 has 'sender' => (
     is              => 'rw',
     isa             => 'Address',
-#    coerce          => 1,
+    predicate       => 'has_sender',
+    clearer         => 'clear_sender',
 );
 
 has 'to' => (
     is              => 'rw',
     isa             => 'AddressList',
-    coerce          => 1,
 );
 
 has 'cc' => (
@@ -177,11 +222,17 @@ has 'bcc' => (
 has 'attachment' => (
     is              => 'rw',
     isa             => 'AttachmentList',
+    coerce          => 1,
+    required        => 1,
+    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Attachment') }
 );
 
 has 'image' => (
     is              => 'rw',
     isa             => 'ImageList',
+    coerce          => 1,
+    required        => 1,
+    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Image') }
 );
 
 around 'from' => \&_address_accessor;
@@ -189,16 +240,13 @@ around 'returnpath' => \&_address_accessor;
 around 'sender' => \&_address_accessor;
 around 'reply' => \&_address_accessor;
 
-#around 'to' => \&_address_list_accessor;
-#around 'cc' => \&_address_list_accessor;
-#around 'bcc' => \&_address_list_accessor;
-
 sub _address_accessor {
     my ($method,$self,@params) = @_;
     
     if (my $params_length = scalar @params) {
         if ($params_length == 1) {
-            if (blessed $params[0] && $params[0]->isa('Email::Address')) {
+            if (blessed $params[0] 
+                && $params[0]->isa('Email::Address')) {
                 return $method->($self,$params[0]);
             } else {
                 return $method->($self,Email::Address->parse($params[0]));
@@ -211,32 +259,6 @@ sub _address_accessor {
         return $method->($self);
     }
 }
-
-#sub _address_list_accessor {
-#    my ($method,$self,@params) = @_;
-#    
-#    if (my $params_length = scalar @params) {
-#        if ($params_length == 1
-#            && ref $params[0] eq 'ARRAY') {
-#            return $method->($self,Email::Address->parse($params[0]));
-#        } 
-#        my @result;
-#        foreach my $param (@params) {
-#            if (blessed $params[0] && $params[0]->isa('Email::Address')) {
-#        }
-#        if ($params_length == 1) {
-#            if (blessed $params[0] && $params[0]->isa('Email::Address')) {
-#                return $method->($self,$params[0]);
-#            } else {
-#                return $method->($self,Email::Address->parse($params[0]));
-#            }
-#        } else {
-#            return $method->($self,Email::Address->new($params[1],$params[0]));
-#        }
-#    } else {
-#        return $method->($self);
-#    }
-#}
 
 sub _generate_plaintext {
     my ($self,$htmltext) = @_;
@@ -358,6 +380,200 @@ sub _convert_text {
     return $plain_text;
 }
 
+sub _get_boundary {
+    my ($self) = @_;
+    my $boundary = $self->_boundary( $self->_boundary + 1 );
+    return sprintf('----_=_NextPart_%04i_%lx',$boundary,time);
+}
+
+sub charset {
+    warn('DEPRECATED: The charset accessor has been removed.')
+}
+
+
+sub _build_text {
+    my ($self,%mime_params) = @_;
+    
+    # Build plaintext message from HTML
+    if ($self->has_htmltext
+        && ! $self->has_plaintext
+        && $self->autotext) {
+        # Parse HTML tree. Load HTML::TreeBuilder lazily
+        require HTML::TreeBuilder;
+        
+        my $html_tree = HTML::TreeBuilder->new_from_content($self->html_text);
+        # Only use the body
+        my $html_body = $html_tree->find('body');
+        # And now convert all elements
+        $self->plaintext(_convert_text($html_body));
+    }
+    
+    my $mime_part;
+    
+    # We have HTML and plaintext
+    if ($self->has_htmltext
+        && $self->has_plaintext) {
+        
+        # Build multipart/alternative envelope for HTML and plaintext
+        $mime_part = build MIME::Entity(
+            %mime_params,
+            Type        => q[multipart/alternative],
+            Boundary    => $self->_get_boundary(),
+            Encoding    => 'binary',
+        );
+        
+        # Add the plaintext entity first
+        $mime_part->add_part(build MIME::Entity (
+            Top         => 0,
+            Type        => qq[text/plain; charset="utf-8"],
+            Data        => $self->plaintext,
+            Encoding    => 'quoted-printable',
+        ));
+        
+        # Add the html entity (the last entity is prefered in multipart/alternative context)
+        $mime_part->add_part($self->_build_html(Top => 0));
+    # We only have plaintext
+    } else {
+        $mime_part = build MIME::Entity (
+            %mime_params,
+            Type        => qq[text/plain; charset="utf-8"],
+            Data        => $self->plaintext,
+            Encoding    => 'quoted-printable',
+        );
+    }
+    
+    return $mime_part;
+}
+
+sub _build_html {
+    my ($self,%mime_params) = @_;
+    
+    my $mime_part;
+    
+    # We have inline images
+    if ($self->image->length) {
+        # So we need a multipart/related envelope first
+        $mime_part = build MIME::Entity(
+            %mime_params,
+            Type        => q[multipart/related],
+            Boundary    => $self->_get_boundary(),
+            Encoding    => 'binary',
+        );
+        # Add the html body
+        $mime_part->add_part(build MIME::Entity (
+            Top         => 0,
+            Type        => qq[text/html; charset="utf-8"],
+            Data        => $self->htmltext,
+            Encoding    => 'quoted-printable',
+        ));
+        # And now all the inline images
+        foreach ($self->image->list) {
+            $mime_part->add_part($_->serialize);
+        }
+    # We don't have any inline images
+    } else {
+        $mime_part = build MIME::Entity (
+            %mime_params,
+            Type        => qq[text/html; charset="utf-8"],
+            Data        => $self->htmltext,
+            Encoding    => 'quoted-printable',
+        );
+    }   
+    return $mime_part;
+}
+
+
+sub build_message {
+    my ($self) = @_;
+    
+    croak(q[Recipient address missing]) 
+        unless ($self->to->length());
+    croak(q[From address missing]) 
+        unless ($self->has_from);
+    croak(q[e-mail subject missing]) 
+        unless ($self->has_subject);
+    croak(q[e-mail content missing]) 
+        unless ($self->has_plaintext || $self->has_htmltext);
+    
+    # Set header fields
+    my %email_header = (
+        'Top'           => 1,
+        'From'          => $self->serialize,
+        'To'            => $self->to->join,
+        'Cc'            => $self->to->join,
+        'Bcc'           => $self->bcc->join,
+        'Subject'       => encode('MIME-Header',$self->subject),
+        'Message-ID'    => $self->messageid->in_brackets(),
+        'X-Priority'    => $self->priority,
+        'X-Mailer'      => encode('MIME-Header', $self->mailer),
+    );
+    
+    # Set reply address
+    if ($self->has_reply) {
+        $email_header{'Reply-To'} = $self->reply->serialize;
+    }
+    
+    # Set sender address
+    if ($self->has_sender) {
+        $email_header{'Sender'} = $self->has_sender->serialize;
+    }
+    
+    # Set language
+    if ($self->has_language) {
+        $email_header{'Content-language'} = $self->language;
+    }
+    
+    # Set return path
+    if ($self->has_returnpath) {
+        $email_header{'Return-Path'} = $self->has_returnpath->address();
+    } elsif ($self->has_reply) {
+        $email_header{'Return-Path'} = $self->reply->address();
+    } else {
+        $email_header{'Return-Path'} = $self->from->address();
+    } 
+    
+    # Set organizsation
+    if ($self->has_organization) {
+        $email_header{'Organization'} = encode('MIME-Header', $self->organization);
+    }
+    
+    # Build e-mail entity ...
+    my $mime_entity;
+    
+    # ... with attachments
+    if ($self->attachment->length()) {
+        $mime_entity = build MIME::Entity(
+            %email_header,
+            Type        => 'multipart/mixed',
+            Boundary    => $self->_get_boundary(),
+            Encoding    => 'binary',
+        );
+        foreach my $attachment ($self->attachment->list()) {
+            $mime_entity->add_part($attachment->serialize());
+        }
+        $mime_entity->add_part($self->_build_text(Top => 0));
+    # ... without attachments
+    } else {
+        $mime_entity = $self->_build_text(%email_header);
+    }
+    
+    return $mime_entity;
+}
+
+sub stringify {
+    my $obj = shift;
+    return $obj->build_message->stringify;
+}
+
+
+
+
+
+
+
+
+
+
 
 =encoding utf8
 
@@ -449,10 +665,7 @@ This method is just a shortcut to C<$mb-E<gt>build_message-E<gt>stringify>
 
 =cut
 
-sub stringify {
-    my $obj = shift;
-    return $obj->build_message->stringify;
-}
+
 
 =head3 build_message
 
@@ -475,85 +688,7 @@ has changed.
 
 =cut
 
-sub build_message {
-    my $obj = shift;
-    
-    croak(q[Recipient address missing]) 
-        unless ($obj->{'to'}->length());
-    croak(q[From address missing]) 
-        unless (defined $obj->{'from'});
-    croak(q[e-mail subject missing]) 
-        unless ($obj->{'subject'});
-    croak(q[e-mail content missing]) 
-        unless ($obj->{'plaintext'} || $obj->{'htmltext'});
-    croak(q[Invalid priority (only 1-5)]) 
-        unless (defined($obj->{'priority'}) && $obj->{'priority'} =~ /^[1-5]$/);
-    
-    # Set message ID
-    $obj->{'messageid'} = Email::MessageID->new();
-    
-    # Set header fields
-    my %email_header = (
-        'Top'           => 1,
-        'From'          => $obj->{'from'}->serialize,
-        'To'            => $obj->{'to'}->join,
-        'Cc'            => $obj->{'cc'}->join,
-        'Bcc'           => $obj->{'bcc'}->join,
-        'Subject'       => encode('MIME-Header',$obj->{'subject'}),
-        'Message-ID'    => $obj->{'messageid'}->in_brackets(),
-        'X-Priority'    => $obj->{'priority'},
-        'X-Mailer'      => encode('MIME-Header', $obj->{'mailer'}),
-    );
-    
-    # Set reply address
-    if (defined $obj->{'reply'}) {
-        $email_header{'Reply-To'} = $obj->{'reply'}->serialize;
-    }
-    
-    # Set sender address
-    if (defined $obj->{'sender'}) {
-        $email_header{'Sender'} = $obj->{'sender'}->serialize;
-    }
-    
-    # Set language
-    if (defined $obj->{'language'}) {
-        $email_header{'Content-language'} = $obj->{'language'};
-    }
-    
-    # Set return path
-    if (defined $obj->{'returnpath'}) {
-        $email_header{'Return-Path'} = $obj->{'returnpath'}->email();
-    } elsif (defined $obj->{'reply'}) {
-        $email_header{'Return-Path'} = $obj->{'reply'}->email();
-    } else {
-        $email_header{'Return-Path'} = $obj->{'from'}->email();
-    } 
-    
-    # Set organizsation
-    $email_header{'Organization'} = encode('MIME-Header', $obj->{'organization'})
-        if ($obj->{'organization'});
-    
-    # Build e-mail entity ...
-    my $mime_entity;
-    
-    # ... with attachments
-    if ($obj->{'attachment'}->length()) {
-        $mime_entity = build MIME::Entity(
-            %email_header,
-            Type        => 'multipart/mixed',
-            Boundary    => $obj->_get_boundary(),
-            Encoding    => 'binary',
-        );
-        foreach ($obj->{'attachment'}->list()) {
-            $mime_entity->add_part($_->serialize());
-        }
-        $mime_entity->add_part($obj->_build_text(Top => 0));
-    # ... without attachments
-    } else {
-        $mime_entity = $obj->_build_text(%email_header);
-    }
-    return $mime_entity;
-}
+
 
 =head2 Accessors 
 
@@ -580,9 +715,7 @@ name)
 
 =cut
 
-sub charset {
-    warn('DEPRECATED: The charset accessor has been removed.')
-}
+
 
 =head3 to, cc, bcc
 
@@ -621,20 +754,6 @@ manipulating the list of recipients. e.g.
 
 =cut
 
-sub to {
-    my $obj = shift;
-    return $obj->_list('to',@_);
-}
-
-sub cc {
-    my $obj = shift;
-    return $obj->_list('cc',@_);
-}
-
-sub bcc {
-    my $obj = shift;
-    return $obj->_list('bcc',@_);
-}
 
 =head3 language
 
@@ -749,10 +868,6 @@ If you want to append an additional attachment to the list use
 
 =cut
 
-sub attachment {
-    my $obj = shift;
-    return $obj->_list('attachment',@_);
-}
 
 =head3 image
 
@@ -787,156 +902,12 @@ Only jpg, gif and png images may be added as inline images.
 
 =cut
 
-sub image {
-    my $obj = shift;
-    return $obj->_list('image',@_);
-}
 
 
 
 
-# -------------------------------------------------------------
-sub _list
-# Type: Private accessor
-# Parameters: FIELD,[Mail::Builder::List OR PARAMS]
-# Returnvalue: Mail::Builder::Address OR UNDEF
-# -------------------------------------------------------------
-{
-    my $obj = shift;
-    my $field = shift;
-    
-    if (@_) {
-        # Replace list object
-        if (ref($_[0])
-            && $_[0]->isa('Mail::Builder::List')) {
-            croak('List types do not match') unless ($_[0]->type eq $obj->{$field}->type);              
-            $obj->{$field} = $_[0];
-        # Reset list and add new value
-        } else {
-            $obj->{$field}->reset();
-            $obj->{$field}->add(@_);
-        }
-    }
-    return $obj->{$field};
-}
-
-# -------------------------------------------------------------
-sub _get_boundary
-# Type: Private method
-# Parameters: -
-# Returnvalue: Boundary string
-# -------------------------------------------------------------
-{
-    my $obj = shift;
-    $obj->{'boundary'} ++;
-    return qq[----_=_NextPart_00$obj->{'boundary'}_].(sprintf '%lx',time);
-}
-
-# -------------------------------------------------------------
-sub _build_text
-# Type: Private method
-# Parameters: MIME::Entity Parameters
-# Returnvalue: MIME::Entity
-# -------------------------------------------------------------
-{
-    my $obj = shift;
-    my %mime_params = @_;
-    
-    # Build plaintext message from HTML
-    if (defined $obj->{'htmltext'}
-        && ! defined($obj->{'plaintext'})
-        && $obj->{autotext}) {
-        # Parse HTML tree. Load HTML::TreeBuilder lazily
-        require HTML::TreeBuilder;
-        
-        my $html_tree = HTML::TreeBuilder->new_from_content($obj->{'htmltext'});
-        # Only use the body
-        my $html_body = $html_tree->find('body');
-        # And now convert all elements
-        $obj->{'plaintext'} = _convert_text($html_body);
-    }
-    
-    my $mime_part;
-    
-    # We have HTML and plaintext
-    if (defined $obj->{'htmltext'}
-        && defined $obj->{'plaintext'}) {
-        
-        # Build multipart/alternative envelope for HTML and plaintext
-        $mime_part = build MIME::Entity(
-            %mime_params,
-            Type        => q[multipart/alternative],
-            Boundary    => $obj->_get_boundary(),
-            Encoding    => 'binary',
-        );
-        
-        # Add the plaintext entity first
-        $mime_part->add_part(build MIME::Entity (
-            Top         => 0,
-            Type        => qq[text/plain; charset="utf-8"],
-            Data        => $obj->{'plaintext'},
-            Encoding    => 'quoted-printable',
-        ));
-        
-        # Add the html entity (the last entity is prefered in multipart/alternative context)
-        $mime_part->add_part($obj->_build_html(Top => 0));
-    # We only have plaintext
-    } else {
-        $mime_part = build MIME::Entity (
-            %mime_params,
-            Type        => qq[text/plain; charset="utf-8"],
-            Data        => $obj->{'plaintext'},
-            Encoding    => 'quoted-printable',
-        );
-    }
-    
-    return $mime_part;
-}
 
 
-# -------------------------------------------------------------
-sub _build_html
-# Type: Private method
-# Parameters: MIME::Entity Parameters
-# Returnvalue: MIME::Entity
-# -------------------------------------------------------------
-{
-    my $obj = shift;
-    my %mime_params = @_;
-    
-    my $mime_part;
-    
-    # We have inline images
-    if ($obj->{'image'}->length()) {
-        # So we need a multipart/related envelope first
-        $mime_part = build MIME::Entity(
-            %mime_params,
-            Type        => q[multipart/related],
-            Boundary    => $obj->_get_boundary(),
-            Encoding    => 'binary',
-        );
-        # Add the html body
-        $mime_part->add_part(build MIME::Entity (
-            Top         => 0,
-            Type        => qq[text/html; charset="utf-8"],
-            Data        => $obj->{'htmltext'},
-            Encoding    => 'quoted-printable',
-        ));
-        # And now all the inline images
-        foreach ($obj->{'image'}->list) {
-            $mime_part->add_part($_->serialize);
-        }
-    # We don't have any inline images
-    } else {
-        $mime_part = build MIME::Entity (
-            %mime_params,
-            Type        => qq[text/html; charset="utf-8"],
-            Data        => $obj->{'htmltext'},
-            Encoding    => 'quoted-printable',
-        );
-    }   
-    return $mime_part;
-}
 
 
 =head1 EXAMPLE
