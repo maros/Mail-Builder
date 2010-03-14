@@ -10,24 +10,27 @@ all_from        $from;
 readme_from     $from;
 readme_markdown_from $from;
 
-
 perl_version    '5.008';
 
 # Specific dependencies
 requires        'MIME::Tools'           => '5.4';
-requires        'Email::Valid'          => 0;
-requires        'Class::Accessor'       => 0;
-requires        'HTML::TreeBuilder'     => '3.00';
 requires        'MIME::Types'           => 0;
+requires        'Email::Valid'          => 0;
+requires        'Email::Address'        => 0;
 requires        'Email::MessageID'      => 0;
-requires        'Encode'                => 0;
-requires        'Text::Table'           => 0;
-requires        'IO::Lines'             => 0;
-requires        'version'               => 0;
-requires        'parent'                => 0;
 
-build_requires  'Test::Pod'             => 0;
-build_requires  'Test::Pod::Coverage'   => 0;
+requires        'Moose'                 => '0.94';
+requires        'version'               => 0;
+
+requires        'HTML::TreeBuilder'     => '3.00';
+requires        'Text::Table'           => 0;
+requires        'Encode'                => 0;
+
+author_requires 'Test::Pod'             => '1.14';
+author_requires 'Test::Pod::Coverage'   => '1.04';
+author_requires 'Test::Perl::Critic'    => 0;
+author_requires 'Module::Install::ReadmeMarkdownFromPod'=> 0;
+author_requires 'Module::Install::ReadmeFromPod'        => 0;
 
 repository 'git://github.com/maros/Mail-Builder.git';
 
