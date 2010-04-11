@@ -1,13 +1,106 @@
-# ================================================================
+# ============================================================================
 package Mail::Builder::Attachment;
-# ================================================================
-use strict;
-use warnings;
+# ============================================================================
 
+use Moose;
+with qw(Mail::Builder::Role::File);
+
+use MIME::Types;
+use Path::Class;
+use IO::File;
 use Carp;
 
-use vars qw($VERSION);
-$VERSION = $Mail::Builder::VERSION;
+our $VERSION = $Mail::Builder::VERSION;
+
+has 'name' => (
+    is          => 'rw',
+    isa         => 'Str',
+    lazy_build  => 1,
+    trigger     => sub { shift->clear_cache },
+);
+
+has 'mimetype' => (
+    is          => 'rw',
+    isa         => 'Str',
+    lazy_build  => 1,
+    trigger     => sub { shift->clear_cache },
+);
+
+sub _build_mimetype {
+    my ($self) = @_;
+    
+    my $filename = $self->filename;
+    my $filetype;
+    
+    if (defined $filename
+        && lc($filename->basename) =~ /\.([0-9a-z]{1,4})$/)  {
+        my $mimetype = MIME::Types->new->mimeTypeOf($1);
+        $filetype = $mimetype->type
+            if defined $mimetype;
+    }
+    
+    unless (defined $filetype) {
+        my $filecontent = $self->filecontent;
+        $filetype = $self->_check_magic_string($filecontent);
+    }
+    
+    $filetype ||= 'application/octet-stream';
+    
+    return $filetype;
+}
+
+sub _build_name {
+    my ($self) = @_;
+    
+    my $filename = $self->filename;
+    my $name;
+    
+    if (defined $filename) {
+        $name = $filename->basename;
+    }
+    
+    unless (defined $name
+        && $name !~ m/^\s*$/) {
+        return __PACKAGE__->_throw_error('Could not determine the attachment name automatically');
+    }
+    
+    return $name;
+}
+
+sub serialize {
+    my ($self) = @_;
+    
+    return $self->cache 
+        if (defined $self->has_cache);
+    
+    my $file = $self->file;
+    my $accessor;
+    my $value;
+    
+    if (blessed $file) {
+        if ($file->isa('IO::File')) {
+            $accessor = 'Data';
+            $value = $self->filecontent;
+        } elsif ($file->isa('Path::Class::File')) {
+            $accessor = 'Path';
+            $value = $file->stringify;
+        }
+    } else {
+        $accessor = 'Data';
+        $value = $file;
+    }
+    
+    my $entity = build MIME::Entity(
+        Disposition     => 'attachment',
+        Type            => $self->mimetype,
+        Top             => 0,
+        Filename        => encode('MIME-Header', $self->name),
+        Encoding        => 'base64',
+        $accessor       => $value,
+    );
+}
+
+__PACKAGE__->meta->make_immutable;
 
 =encoding utf8
 
@@ -34,12 +127,6 @@ Shortcut to the constructor from L<Mail::Builder::Attachment::File>.
 
 =cut
 
-sub new {
-    my $class = shift;
-    
-    return Mail::Builder::Attachment::File->new(@_);
-}
-
 =head2 Accessors
 
 =head3 name
@@ -52,25 +139,6 @@ message.
 Accessor which takes/returns the mime type of the file. 
 
 =cut
-
-sub name {
-    my $obj = shift;
-    if (@_) {
-        $obj->{'name'} = shift;
-        undef $obj->{'cache'};
-    }
-    return $obj->{'name'};
-}
-
-sub mime {
-    my $obj = shift;
-    if (@_) {
-        $obj->{'mime'} = shift;
-        croak(q[Invalid mime type]) unless ($obj->{'mime'} =~ /^[a-z]+\/[a-z0-9.-]+$/);
-        undef $obj->{'cache'};
-    }
-    return $obj->{'mime'};
-}
 
 
 1;
