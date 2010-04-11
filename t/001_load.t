@@ -2,9 +2,16 @@
 
 # t/001_load.t - check module loading and create testing directory
 
-use Test::More tests => 2;
+use Test::More tests => 9 + 1;
+use Test::NoWarnings;
 
-BEGIN { use_ok( 'Mail::Builder' ); }
+use_ok( 'Mail::Builder' ); 
+use_ok( 'Mail::Builder::List' ); 
+use_ok( 'Mail::Builder::Image' ); 
+use_ok( 'Mail::Builder::Image::File' ); 
+use_ok( 'Mail::Builder::Image::Data' ); 
+use_ok( 'Mail::Builder::Attachment' ); 
+use_ok( 'Mail::Builder::Attachment::File' ); 
+use_ok( 'Mail::Builder::Attachment::Data' ); 
+use_ok( 'Mail::Builder::Address' ); 
 
-my $object = Mail::Builder->new();
-isa_ok ($object, 'Mail::Builder');
