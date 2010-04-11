@@ -9,7 +9,7 @@ use Carp;
 our $VERSION = $Mail::Builder::VERSION;
 
 has 'type' => (
-    is          => 'rw',
+    is          => 'ro',
     isa         => 'ClassName',
     required    => 1,
 );
@@ -42,6 +42,8 @@ around 'list' => sub {
     
     return wantarray ? @{$result} : $result;
 };
+
+__PACKAGE__->meta->make_immutable;
 
 sub length {
     my ($self) = @_;

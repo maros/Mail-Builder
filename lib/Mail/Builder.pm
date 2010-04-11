@@ -19,23 +19,18 @@ use Email::Address;
 
 use Mail::Builder::List;
 use Mail::Builder::Address;
-use Mail::Builder::Attachment;
-use Mail::Builder::Attachment::File;
-use Mail::Builder::Attachment::Data;
 use Mail::Builder::Image;
-use Mail::Builder::Image::File;
-use Mail::Builder::Image::Data;
 
-subtype 'Address'
-    => as 'Mail::Builder::Address';
+subtype 'Mail.Builder.Address'
+    => as class_type('Mail::Builder::Address');
 
-subtype 'AddressList'
-    => as 'Mail::Builder::List'
+subtype 'Mail.Builder.AddressList'
+    => as class_type('Mail::Builder::List')
     => where { $_->type eq 'Mail::Builder::Address' }
     => message { "Must be Mail::Builder::List of Mail::Builder::Address" };
 
-coerce 'AddressList'
-    => from 'Mail::Builder::Address'
+coerce 'Mail.Builder.AddressList'
+    => from 'Mail.Builder.Address'
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ $_ ] ) }
     => from 'ArrayRef'
     => via { 
@@ -56,19 +51,19 @@ coerce 'AddressList'
         return Mail::Builder::List->new( type => 'Mail::Builder::Address', list => $result ) 
     };
 
-subtype 'Mail::Builder::Attachment'
-    => as 'Mail::Builder::Attachment';
+subtype 'Mail.Builder.Attachment'
+    => as class_type('Mail::Builder::Attachment');
 
-subtype 'Mail::Builder::Image'
-    => as 'Mail::Builder::Image';
+subtype 'Mail.Builder.Image'
+    => as class_type('Mail::Builder::Image');
 
-subtype 'AttachmentList'
-    => as 'Mail::Builder::List'
+subtype 'Mail.Builder.AttachmentList'
+    => as class_type('Mail::Builder::List')
     => where { $_->type eq 'Mail::Builder::Attachment' }
     => message { "Must be Mail::Builder::List of Mail::Builder::Attachment" };
 
-coerce 'AttachmentList'
-    => from 'Mail::Builder::Attachment'
+coerce 'Mail.Builder.AttachmentList'
+    => from class_type('Mail::Builder::Attachment')
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => [ $_ ] ) }
     => from 'ArrayRef'
     => via { 
@@ -85,13 +80,13 @@ coerce 'AttachmentList'
         return Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => $result ) 
     };
 
-subtype 'ImageList'
-    => as 'Mail::Builder::List'
+subtype 'Mail.Builder.ImageList'
+    => as class_type('Mail::Builder::List')
     => where { $_->type eq 'Mail::Builder::Image' }
     => message { "Must be Mail::Builder::List of Mail::Builder::Image" };
 
-coerce 'ImageList'
-    => from 'Mail::Builder::Image'
+coerce 'Mail.Builder.ImageList'
+    => from class_type('Mail::Builder::Image')
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Image', list => [ $_ ] ) }
     => from 'ArrayRef'
     => via { 
@@ -176,52 +171,52 @@ has '_boundary' => (
 
 has 'from' => (
     is              => 'rw',
-    isa             => 'Address',
+    isa             => 'Mail.Builder.Address',
     predicate       => 'has_from',
     clearer         => 'clear_from',
 );
 
 has 'reply' => (
     is              => 'rw',
-    isa             => 'Address',
+    isa             => 'Mail.Builder.Address',
     predicate       => 'has_reply',
     clearer         => 'clear_reply',
 );
 
 has 'returnpath' => (
     is              => 'rw',
-    isa             => 'Address',
+    isa             => 'Mail.Builder.Address',
     predicate       => 'has_returnpath',
     clearer         => 'clear_returnpath',
 );
 
 has 'sender' => (
     is              => 'rw',
-    isa             => 'Address',
+    isa             => 'Mail.Builder.Address',
     predicate       => 'has_sender',
     clearer         => 'clear_sender',
 );
 
 has 'to' => (
     is              => 'rw',
-    isa             => 'AddressList',
+    isa             => 'Mail.Builder.AddressList',
 );
 
 has 'cc' => (
     is              => 'rw',
-    isa             => 'AddressList',
+    isa             => 'Mail.Builder.AddressList',
     coerce          => 1,
 );
 
 has 'bcc' => (
     is              => 'rw',
-    isa             => 'AddressList',
+    isa             => 'Mail.Builder.AddressList',
     coerce          => 1,
 );
 
 has 'attachment' => (
     is              => 'rw',
-    isa             => 'AttachmentList',
+    isa             => 'Mail.Builder.AttachmentList',
     coerce          => 1,
     required        => 1,
     default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Attachment') }
@@ -229,7 +224,7 @@ has 'attachment' => (
 
 has 'image' => (
     is              => 'rw',
-    isa             => 'ImageList',
+    isa             => 'Mail.Builder.ImageList',
     coerce          => 1,
     required        => 1,
     default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Image') }
@@ -390,6 +385,16 @@ sub charset {
     warn('DEPRECATED: The charset accessor has been removed.')
 }
 
+sub purge_cache {
+    my ($self) = @_;
+    
+    foreach my $list (qw(attachment image)) {
+        foreach my $element ($self->$list->list) {
+            $element->clear_cache;
+        }
+    }
+    return 1;
+}
 
 sub _build_text {
     my ($self,%mime_params) = @_;
@@ -565,6 +570,7 @@ sub stringify {
     return $obj->build_message->stringify;
 }
 
+__PACKAGE__->meta->make_immutable;
 
 
 

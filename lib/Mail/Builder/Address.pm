@@ -12,7 +12,7 @@ use Email::Valid;
 
 our $VERSION = $Mail::Builder::VERSION;
 
-subtype 'EmailAddress'
+subtype 'Mail.Builder.EmailAddress'
     => as 'Str'
     => where { 
         Email::Valid->address( 
@@ -24,7 +24,7 @@ subtype 'EmailAddress'
 
 has 'email' => (
     is              => 'rw',
-    isa             => 'EmailAddress',
+    isa             => 'Mail.Builder.EmailAddress',
     required        => 1,
 );
 
@@ -139,6 +139,9 @@ Deletes the current address/name values. Leaves an empy object
 sub empty {
     die('DEPRECATED')
 }
+
+__PACKAGE__->meta->make_immutable;
+
 
 1;
 
