@@ -8,7 +8,7 @@ use Moose::Util::TypeConstraints;
 use Path::Class::File;
 use IO::File;
 
-subtype 'MailBuilderFile'
+subtype 'Mail.Builder.File'
     => as 'Defined'
     => where {
         my $file = $_;
@@ -20,7 +20,7 @@ subtype 'MailBuilderFile'
         return 0;
     };
     
-coerce 'MailBuilderFile'
+coerce 'Mail.Builder.File'
     => from 'GlobRef'
     => via { bless($_,'IO::File'); }
     => from 'Str'
@@ -33,7 +33,7 @@ coerce 'MailBuilderFile'
 
 has 'file' => (
     is          => 'rw',
-    isa         => 'MailBuilderFile',
+    isa         => 'Mail.Builder.File',
     required    => 1,
     trigger     => sub { shift->clear_cache },
 );
