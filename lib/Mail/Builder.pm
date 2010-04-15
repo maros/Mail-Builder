@@ -120,6 +120,7 @@ has 'to' => (
     is              => 'rw',
     isa             => 'Mail.Builder.AddressList',
     required        => 1,
+    coerce          => 1,
     default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Address' ) }
 );
 
@@ -416,10 +417,10 @@ sub build_message {
     # Set header fields
     my %email_header = (
         'Top'           => 1,
-        'From'          => $self->serialize,
-        'To'            => $self->to->join,
-        'Cc'            => $self->to->join,
-        'Bcc'           => $self->bcc->join,
+        'From'          => $self->from->serialize,
+        'To'            => $self->to->join(','),
+        'Cc'            => $self->to->join(','),
+        'Bcc'           => $self->bcc->join(','),
         'Subject'       => encode('MIME-Header',$self->subject),
         'Message-ID'    => $self->messageid->in_brackets(),
         'X-Priority'    => $self->priority,

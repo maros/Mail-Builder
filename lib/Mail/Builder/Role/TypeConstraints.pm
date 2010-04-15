@@ -46,10 +46,8 @@ subtype 'Mail.Builder.AddressList'
     => message { "'$_' is not a Mail::Builder::List of Mail::Builder::Address" };
 
 coerce 'Mail.Builder.AddressList'
-    => from 'Mail::Builder::Address'
-    => via { 
-        warn('COERCE FROM Mail.Builder.Address');
-        Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ $_ ] ) }
+    => from 'Mail.Builder.Address'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ $_ ] ) }
     => from 'ArrayRef'
     => via { 
         my $param = $_;

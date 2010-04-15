@@ -1,10 +1,9 @@
 # -*- perl -*-
 
-# t/001_load.t - check module loading and create testing directory
+# t/001_load.t - check basic email
 
-use Test::More tests => 9 + 1;
+use Test::More tests => 15 + 1;
 use Test::NoWarnings;
-use Test::Exception;
 
 use Mail::Builder;
 
@@ -16,6 +15,7 @@ isa_ok($mailbuilder,'Mail::Builder');
 ok($mailbuilder->from('from@test.com'),'Set from');
 isa_ok($mailbuilder->from,'Mail::Builder::Address');
 is($mailbuilder->from->email,'from@test.com','Has correct email address');
+$mailbuilder->from->name('tester');
 
 # Test basic accessor
 is($mailbuilder->has_organization,'','Has no organization');
@@ -23,8 +23,21 @@ ok($mailbuilder->organization('organization'),'Set organization');
 is($mailbuilder->has_organization,1,'Has organization');
 is($mailbuilder->organization,'organization','Has correct organization');
 
-throws_ok {
-    $mailbuilder->build_message();
-} qr/Recipient address missing/,'Required values missing';
-
+# Test recipient address
 $mailbuilder->to(Mail::Builder::Address->new(email => 'to@test.com'));
+isa_ok($mailbuilder->to,'Mail::Builder::List');
+
+# Add required fields
+$mailbuilder->plaintext('testcontent');
+$mailbuilder->subject('test');
+
+# Build address
+my $mime = $mailbuilder->build_message();
+isa_ok($mime,'MIME::Entity');
+
+isa_ok($mime->head,'MIME::Head');
+is($mime->head->get('To'),'to@test.com'."\n",'Recipient in MIME object ok');
+is($mime->head->get('From'),'"tester" <from@test.com>'."\n",'From in MIME object ok');
+is($mime->head->get('X-Priority'),'3'."\n",'Priority in MIME object ok');
+is($mime->head->get('Subject'),'test'."\n",'Subject in MIME object ok');
+

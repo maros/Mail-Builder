@@ -108,6 +108,10 @@ around BUILDARGS => sub {
     return $class->$orig(\%params);
 };
 
+sub address {
+    my $self = shift;
+    return $self->email(@_);
+}
 
 =head2 Public Methods
 
@@ -122,8 +126,11 @@ sub serialize {
     
     return $self->email
         unless $self->has_name;
-          
-    my $return = sprintf '"%s" <%s>',encode('MIME-Header', $self->name),$self->email;
+    
+    my $name = $self->name;
+    $name =~ s/"/\\"/g;
+    
+    my $return = sprintf '"%s" <%s>',encode('MIME-Header', $name),$self->email;
     $return .= ' '.$self->comment
         if $self->has_comment;
     
