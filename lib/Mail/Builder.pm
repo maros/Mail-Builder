@@ -40,7 +40,7 @@ has 'htmltext' => (
 has 'subject' => (
     is              => 'rw',
     isa             => 'Str',
-    required        => 1,
+    #required        => 1,
     predicate       => 'has_subject',
 );
 
@@ -67,7 +67,7 @@ has 'language' => (
 has 'mailer' => (
     is              => 'rw',
     isa             => 'Str',
-    default         => "Mail::Builder $VERSION",
+    default         => "Mail::Builder v$VERSION",
 );
 
 has 'autotext' => (
@@ -119,18 +119,22 @@ has 'sender' => (
 has 'to' => (
     is              => 'rw',
     isa             => 'Mail.Builder.AddressList',
+    required        => 1,
+    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Address' ) }
 );
 
 has 'cc' => (
     is              => 'rw',
     isa             => 'Mail.Builder.AddressList',
     coerce          => 1,
+    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Address' ) }
 );
 
 has 'bcc' => (
     is              => 'rw',
     isa             => 'Mail.Builder.AddressList',
     coerce          => 1,
+    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Address' ) }
 );
 
 has 'attachment' => (
@@ -138,7 +142,7 @@ has 'attachment' => (
     isa             => 'Mail.Builder.AttachmentList',
     coerce          => 1,
     required        => 1,
-    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Attachment') }
+    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Attachment' ) }
 );
 
 has 'image' => (
@@ -146,7 +150,7 @@ has 'image' => (
     isa             => 'Mail.Builder.ImageList',
     coerce          => 1,
     required        => 1,
-    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Image') }
+    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Image' ) }
 );
 
 around 'from' => \&_address_accessor;
