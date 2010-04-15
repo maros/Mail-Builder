@@ -157,18 +157,8 @@ around 'reply' => \&_address_accessor;
 sub _address_accessor {
     my ($method,$self,@params) = @_;
     
-    if (my $params_length = scalar @params) {
-        if ($params_length == 1) {
-            if (blessed $params[0] 
-                && $params[0]->isa('Email::Address')) {
-                return $method->($self,$params[0]);
-            } else {
-                return $method->($self,Email::Address->parse($params[0]));
-            }
-        } else {
-            # DEPRECATED
-            return $method->($self,Email::Address->new($params[1],$params[0]));
-        }
+    if (scalar @params) {
+        return $method->($self,Mail::Builder::Address->new(@params));
     } else {
         return $method->($self);
     }

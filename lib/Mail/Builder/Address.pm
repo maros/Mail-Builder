@@ -70,6 +70,45 @@ Simple constructor
 =cut
 
 
+around BUILDARGS => sub {
+    my $orig = shift;
+    my $class = shift;
+    my @args = @_;
+    
+    my $args_length = scalar @args;
+    my %params;
+    
+    if ($args_length == 1) {
+        if (blessed $args[0] && $args[0]->isa('Email::Address')) {
+            $params{email} = $args[0]->email;
+            $params{name} = $args[0]->phrase;
+            $params{comment} = $args[0]->comment;
+        } elsif (ref $args[0] eq 'HASH') {
+            return $class->$orig($args[0]);
+        } else {
+            $params{email} = $args[0];
+        }
+    } elsif ($args_length == 2
+        && $args[0] ne 'email') {
+        $params{email} = $args[0];
+        $params{name} = $args[1];
+    } elsif ($args_length == 3) {
+        $params{email} = $args[0];
+        $params{name} = $args[1];
+        $params{comment} = $args[2];
+    } else {
+        return $class->$orig(@args);
+    }
+    
+    delete $params{name}
+        unless defined $params{name};
+    delete $params{comment}
+        unless defined $params{comment};
+    
+    return $class->$orig(\%params);
+};
+
+
 =head2 Public Methods
 
 =head3 serialize
