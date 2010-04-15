@@ -3,7 +3,7 @@ package Mail::Builder::Address;
 # ============================================================================
 
 use Moose;
-use Moose::Util::TypeConstraints;
+with qw(Mail::Builder::Role::TypeConstraints);
 
 use Carp;
 use Encode qw/encode decode/; 
@@ -11,16 +11,6 @@ use Encode qw/encode decode/;
 use Email::Valid;
 
 our $VERSION = $Mail::Builder::VERSION;
-
-subtype 'Mail.Builder.EmailAddress'
-    => as 'Str'
-    => where { 
-        Email::Valid->address( 
-            -address => $_,
-            -tldcheck => 1 
-        );
-    }
-    => message { "Not a valid e-mail address" };
 
 has 'email' => (
     is              => 'rw',

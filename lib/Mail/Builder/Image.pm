@@ -3,8 +3,7 @@ package Mail::Builder::Image;
 # ============================================================================
 
 use Moose;
-with qw(Mail::Builder::Role::File);
-use Moose::Util::TypeConstraints;
+with qw(Mail::Builder::Role::File Mail::Builder::Role::TypeConstraints);
 
 use Path::Class;
 use IO::File;
@@ -21,7 +20,7 @@ has 'id' => (
 
 has 'mimetype' => (
     is          => 'rw',
-    isa         => enum([qw(image/gif image/jpeg image/png)]),
+    isa         => 'Mail.Builder.ImageMimetype',
     lazy_build  => 1,
     trigger     => sub { shift->clear_cache },
 );

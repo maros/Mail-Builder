@@ -7,7 +7,7 @@ our $AUTHORITY = 'cpan:MAROS';
 our $VERSION = version->new("2.00");
 
 use Moose;
-use Moose::Util::TypeConstraints;
+with qw(Mail::Builder::Role::TypeConstraints);
 
 use Carp;
 
@@ -17,91 +17,10 @@ use MIME::Entity;
 use Email::MessageID;
 use Email::Address;
 
-use Mail::Builder::List;
 use Mail::Builder::Address;
+use Mail::Builder::Attachment;
 use Mail::Builder::Image;
-
-subtype 'Mail.Builder.Address'
-    => as class_type('Mail::Builder::Address');
-
-subtype 'Mail.Builder.AddressList'
-    => as class_type('Mail::Builder::List')
-    => where { $_->type eq 'Mail::Builder::Address' }
-    => message { "Must be Mail::Builder::List of Mail::Builder::Address" };
-
-coerce 'Mail.Builder.AddressList'
-    => from 'Mail.Builder.Address'
-    => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ $_ ] ) }
-    => from 'ArrayRef'
-    => via { 
-        my $param = $_;
-        my $result = [];
-        foreach my $element (@$param) {
-            if (blessed $element) {
-                if ($element->isa('Mail::Builder::Address')) {
-                    push(@{$result},$element);
-                } elsif ($element->isa('Email::Address')) {
-                    # TODO
-                }
-            } else {
-                # TODO
-                push(@{$result},Email::Address->parse($element));
-            }
-        }
-        return Mail::Builder::List->new( type => 'Mail::Builder::Address', list => $result ) 
-    };
-
-subtype 'Mail.Builder.Attachment'
-    => as class_type('Mail::Builder::Attachment');
-
-subtype 'Mail.Builder.Image'
-    => as class_type('Mail::Builder::Image');
-
-subtype 'Mail.Builder.AttachmentList'
-    => as class_type('Mail::Builder::List')
-    => where { $_->type eq 'Mail::Builder::Attachment' }
-    => message { "Must be Mail::Builder::List of Mail::Builder::Attachment" };
-
-coerce 'Mail.Builder.AttachmentList'
-    => from class_type('Mail::Builder::Attachment')
-    => via { Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => [ $_ ] ) }
-    => from 'ArrayRef'
-    => via { 
-        my $param = $_;
-        my $result = [];
-        foreach my $element (@$param) {
-            if (blessed $element
-                && $element->isa('Mail::Builder::Attachment')) {
-                push(@{$result},$element);
-            } else {
-                push(@{$result},Mail::Builder::Attachment->new(file => $element));
-            }
-        }
-        return Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => $result ) 
-    };
-
-subtype 'Mail.Builder.ImageList'
-    => as class_type('Mail::Builder::List')
-    => where { $_->type eq 'Mail::Builder::Image' }
-    => message { "Must be Mail::Builder::List of Mail::Builder::Image" };
-
-coerce 'Mail.Builder.ImageList'
-    => from class_type('Mail::Builder::Image')
-    => via { Mail::Builder::List->new( type => 'Mail::Builder::Image', list => [ $_ ] ) }
-    => from 'ArrayRef'
-    => via { 
-        my $param = $_;
-        my $result = [];
-        foreach my $element (@$param) {
-            if (blessed $element
-                && $element->isa('Mail::Builder::Image')) {
-                push(@{$result},$element);
-            } else {
-                push(@{$result},Mail::Builder::Image->new(file => $element));
-            }
-        }
-        return Mail::Builder::List->new( type => 'Mail::Builder::Image', list => $result ) 
-    };
+use Mail::Builder::List;
 
 has 'plaintext' => (
     is              => 'rw',
@@ -134,7 +53,7 @@ has 'organization' => (
 
 has 'priority' => (
     is              => 'rw',
-    isa             => enum([qw(1 2 3 4 5)]),
+    isa             => 'Mail.Builder.Priority',
     default         => 3,
 );
 

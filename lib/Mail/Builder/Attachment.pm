@@ -3,7 +3,7 @@ package Mail::Builder::Attachment;
 # ============================================================================
 
 use Moose;
-with qw(Mail::Builder::Role::File);
+with qw(Mail::Builder::Role::File Mail::Builder::Role::TypeConstraints);
 
 use MIME::Types;
 use Path::Class;
@@ -21,7 +21,7 @@ has 'name' => (
 
 has 'mimetype' => (
     is          => 'rw',
-    isa         => 'Str',
+    isa         => 'Mail.Builder.Mimetype',
     lazy_build  => 1,
     trigger     => sub { shift->clear_cache },
 );

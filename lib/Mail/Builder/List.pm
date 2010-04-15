@@ -3,14 +3,15 @@ package Mail::Builder::List;
 # ============================================================================
 
 use Moose;
-use Moose::Util::TypeConstraints;
+with qw(Mail::Builder::Role::TypeConstraints);
+
 use Carp;
 
 our $VERSION = $Mail::Builder::VERSION;
 
 has 'type' => (
     is          => 'ro',
-    isa         => 'ClassName',
+    isa         => 'Mail.Builder.Class',
     required    => 1,
 );
 
