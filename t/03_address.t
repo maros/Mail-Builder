@@ -7,6 +7,7 @@ use Test::NoWarnings;
 
 use Mail::Builder;
 
+# Address 1
 ok($address1 = Mail::Builder::Address->new('test@test.com'),'Create simple object');
 isa_ok ($address1, 'Mail::Builder::Address');
 is ($address1->email, 'test@test.com','Check email address');
@@ -16,24 +17,24 @@ is ($address1->serialize, 'test@test.com','Serialize email');
 ok ($address1->name('This is a Test'),'Set new name');
 is ($address1->serialize, '"This is a Test" <test@test.com>','Serialize email with name');
 
+# Address 2
 ok($address2 = Mail::Builder::Address->new('test@test.com','testname'),'Create simple object');
 isa_ok ($address2, 'Mail::Builder::Address');
 is ($address2->email, 'test@test.com','Check email address');
 is ($address2->name, 'testname','Check name');
 
+# Address 3
 ok($address3 = Mail::Builder::Address->new('test@test.com','testname','comment'),'Create simple object');
 isa_ok ($address3, 'Mail::Builder::Address');
 is ($address3->email, 'test@test.com','Check email address');
 is ($address3->name, 'testname','Check name');
 is ($address3->comment, 'comment','Check name');
 is ($address3->serialize, '"testname" <test@test.com> comment','Serialize email with name');
-#
-#
-#ok ($address->email('othertest@test2.com'), 'Set new email');
-#is ($address->email, 'othertest@test2.com');
-#
-#eval {
-#    $address->email('messed.up.@-address.comx');
-#};
-#like($@,qr/e\-mail address is not valid at/);
 
+# Address 4
+ok($address4 = Mail::Builder::Address->new( email => 'test@test.com' ),'Create simple object');
+isa_ok ($address4, 'Mail::Builder::Address');
+is ($address4->email, 'test@test.com','Check email address');
+
+# Broken Address 1
+throws_ok { Mail::Builder::Address->new( email => 'messed.up.@-address.comx' ) } qr/is not a valid e-mail address/,'Exception ok';
