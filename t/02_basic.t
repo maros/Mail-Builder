@@ -1,8 +1,8 @@
 # -*- perl -*-
 
-# t/001_load.t - check basic email
+# t/02_basic.t - check basic email
 
-use Test::More tests => 15 + 1;
+use Test::Most tests => 15 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;

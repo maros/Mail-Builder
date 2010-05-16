@@ -1,8 +1,8 @@
 # -*- perl -*-
 
-# t/004_address.t - check module for address handling
+# t/03_address.t - check module for address handling
 
-use Test::More tests => 15 + 1;
+use Test::Most tests => 22 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;

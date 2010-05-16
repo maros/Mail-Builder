@@ -2,7 +2,7 @@
 
 # t/001_load.t - check module loading and create testing directory
 
-use Test::More tests => 9 + 1;
+use Test::Most tests => 9 + 1;
 use Test::NoWarnings;
 
 use_ok( 'Mail::Builder' ); 

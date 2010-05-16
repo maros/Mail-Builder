@@ -2,7 +2,7 @@
 
 # t/005_list.t - check module for list handling
 
-use Test::More tests => 28;
+use Test::Most tests => 28;
 
 use Mail::Builder;
 
