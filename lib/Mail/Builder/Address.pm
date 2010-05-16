@@ -160,7 +160,7 @@ sub compare {
     
     if (blessed($compare)) {
         return 0 unless $compare->isa(__PACKAGE__);
-        return (uc($self->email) eq uc($self->email)) ? 1:0;
+        return (uc($self->email) eq uc($compare->email)) ? 1:0;
     } else {
         return ( uc($compare) eq uc($self->{email}) ) ? 1:0;
     }
