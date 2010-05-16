@@ -46,6 +46,41 @@ around 'list' => sub {
 
 __PACKAGE__->meta->make_immutable;
 
+sub _convert_item {
+    my ($self) = shift;
+    
+    croak(qq[Params missing])
+        unless scalar @_;
+    
+    my $type = $self->type;
+    
+    if (blessed($_[0])) {
+        croak(qq[Invalid item added to list: Must be of $type]) 
+            unless ($_[0]->isa($type));
+        return $_[0];
+    } else {
+        my $object = $type->new(@_);
+        croak(qq[Could not create $type object]) 
+            unless (defined $object 
+            && blessed $object 
+            && $object->isa($type));
+        
+        return $object;
+    }
+}
+
+sub convert {
+    my ($class,@elements) = @_;
+    
+    my $elements_ref = (scalar @elements == 1 && ref $elements[0] eq 'ARRAY') ? 
+        $elements[0] : \@elements;
+    
+    return $class->new(
+        type    => ref($elements_ref->[0]),
+        list    => $elements_ref,
+    );
+}
+
 sub length {
     my ($self) = @_;
     my $list = $self->list;
@@ -79,7 +114,7 @@ sub contains {
 sub reset {
     my ($self) = @_;
     
-    $self->reset([]);
+    $self->list([]);
     
     return 1;
 }
@@ -91,65 +126,58 @@ sub push {
 }
 
 sub remove {
-    my ($self,$value) = @_;
+    my ($self,$remove) = @_;
     
     my $list = $self->list;
     
-    unless (defined $value) {
+    # No params: take last param
+    unless (defined $remove) {
         return pop @{$list};
+    # Element
     } else {
         my $new_list = [];
         my $old_value;
         my $index = 0;
         foreach my $item (@{$list}) {
-            if (blessed($value) && $item == $value
-                || ($value =~ /^\d+$/ && $index == $value)
-                || $item->compare($value)) {
-                $value = $item;
+            if (blessed($remove) && $item == $remove
+                || ($remove =~ /^\d+$/ && $index == $remove)
+                || $item->compare($remove)) {
+                $remove = $item;
             } else {
-                CORE::push @{$new_list},$item;
+                CORE::push(@{$new_list},$item);
             }
             $index ++;
         }
         $self->list($new_list);
         
         # Return old value
-        return $value
-            if defined $value;
+        return $remove
+            if defined $remove;
     }
     return;
 }
 
 sub add {
-    my ($self,$value) = @_;
+    my ($self) = shift;
     
-    warn('ADD '.$value);
+    my $item = $self->_convert_item(@_);
     
-    if (blessed($value)) {
-        croak(qq[Invalid item added to list: Must be of ].$self->type) 
-            unless ($value->isa($self->type));
-        
-        CORE::push (@{$self->list},$value);
-    } else {
-        my $object = $self->type->new($value,@_);
-        return 0 unless (defined $object 
-            && blessed $object 
-            && $object->isa($self->type));
-        
-        CORE::push @{$self->list}, $object;
+    unless ($self->contains($item)) {
+        CORE::push(@{$self->list}, $item);
     }
     
-    return 1;
+    return $item;
 }
 
 
 sub item {
     my ($self,$index) = @_;
     
-    $index ||= 0;
+    $index //= 0;
     
     return 
-        unless (defined $self->list->[$index]);
+        unless ($index =~ /^\d+$/ 
+        && defined $self->list->[$index]);
     
     return $self->list->[$index];
 }
