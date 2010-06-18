@@ -46,7 +46,7 @@ sub _build_magic_string {
 }
 
 sub _check_magic_string {
-    my ($self,$string);
+    my ($self,$string) = @_;
     
     foreach my $type (keys %MAGIC_STRINGS) {
         return $type
@@ -99,8 +99,8 @@ sub filecontent {
     
     my $file = $self->file;
     
-    return $file
-        unless ref $file;
+    return $$file
+        if ref $file eq 'SCALAR';
     
     my $filehandle = $self->filehandle;
     
@@ -112,9 +112,6 @@ sub filecontent {
     } else {
         $filehandle->seek(0,0);
     }
-    
-    # Store file in memory
-    $self->file($filecontent);
     
     return $filecontent;
 }

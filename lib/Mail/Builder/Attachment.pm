@@ -87,7 +87,7 @@ sub serialize {
         }
     } else {
         $accessor = 'Data';
-        $value = $file;
+        $value = $$file;
     }
     
     my $entity = build MIME::Entity(
