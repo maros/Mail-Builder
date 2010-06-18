@@ -9,6 +9,7 @@ use MIME::Types;
 use Path::Class;
 use IO::File;
 use Carp;
+use Encode;
 
 our $VERSION = $Mail::Builder::VERSION;
 
@@ -61,7 +62,7 @@ sub _build_name {
     
     unless (defined $name
         && $name !~ m/^\s*$/) {
-        return __PACKAGE__->_throw_error('Could not determine the attachment name automatically');
+        return croak('Could not determine the attachment name automatically');
     }
     
     return $name;
@@ -71,7 +72,7 @@ sub serialize {
     my ($self) = @_;
     
     return $self->cache 
-        if (defined $self->has_cache);
+        if ($self->has_cache);
     
     my $file = $self->file;
     my $accessor;

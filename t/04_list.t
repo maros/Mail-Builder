@@ -1,6 +1,6 @@
 # -*- perl -*-
 
-# t/004_address.t - check module for address handling
+# t/04_list.t - check module for generic list handling
 
 use Test::Most tests => 37 + 1;
 use Test::NoWarnings;
