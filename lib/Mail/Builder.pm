@@ -53,7 +53,7 @@ has 'organization' => (
 
 has 'priority' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.Priority',
+    isa             => 'Mail::Builder::Type::Priority',
     default         => 3,
 );
 
@@ -90,57 +90,59 @@ has '_boundary' => (
 
 has 'from' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.Address',
+    isa             => 'Mail::Builder::Type::Address',
     predicate       => 'has_from',
     clearer         => 'clear_from',
 );
 
 has 'reply' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.Address',
+    isa             => 'Mail::Builder::Type::Address',
     predicate       => 'has_reply',
     clearer         => 'clear_reply',
 );
 
 has 'returnpath' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.Address',
+    isa             => 'Mail::Builder::Type::Address',
     predicate       => 'has_returnpath',
     clearer         => 'clear_returnpath',
 );
 
 has 'sender' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.Address',
+    isa             => 'Mail::Builder::Type::Address',
     predicate       => 'has_sender',
     clearer         => 'clear_sender',
 );
 
 has 'to' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.AddressList',
+    isa             => 'Mail::Builder::Type::AddressList',
     required        => 1,
     coerce          => 1,
-    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Address' ) }
+    default         => \&_default_addresslist,
 );
 
 has 'cc' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.AddressList',
+    isa             => 'Mail::Builder::Type::AddressList',
     coerce          => 1,
-    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Address' ) }
+    required        => 1,
+    default         => \&_default_addresslist,
 );
 
 has 'bcc' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.AddressList',
+    isa             => 'Mail::Builder::Type::AddressList',
     coerce          => 1,
-    default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Address' ) }
+    required        => 1,
+    default         => \&_default_addresslist,
 );
 
 has 'attachment' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.AttachmentList',
+    isa             => 'Mail::Builder::Type::AttachmentList',
     coerce          => 1,
     required        => 1,
     default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Attachment' ) }
@@ -148,7 +150,7 @@ has 'attachment' => (
 
 has 'image' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.ImageList',
+    isa             => 'Mail::Builder::Type::ImageList',
     coerce          => 1,
     required        => 1,
     default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Image' ) }
@@ -158,6 +160,10 @@ around 'from' => \&_address_accessor;
 around 'returnpath' => \&_address_accessor;
 around 'sender' => \&_address_accessor;
 around 'reply' => \&_address_accessor;
+
+sub _default_addresslist {
+    return Mail::Builder::List->new( type => 'Mail::Builder::Address' )
+}
 
 sub _address_accessor {
     my ($method,$self,@params) = @_;

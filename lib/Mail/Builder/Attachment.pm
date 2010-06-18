@@ -21,7 +21,7 @@ has 'name' => (
 
 has 'mimetype' => (
     is          => 'rw',
-    isa         => 'Mail.Builder.Mimetype',
+    isa         => 'Mail::Builder::Type::Mimetype',
     lazy_build  => 1,
     trigger     => sub { shift->clear_cache },
 );

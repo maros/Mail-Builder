@@ -8,33 +8,11 @@ use Moose::Util::TypeConstraints;
 use Path::Class::File;
 use IO::File;
 
-subtype 'Mail.Builder.File'
-    => as 'Defined'
-    => where {
-        my $file = $_;
-        return 1
-            if blessed($file)
-            && grep { $file->isa($_) } qw(IO::File Path::Class::File);
-        return 1
-            unless ref($file);
-        return 0;
-    };
-    
-coerce 'Mail.Builder.File'
-    => from 'GlobRef'
-    => via { bless($_,'IO::File'); }
-    => from 'Str'
-    => via { 
-        if (-e $_ && -f $_) {
-            return Path::Class::File->new($_);
-        }
-        return $_;
-    };
-
 has 'file' => (
     is          => 'rw',
-    isa         => 'Mail.Builder.File',
+    isa         => 'Mail::Builder::Type::Content | Mail::Builder::Type::File | Mail::Builder::Type::Fh',
     required    => 1,
+    coerce      => 1,
     trigger     => sub { shift->clear_cache },
 );
 
@@ -49,6 +27,18 @@ our %MAGIC_STRINGS = (
     'image/jpeg'=> _build_magic_string(0xFF,0xD8),
     'image/png' => _build_magic_string(0x89,0x50,0x4E,0x47,0x0D,0x0A),
 );
+
+around BUILDARGS => sub {
+    my $orig = shift;
+    my $class = shift;
+
+    if ( scalar @_ == 1 && ref $_[0] ne 'HASH' ) {
+        return $class->$orig(file => $_[0]);
+    }
+    else {
+        return $class->$orig(@_);
+    }
+};
 
 sub _build_magic_string {
     my (@chars) = @_;

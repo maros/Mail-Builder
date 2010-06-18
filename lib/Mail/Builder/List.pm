@@ -11,7 +11,7 @@ our $VERSION = $Mail::Builder::VERSION;
 
 has 'type' => (
     is          => 'ro',
-    isa         => 'Mail.Builder.Class',
+    isa         => 'Mail::Builder::Type::Class',
     required    => 1,
 );
 

@@ -20,7 +20,7 @@ has 'id' => (
 
 has 'mimetype' => (
     is          => 'rw',
-    isa         => 'Mail.Builder.ImageMimetype',
+    isa         => 'Mail::Builder::Type::ImageMimetype',
     lazy_build  => 1,
     trigger     => sub { shift->clear_cache },
 );

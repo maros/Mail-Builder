@@ -14,7 +14,7 @@ our $VERSION = $Mail::Builder::VERSION;
 
 has 'email' => (
     is              => 'rw',
-    isa             => 'Mail.Builder.EmailAddress',
+    isa             => 'Mail::Builder::Type::EmailAddress',
     required        => 1,
 );
 
