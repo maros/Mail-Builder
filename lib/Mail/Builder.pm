@@ -116,27 +116,11 @@ has 'sender' => (
     clearer         => 'clear_sender',
 );
 
-has 'to' => (
+has [qw(to cc bcc)] => (
     is              => 'rw',
     isa             => 'Mail::Builder::Type::AddressList',
     required        => 1,
     coerce          => 1,
-    default         => \&_default_addresslist,
-);
-
-has 'cc' => (
-    is              => 'rw',
-    isa             => 'Mail::Builder::Type::AddressList',
-    coerce          => 1,
-    required        => 1,
-    default         => \&_default_addresslist,
-);
-
-has 'bcc' => (
-    is              => 'rw',
-    isa             => 'Mail::Builder::Type::AddressList',
-    coerce          => 1,
-    required        => 1,
     default         => \&_default_addresslist,
 );
 
