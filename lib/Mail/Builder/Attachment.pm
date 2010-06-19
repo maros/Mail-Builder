@@ -99,6 +99,10 @@ sub serialize {
         Encoding        => 'base64',
         $accessor       => $value,
     );
+    
+    $self->cache($entity);
+    
+    return $entity;
 }
 
 __PACKAGE__->meta->make_immutable;
