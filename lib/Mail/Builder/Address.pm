@@ -8,8 +8,7 @@ use Carp;
 use Encode qw/encode decode/; 
 use Email::Valid;
 
-use vars qw($VERSION);
-$VERSION = $Mail::Builder::VERSION;
+our $VERSION = $Mail::Builder::VERSION;
 
 =encoding utf8
 

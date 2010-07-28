@@ -21,7 +21,7 @@ Mail::Builder::Image::File - Module for handling inline images from files
 
   use Mail::Builder;
   
-  my $image = new Mail::Builder::Image::File('/home/guybrush/invitation.gif');
+  my $image = Mail::Builder::Image::File->new('/home/guybrush/invitation.gif');
   # Change CID
   $image->id('invitation_location');
   

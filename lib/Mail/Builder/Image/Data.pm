@@ -8,8 +8,7 @@ use Carp;
 
 use parent qw(Mail::Builder::Image);
 
-use vars qw($VERSION);
-$VERSION = $Mail::Builder::VERSION;
+our $VERSION = $Mail::Builder::VERSION;
 
 =encoding utf8
 
@@ -21,7 +20,7 @@ Mail::Builder::Image::Data - Module for handling inline images from data
 
   use Mail::Builder;
   
-  my $image = new Mail::Builder::Image::Data($data,'invitation');
+  my $image = Mail::Builder::Image::Data->new($data,'invitation');
   # Change CID
   $image->id('invitation_location');
   
