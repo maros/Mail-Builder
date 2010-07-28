@@ -38,9 +38,9 @@ and inline images
 =head1 SYNOPSIS
 
   use Mail::Builder;
-  
+
   my $mail = Mail::Builder->new();
-  
+
   $mail->from('mightypirate@meele-island.mq','Guybrush Threepwood');
   $mail->to->add('manuel.calavera@dod.mx','Manuel Calavera');
   $mail->cc->add('glotis@dod.mx');
@@ -50,7 +50,7 @@ and inline images
 
   # Send it with your favourite module (e.g. Email::Send)
   my $mailer = Email::Send->new({mailer => 'Sendmail'})->send($mail->stringify);
-  
+
   # Or mess with MIME::Entity objects
   my $mime = $mail->build_message;
   $mime-> ....
@@ -446,10 +446,10 @@ Tables are converted into text using L<Text::Table>.
  OR
  $obj->attachment(PATH[,NAME,MIME])
  
-This accessor always returns a Mail::Builder::List object. If you supply
+This accessor always returns a L<Mail::Builder::List> object. If you supply
 a L<Mail::Builder::List> the list will be replaced.
 
-If you pass a Mail::Builder::Attachment object or a scalar path (with an
+If you pass a L<Mail::Builder::Attachment> object or a scalar path (with an
 optional name an mime type) the current list will be reset and the new 
 attachment will be added.
 
@@ -476,7 +476,7 @@ sub attachment {
  $obj->image(Mail::Builder::Image)
  OR
  $obj->image(PATH[,ID])
- 
+
 This accessor always returns a Mail::Builder::List object. If you supply
 a L<Mail::Builder::List> the list will be replaced.
 
