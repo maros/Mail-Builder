@@ -24,6 +24,27 @@ has 'mimetype' => (
     trigger     => sub { shift->clear_cache },
 );
 
+around BUILDARGS => sub {
+    my $orig = shift;
+    my $class = shift;
+
+    if ( scalar @_ == 1 && ref $_[0] eq 'HASH' ) {
+        return $class->$orig($_[0]);
+    }
+    else {
+        my $params = {
+            file    => $_[0],
+        };
+        if (defined $_[1]) {
+            $params->{id} = $_[1];
+        }
+        if (defined $_[2]) {
+            $params->{mimetype} = $_[2];
+        }
+        return $class->$orig($params);
+    }
+};
+
 sub _build_mimetype {
     my ($self) = @_;
     

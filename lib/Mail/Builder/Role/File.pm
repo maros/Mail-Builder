@@ -27,18 +27,6 @@ our %MAGIC_STRINGS = (
     'image/png' => _build_magic_string(0x89,0x50,0x4E,0x47,0x0D,0x0A),
 );
 
-around BUILDARGS => sub {
-    my $orig = shift;
-    my $class = shift;
-
-    if ( scalar @_ == 1 && ref $_[0] ne 'HASH' ) {
-        return $class->$orig(file => $_[0]);
-    }
-    else {
-        return $class->$orig(@_);
-    }
-};
-
 sub _build_magic_string {
     my (@chars) = @_;
     return join ('',map { chr($_) } @chars);
