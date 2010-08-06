@@ -68,6 +68,7 @@ has 'language' => (
 has 'mailer' => (
     is              => 'rw',
     isa             => 'Str',
+    required        => 1,
     default         => "Mail::Builder v$VERSION",
 );
 
@@ -78,9 +79,16 @@ has 'autotext' => (
 );
 
 has 'messageid' => (
-    is              => 'rw',
+    is              => 'ro',
     isa             => 'Email::MessageID',
-    default         => sub { Email::MessageID->new },
+    clearer         => 'clear_messageid',
+    predicate       => 'has_messageid',
+);
+
+has '_plaintext_autotext' => (
+    is              => 'rw',
+    isa             => 'Bool',
+    default         => 0,
 );
 
 has '_boundary' => (
@@ -89,40 +97,22 @@ has '_boundary' => (
     default         => 1,
 );
 
-has 'from' => (
-    is              => 'rw',
-    isa             => 'Mail::Builder::Type::Address',
-    predicate       => 'has_from',
-    clearer         => 'clear_from',
-);
-
-has 'reply' => (
-    is              => 'rw',
-    isa             => 'Mail::Builder::Type::Address',
-    predicate       => 'has_reply',
-    clearer         => 'clear_reply',
-);
-
-has 'returnpath' => (
-    is              => 'rw',
-    isa             => 'Mail::Builder::Type::Address',
-    predicate       => 'has_returnpath',
-    clearer         => 'clear_returnpath',
-);
-
-has 'sender' => (
-    is              => 'rw',
-    isa             => 'Mail::Builder::Type::Address',
-    predicate       => 'has_sender',
-    clearer         => 'clear_sender',
-);
+foreach my $field (qw(from reply returnpath sender)) {
+    has $field => (
+        is              => 'rw',
+        isa             => 'Mail::Builder::Type::Address',
+        predicate       => 'has_'.$field,
+        clearer         => 'clear'.$field,
+    );
+    around $field => \&_address_accessor;
+}
 
 has [qw(to cc bcc)] => (
     is              => 'rw',
     isa             => 'Mail::Builder::Type::AddressList',
     required        => 1,
     coerce          => 1,
-    default         => \&_default_addresslist,
+    default         => sub { return Mail::Builder::List->new( type => 'Mail::Builder::Address' ) },
 );
 
 has 'attachment' => (
@@ -140,15 +130,6 @@ has 'image' => (
     required        => 1,
     default         => sub { Mail::Builder::List->new( type => 'Mail::Builder::Image' ) }
 );
-
-around 'from' => \&_address_accessor;
-around 'returnpath' => \&_address_accessor;
-around 'sender' => \&_address_accessor;
-around 'reply' => \&_address_accessor;
-
-sub _default_addresslist {
-    return Mail::Builder::List->new( type => 'Mail::Builder::Address' )
-}
 
 sub _address_accessor {
     my ($method,$self,@params) = @_;
