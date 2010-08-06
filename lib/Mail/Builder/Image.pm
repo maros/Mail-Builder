@@ -3,10 +3,9 @@ package Mail::Builder::Image;
 # ============================================================================
 
 use Moose;
-with qw(Mail::Builder::Role::File Mail::Builder::Role::TypeConstraints);
+with qw(Mail::Builder::Role::File);
+use Mail::Builder::Role::TypeConstraints;
 
-use Path::Class;
-use IO::File;
 use Carp;
 
 our $VERSION = $Mail::Builder::VERSION;

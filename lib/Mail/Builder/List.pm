@@ -3,7 +3,7 @@ package Mail::Builder::List;
 # ============================================================================
 
 use Moose;
-with qw(Mail::Builder::Role::TypeConstraints);
+use Mail::Builder::Role::TypeConstraints;
 
 use Carp;
 

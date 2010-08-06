@@ -3,10 +3,9 @@ package Mail::Builder::Role::File;
 # ============================================================================
 
 use Moose::Role;
-use Moose::Util::TypeConstraints;
 
-use Path::Class::File;
-use IO::File;
+use Path::Class qw();
+use IO::File qw();
 
 has 'file' => (
     is          => 'rw',

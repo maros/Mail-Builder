@@ -4,13 +4,11 @@ package Mail::Builder::Role::TypeConstraints;
 
 our $VERSION = $Mail::Builder::VERSION;
 
-use Moose::Role;
+use strict;
+use warnings;
 use Moose::Util::TypeConstraints;
 
 # Simple types
-
-
-#Mail::Builder::Type::Content | Mail::Builder::Type::File | Mail::Builder::Type::Fh
 
 subtype 'Mail::Builder::Type::Content'
     => as 'ScalarRef';

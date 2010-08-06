@@ -7,7 +7,7 @@ our $AUTHORITY = 'cpan:MAROS';
 our $VERSION = version->new("2.00");
 
 use Moose;
-with qw(Mail::Builder::Role::TypeConstraints);
+use Mail::Builder::Role::TypeConstraints;
 
 use Carp;
 
