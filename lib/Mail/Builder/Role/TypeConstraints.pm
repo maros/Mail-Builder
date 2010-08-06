@@ -99,6 +99,8 @@ subtype 'Mail::Builder::Type::AddressList'
 coerce 'Mail::Builder::Type::AddressList'
     => from 'Mail::Builder::Type::Address'
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ $_ ] ) }
+    => from 'Str'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ Mail::Builder::Address->new($_) ] ) }
     => from 'ArrayRef'
     => via { 
         my $param = $_;

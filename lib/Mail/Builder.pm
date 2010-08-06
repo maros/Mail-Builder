@@ -135,7 +135,13 @@ sub _address_accessor {
     my ($method,$self,@params) = @_;
     
     if (scalar @params) {
-        return $method->($self,Mail::Builder::Address->new(@params));
+        if (scalar @params == 1
+            && blessed($params[0])
+            && $params[0]->isa('Mail::Builder::Address')) {
+            return $method->($self,$params[0]);
+        } else {
+            return $method->($self,Mail::Builder::Address->new(@params));
+        }
     } else {
         return $method->($self);
     }
