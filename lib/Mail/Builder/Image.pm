@@ -62,7 +62,7 @@ sub _build_mimetype {
     }
     
     unless (defined $filetype) {
-        return __PACKAGE__->_throw_error('Could not determine the file type automatically and/or invalid file type (only image/png, image/jpeg an image/gif allowed)');
+        croak('Could not determine the file type automatically and/or invalid file type (only image/png, image/jpeg an image/gif allowed)');
     }
     
     return $filetype;
@@ -82,7 +82,7 @@ sub _build_id {
     
     unless (defined $id
         && $id !~ m/^\s*$/) {
-        return __PACKAGE__->_throw_error('Could not determine the image id automatically');
+        croak('Could not determine the image id automatically');
     }
     
     return $id;

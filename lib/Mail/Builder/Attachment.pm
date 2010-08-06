@@ -83,7 +83,7 @@ sub _build_name {
     
     unless (defined $name
         && $name !~ m/^\s*$/) {
-        return croak('Could not determine the attachment name automatically');
+        croak('Could not determine the attachment name automatically');
     }
     
     return $name;

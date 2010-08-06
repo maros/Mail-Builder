@@ -173,7 +173,7 @@ Deletes the current address/name values. Leaves an empy object
 =cut
 
 sub empty {
-    die('DEPRECATED')
+    croak('DEPRECATED')
 }
 
 __PACKAGE__->meta->make_immutable;
