@@ -292,6 +292,14 @@ sub charset {
 sub purge_cache {
     my ($self) = @_;
     
+    $self->clear_messageid;
+    
+    # Remove plaintext if it has been derived form htmltext
+    if ($self->_plaintext_autotext) {
+        $self->clear_plaintext;
+    }
+    
+    # Empty attachment images
     foreach my $list (qw(attachment image)) {
         foreach my $element ($self->$list->list) {
             $element->clear_cache;
@@ -404,6 +412,9 @@ sub build_message {
     croak(q[e-mail content missing]) 
         unless ($self->has_plaintext || $self->has_htmltext);
     
+    my $messageid = Email::MessageID->new;
+    $self->_set_raw('messageid',$messageid);
+    
     # Set header fields
     my %email_header = (
         'Top'           => 1,
@@ -412,7 +423,7 @@ sub build_message {
         'Cc'            => $self->to->join(','),
         'Bcc'           => $self->bcc->join(','),
         'Subject'       => encode('MIME-Header',$self->subject),
-        'Message-ID'    => $self->messageid->in_brackets(),
+        'Message-ID'    => $messageid->in_brackets(),
         'X-Priority'    => $self->priority,
         'X-Mailer'      => encode('MIME-Header', $self->mailer),
     );
