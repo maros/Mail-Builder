@@ -14,7 +14,7 @@ my $attachment1 = Mail::Builder::Attachment->new('t/testfile.txt');
 my $attachment2 = Mail::Builder::Attachment->new({ file => $pc_file });
 my $attachment3 = Mail::Builder::Attachment->new({ file => $pc_file->openr });
 my $attachment4 = Mail::Builder::Attachment->new(\'File content');
-my $attachment5 = Mail::Builder::Attachment->new(file => 't/testfile.pdf', name => 'document.pdf');
+my $attachment5 = Mail::Builder::Attachment->new('t/testfile.pdf','document.pdf');
 
 isa_ok ($attachment1, 'Mail::Builder::Attachment');
 isa_ok ($attachment2, 'Mail::Builder::Attachment');

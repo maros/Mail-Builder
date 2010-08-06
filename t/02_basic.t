@@ -1,6 +1,6 @@
 # -*- perl -*-
 
-# t/02_basic.t - check basic email
+# t/02_basic.t - generate basic email
 
 use Test::Most tests => 15 + 1;
 use Test::NoWarnings;
