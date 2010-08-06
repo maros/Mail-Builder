@@ -243,8 +243,6 @@ This constructor takes the class name of the objects it should hold. It is
 only possible to add objects of the given type. It is not possible to change
 the assigned type later.
 
-=cut
-
 =head3 convert 
 
  my $list = Mail::Builder::List->convert(ARRAYREF);
@@ -252,19 +250,11 @@ the assigned type later.
 Constructor that converts an array reference into a Mail::Builder::List 
 object. The list type is defined by the first element of the array.
 
-=cut
-
-
-
 =head2 Public Methods
 
 =head3 length 
 
 Returns the number of items in the list.
-
-=cut
-
-
 
 =head3 add
 
@@ -276,16 +266,9 @@ Pushes a new item into the list. The methods either accepts an object or
 scalar values. Scalar values will be passed to the C<new> method in the
 list type class.
 
-=cut
-
-
 =head3 push
 
 Synonym for L<add>
-
-=cut
-
-
 
 =head3 remove
 
@@ -298,20 +281,9 @@ Synonym for L<add>
 Removes the given element from the list. If no parameter is passed to the 
 method the last element from the list will be removed instead.
 
-=cut 
-
-
-
-
-
 =head3 reset
 
 Removes all elements from the list, leaving an empty list.
-
-=cut
-
-
-
 
 =head3 item
 
@@ -319,19 +291,11 @@ Removes all elements from the list, leaving an empty list.
 
 Returns the list item with the given index.
 
-=cut
-
-
-
 =head3 join
 
  my $list = $obj->join(STRING)
 
 Serializes all items in the list and joins them using the given string.
-
-=cut
-
-
 
 =head3 has
 
@@ -342,30 +306,15 @@ Serializes all items in the list and joins them using the given string.
 Returns true if the given object is in the list. You can either pass an
 object or scalar value. Uses the L<compare> method from the list type class.
 
-=cut
-
-
 =head2 Accessors
 
 =head3 type
 
 Returns the class name which was initially passed to the constructor. 
 
-=cut
-
-
-
 =head3 list
 
 Raw list as list or array reference.
-
-=cut
-
-
-
-1;
-
-__END__
 
 =head1 AUTHOR
 
