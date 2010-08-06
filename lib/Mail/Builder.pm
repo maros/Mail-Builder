@@ -27,6 +27,7 @@ has 'plaintext' => (
     isa             => 'Str',
     predicate       => 'has_plaintext',
     clearer         => 'clear_plaintext',
+    trigger         => \&_set_autotext_plaintext,
 );
 
 has 'htmltext' => (
@@ -159,19 +160,34 @@ sub _address_accessor {
     }
 }
 
+sub _set_raw {
+    my ($self,$key,$value) = @_;
+    my $attr = __PACKAGE__->meta->get_attribute($key);
+    $attr->set_raw_value($self,$value);
+}
+
 sub _generate_plaintext {
     my ($self,$htmltext) = @_;
     $htmltext ||= $self->htmltext;
     
-    if ($self->autotext) {
+    if ($self->autotext
+        && ($self->_plaintext_autotext == 1 || ! $self->has_plaintext)) {
         Class::MOP::load_class('HTML::TreeBuilder');
         
         my $html_tree = HTML::TreeBuilder->new_from_content($self->htmltext);
         # Only use the body
         my $html_body = $html_tree->find('body');
         # And now convert all elements
-        $self->plaintext($self->_convert_text($html_body));
+        my $plaintext = $self->_convert_text($html_body);
+        # Store in plaintext accessor and set _plaintext_autotext flag
+        $self->_set_raw('plaintext',$plaintext);
+        $self->_plaintext_autotext(1);
     }
+}
+
+sub _set_autotext_plaintext {
+    my ($self,$plaintext) = @_;
+    $self->_plaintext_autotext(0);
 }
 
 sub _convert_text {
