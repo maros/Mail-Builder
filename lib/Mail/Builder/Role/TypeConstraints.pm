@@ -76,8 +76,10 @@ subtype 'Mail::Builder::Type::Class'
 subtype 'Mail::Builder::Type::Priority'
     => as enum([qw(1 2 3 4 5)]);
 
-subtype 'Mail::Builder::Type::ImageMimetpe'
-    => as enum([qw(image/gif image/jpeg image/png)]);
+subtype 'Mail::Builder::Type::ImageMimetype'
+    => as enum([qw(image/gif image/jpeg image/png)])
+    => message { "'$_' is not a valid image MIME-type" };
+
 
 subtype 'Mail::Builder::Type::Mimetype'
     => as 'Str'

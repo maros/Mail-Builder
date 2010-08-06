@@ -90,9 +90,9 @@ sub _build_id {
 
 sub serialize {
     my ($self) = @_;
-    
+
     return $self->cache 
-        if (defined $self->has_cache);
+        if ($self->has_cache);
     
     my $file = $self->file;
     my $accessor;
