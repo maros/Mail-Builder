@@ -7,6 +7,8 @@ use Test::NoWarnings;
 
 use Mail::Builder;
 
+my ($mime1,$mime2,$mime3);
+
 my $object = Mail::Builder->new();
 
 isa_ok ($object, 'Mail::Builder');
@@ -22,11 +24,10 @@ ok($object->reply($replyaddress),'Set reply address');
 isa_ok($object->reply(),'Mail::Builder::Address');
 ok($object->priority('5'),'Set priority');
 
-eval {
+throws_ok {
     $object->build_message();
-};
+} qr/Recipient address/,'Recipient address missing';
 
-like($@,qr/Recipient address/);
 ok($object->to('recipient1@test.com'),'Recipient set');
 isa_ok($object->to(),'Mail::Builder::List');
 is($object->to->length,1,'One recipient');
@@ -34,7 +35,7 @@ isa_ok($object->to->item(0),'Mail::Builder::Address');
 is($object->to->item(0)->email,'recipient1@test.com','Recipient email ok');
 isa_ok($object->cc(),'Mail::Builder::List');
 is($object->cc->length,0,'CC list empty');
-my $list = Mail::Builder::List->new('Mail::Builder::Address');
+my $list = Mail::Builder::List->new(type => 'Mail::Builder::Address');
 $list->add('cc1@test.com');
 $list->add('cc2@test.com');
 ok($object->cc($list),'Set new list');
@@ -57,7 +58,7 @@ ok($object->subject('subject'),'Set subject');
 is($object->subject,'subject');
 
 eval {
-    $mime = $object->build_message();
+    $mime1 = $object->build_message();
 };
 like($@,qr/e-mail content/);
 ok($object->htmltext(qq[<html><head></head><body><h1>Headline</h1>
@@ -104,8 +105,8 @@ eval {
 };
 like($@,qr/Invalid priority/);
 ok($object->priority('4'),'Set priority');
-ok($mime = $object->build_message(),'Build Message');
-isa_ok($mime,'MIME::Entity');
+ok($mime2 = $object->build_message(),'Build Message');
+isa_ok($mime2,'MIME::Entity');
 like($object->{'plaintext'},qr/\t* Bullet/);
 like($object->{'plaintext'},qr/\t1\. Item/);
 like($object->{'plaintext'},qr/_This is an italic text_/);
@@ -116,16 +117,16 @@ like($object->{'plaintext'},qr/\[revdev logo\]/);
 like($object->{'plaintext'},qr/Test1\s\sTest2\s\sTest3/);
 like($object->{'plaintext'},qr/Test21\s{8}Test23/);
 
-isa_ok($mime->head,'MIME::Head');
-is($mime->head->get('To'),'recipient1@test.com'."\n");
-is($mime->head->get('Cc'),'cc1@test.com,cc2@test.com'."\n");
-is($mime->head->get('Sender'),'"boss" <sender@test.com>'."\n");
-is($mime->head->get('X-Priority'),'4'."\n");
-is($mime->head->get('Subject'),'subject'."\n");
-is($mime->parts,2);
-ok($mime = $object->stringify(),'Stringify Message');
-like($mime,qr/Content-Type: text\/html; charset="utf-8"/);
-like($mime,qr/------_=_NextPart_002_/);
+isa_ok($mime2->head,'MIME::Head');
+is($mime2->head->get('To'),'recipient1@test.com'."\n");
+is($mime2->head->get('Cc'),'cc1@test.com,cc2@test.com'."\n");
+is($mime2->head->get('Sender'),'"boss" <sender@test.com>'."\n");
+is($mime2->head->get('X-Priority'),'4'."\n");
+is($mime2->head->get('Subject'),'subject'."\n");
+is($mime2->parts,2);
+ok($mime2 = $object->stringify(),'Stringify Message');
+like($mime2,qr/Content-Type: text\/html; charset="utf-8"/);
+like($mime2,qr/------_=_NextPart_002_/);
 
 my $object2 = Mail::Builder->new();
 ok($object2->to->add('recipient2@test.com','nice üft-8 nämé'));
@@ -135,12 +136,12 @@ ok($object2->plaintext(qq[Text]));
 ok($object2->language(q[de]));
 ok($object2->attachment->add(qq[t/testfile.pdf],q[test.pdf]));
 is($object2->attachment->length,1);
-ok($mime = $object2->build_message(),'Build Message');
-isa_ok($mime,'MIME::Entity');
-isa_ok($mime->head,'MIME::Head');
-is($mime->head->get('To'),'"=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?=" <recipient2@test.com>'."\n");
-is($mime->head->get('Subject'),'Testmail'."\n");
-is($mime->head->get('From'),'"me" <from2@test.com>'."\n");
-is($mime->parts,2);
-is($mime->parts(0)->mime_type,'application/pdf');
-is($mime->parts(1)->mime_type,'text/plain');
+ok($mime3 = $object2->build_message(),'Build Message');
+isa_ok($mime3,'MIME::Entity');
+isa_ok($mime3->head,'MIME::Head');
+is($mime3->head->get('To'),'"=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?=" <recipient2@test.com>'."\n");
+is($mime3->head->get('Subject'),'Testmail'."\n");
+is($mime3->head->get('From'),'"me" <from2@test.com>'."\n");
+is($mime3->parts,2);
+is($mime3->parts(0)->mime_type,'application/pdf');
+is($mime3->parts(1)->mime_type,'text/plain');

@@ -7,6 +7,8 @@ use Test::NoWarnings;
 
 use Mail::Builder;
 
+my ($address1,$address2,$address3,$address4);
+
 # Address 1
 ok($address1 = Mail::Builder::Address->new('test@test.com'),'Create simple object');
 isa_ok ($address1, 'Mail::Builder::Address');

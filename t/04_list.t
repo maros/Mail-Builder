@@ -7,6 +7,8 @@ use Test::NoWarnings;
 
 use Mail::Builder;
 
+my ($list1,$list2);
+
 # List1
 ok($list1 = Mail::Builder::List->new(type => 'Mail::Builder::Address'),'Create list');
 isa_ok ($list1, 'Mail::Builder::List');
