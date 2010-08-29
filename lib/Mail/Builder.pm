@@ -423,7 +423,7 @@ sub build_message {
         'Top'           => 1,
         'From'          => $self->from->serialize,
         'To'            => $self->to->join(','),
-        'Cc'            => $self->to->join(','),
+        'Cc'            => $self->cc->join(','),
         'Bcc'           => $self->bcc->join(','),
         'Subject'       => encode('MIME-Header',$self->subject),
         'Message-ID'    => $messageid->in_brackets(),
@@ -438,7 +438,7 @@ sub build_message {
     
     # Set sender address
     if ($self->has_sender) {
-        $email_header{'Sender'} = $self->has_sender->serialize;
+        $email_header{'Sender'} = $self->sender->serialize;
     }
     
     # Set language
@@ -448,7 +448,7 @@ sub build_message {
     
     # Set return path
     if ($self->has_returnpath) {
-        $email_header{'Return-Path'} = $self->has_returnpath->address();
+        $email_header{'Return-Path'} = $self->returnpath->address();
     } elsif ($self->has_reply) {
         $email_header{'Return-Path'} = $self->reply->address();
     } else {
@@ -475,7 +475,7 @@ sub build_message {
             $mime_entity->add_part($attachment->serialize());
         }
         $mime_entity->add_part($self->_build_text(Top => 0));
-    # ... without attachments
+        # ... without attachments
     } else {
         $mime_entity = $self->_build_text(%email_header);
     }
