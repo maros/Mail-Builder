@@ -125,6 +125,7 @@ sub serialize {
     return $entity;
 }
 
+no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;

@@ -488,16 +488,8 @@ sub stringify {
     return $obj->build_message->stringify;
 }
 
+no Moose;
 __PACKAGE__->meta->make_immutable;
-
-
-
-
-
-
-
-
-
 
 =encoding utf8
 

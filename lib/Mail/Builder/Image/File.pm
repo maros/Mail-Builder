@@ -9,10 +9,11 @@ use Carp;
 
 our $VERSION = $Mail::Builder::VERSION;
 
-sub BUILD {
+before BUILDARGS => sub{
     carp '<Mail::Builder::Image::Data> is deprecated, use <Mail::Builder::Image> instead';
 };
 
+no Moose;
 __PACKAGE__->meta->make_immutable;
 
 
