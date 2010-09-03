@@ -2,10 +2,11 @@
 
 # t/07_builder_integration.t - integration tests
 
-use Test::Most tests => 61 + 1;
+use Test::Most tests => 64 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;
+use Email::Address;
 
 my ($mime1,$mime2,$mime3);
 
@@ -131,8 +132,16 @@ lives_ok {
 
 lives_ok {
     my $object2 = Mail::Builder->new();
+    
+    my $email_address1 = Email::Address->new('Test3','recipient3@test.com');
+    my $email_address2 = Email::Address->new('Test4','recipient4@test.com');
+    
     $object2->to->add('recipient2@test.com','nice üft-8 nämé');
+    $object2->bcc($email_address2);
     $object2->from('from2@test.com','me');
+    $object2->sender({ email => 'from3@test.com', name => 'me2'});
+    $object2->reply($email_address1);
+    
     $object2->subject('Testmail');
     $object2->plaintext('Text');
     $object2->language('de');
@@ -145,9 +154,13 @@ lives_ok {
     isa_ok($mime3,'MIME::Entity');
     isa_ok($mime3->head,'MIME::Head');
     
-    is($mime3->head->get('To'),'"=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?=" <recipient2@test.com>'."\n",'Recipient header encoding ok');
+    is($mime3->head->get('To'),'"=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?=" <recipient2@test.com>'."\n",'To header encoding ok');
+    is($mime3->head->get('Reply-To'),'"Test3" <recipient3@test.com>'."\n",'Reply header encoding ok');
+    is($mime3->head->get('Bcc'),'"Test4" <recipient4@test.com>'."\n",'Bcc header encoding ok');
+    
     is($mime3->head->get('Subject'),'Testmail'."\n",'Subject ok');
-    is($mime3->head->get('From'),'"me" <from2@test.com>'."\n",'Sender ok');
+    is($mime3->head->get('From'),'"me" <from2@test.com>'."\n",'From ok');
+    is($mime3->head->get('Sender'),'"me2" <from3@test.com>'."\n",'From ok');
     is($mime3->parts,2,'No. of mime parts ok');
     is($mime3->parts(0)->mime_type,'application/pdf','Mime type ok');
     is($mime3->parts(1)->mime_type,'text/plain','Mime type ok');

@@ -2,12 +2,12 @@
 
 # t/04_list.t - check module for generic list handling
 
-use Test::Most tests => 37 + 1;
+use Test::Most tests => 41 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;
 
-my ($list1,$list2);
+my ($list1,$list2,$list3,$list4);
 
 # List1
 ok($list1 = Mail::Builder::List->new(type => 'Mail::Builder::Address'),'Create list');
@@ -77,3 +77,10 @@ throws_ok {
 ok($list2 = Mail::Builder::List->convert([$address1,$address2]),'Convert item');
 is($list2->item(0)->email, 'test4@test4.com','First element ok');
 is($list2->length, 2,'Length is 2');
+
+ok($list3 = Mail::Builder::List->new('Mail::Builder::Address'),'Create list');
+is($list3->type(),'Mail::Builder::Address','Type is ok');
+
+ok($list4 = Mail::Builder::List->new({ type => 'Mail::Builder::Address' }),'Create list');
+is($list4->type(),'Mail::Builder::Address','Type is ok');
+
