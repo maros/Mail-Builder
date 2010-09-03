@@ -30,7 +30,7 @@ sub _check_list {
     foreach my $element (@$value) {
         unless (blessed $element
             && $element->isa($type)) {
-            die('NOT A '.$type)
+            croak("'$value' is not a '$type'");
         }
     }
 }
@@ -43,6 +43,19 @@ around 'list' => sub {
     
     return wantarray ? @{$result} : $result;
 };
+
+around BUILDARGS => sub {
+    my $orig = shift;
+    my $class = shift;
+
+    if (scalar @_ == 1
+        && ref($_[0]) eq '') {
+        return $class->$orig({ type => $_[0] });
+    } else {
+        return $class->$orig(@_);
+    }
+};
+
 
 __PACKAGE__->meta->make_immutable;
 

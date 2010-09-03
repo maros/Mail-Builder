@@ -80,7 +80,7 @@ around BUILDARGS => sub {
     
     if ($args_length == 1) {
         if (blessed $args[0] && $args[0]->isa('Email::Address')) {
-            $params{email} = $args[0]->email;
+            $params{email} = $args[0]->address;
             $params{name} = $args[0]->phrase;
             $params{comment} = $args[0]->comment;
         } elsif (ref $args[0] eq 'HASH') {

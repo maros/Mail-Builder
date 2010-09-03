@@ -31,33 +31,6 @@ coerce 'Mail::Builder::Type::File'
         return Path::Class::File->new($_)
     };
 
-#subtype 'Mail::Builder::Type::File'
-#    => as 'Defined'
-#    => where {
-#        my $file = $_;
-#        return 1
-#            if blessed($file)
-#            && grep { $file->isa($_) } qw(IO::File Path::Class::File);
-#        return 1
-#            unless ref($file);
-#        return 0;
-#    };
-#    
-#coerce 'Mail::Builder::Type::File'
-#    => from 'GlobRef'
-#    => via { 
-#        warn 'COERCE FILE';
-#        bless($_,'IO::File'); 
-#    }
-#    => from 'Str'
-#    => via { 
-#        warn 'COERCE FILE';
-#        if (-e $_ && -f $_) {
-#            return Path::Class::File->new($_);
-#        }
-#        return $_;
-#    };
-
 subtype 'Mail::Builder::Type::EmailAddress'
     => as 'Str'
     => where { 
@@ -101,6 +74,14 @@ coerce 'Mail::Builder::Type::AddressList'
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ $_ ] ) }
     => from 'Str'
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ Mail::Builder::Address->new($_) ] ) }
+    => from 'HashRef'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ Mail::Builder::Address->new($_) ] ) }
+    => from class_type('Email::Address')
+    => via { 
+        return Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [
+            Mail::Builder::Address->new($_)
+        ] ) 
+    }
     => from 'ArrayRef'
     => via { 
         my $param = $_;
@@ -127,6 +108,8 @@ subtype 'Mail::Builder::Type::AttachmentList'
 coerce 'Mail::Builder::Type::AttachmentList'
     => from class_type('Mail::Builder::Attachment')
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => [ $_ ] ) }
+    => from 'HashRef'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => [ Mail::Builder::Attachment->new($_) ] ) }
     => from 'ArrayRef'
     => via { 
         my $param = $_;
@@ -135,6 +118,8 @@ coerce 'Mail::Builder::Type::AttachmentList'
             if (blessed $element
                 && $element->isa('Mail::Builder::Attachment')) {
                 push(@{$result},$element);
+            } elsif (ref $element eq 'HASH') {
+                push(@{$result},Mail::Builder::Attachment->new($element));
             } else {
                 push(@{$result},Mail::Builder::Attachment->new(file => $element));
             }
@@ -153,6 +138,8 @@ subtype 'Mail::Builder::Type::ImageList'
 coerce 'Mail::Builder::Type::ImageList'
     => from class_type('Mail::Builder::Image')
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Image', list => [ $_ ] ) }
+    => from 'HashRef'
+    => via { Mail::Builder::List->new( type => 'Mail::Builder::Image', list => [ Mail::Builder::Image->new($_) ] ) }
     => from 'ArrayRef'
     => via { 
         my $param = $_;
@@ -161,11 +148,16 @@ coerce 'Mail::Builder::Type::ImageList'
             if (blessed $element
                 && $element->isa('Mail::Builder::Image')) {
                 push(@{$result},$element);
+            } elsif (ref $element eq 'HASH') {
+                push(@{$result},Mail::Builder::Image->new($element));
             } else {
                 push(@{$result},Mail::Builder::Image->new(file => $element));
             }
         }
         return Mail::Builder::List->new( type => 'Mail::Builder::Image', list => $result ) 
     };
+
+no Moose::Role;
+no Moose::Util::TypeConstraints;
 
 1;
