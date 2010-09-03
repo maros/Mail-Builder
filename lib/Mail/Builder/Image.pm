@@ -134,17 +134,118 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
-Mail::Builder::Image - Abstract class for handling inline images
+Mail::Builder::Image - Class for handling inline images
 
 =head1 SYNOPSIS
 
-This is an abstract class. Please Use L<Mail::Builder::Image::Data> or
-L<Mail::Builder::Image::Path>.
+  use Mail::Builder::Image;
+  
+  my $image1 = Mail::Builder::Image->new({
+      file  => 'path/to/image.png',
+      id    => 'location',
+  });
+  
+  my $image2 = Mail::Builder::Image->new($fh);
+  
+  my $image1_entity = $image1->serialize;
   
 =head1 DESCRIPTION
 
-This is a simple module for handling inline images. 
+This class handles imline images that should be displayed in html e-mail
+messages.
 
+=head1 METHODS
+
+=head2 Constructor 
+
+=head3 new
+
+The constructor can be called in multiple ways
+
+ Mail::Builder::Image->new({
+     file       => Path | Path::Class::File | IO::File | FH | ScalarRef,
+     [ id       => Image id, ]
+     [ mimetype => Image mimetype, ]
+ })
+ OR
+ Mail::Builder::Image->new(
+    Path | Path::Class::File | IO::File | FH | ScalarRef
+    [, Image id [, Mime type ]]
+ )
+
+See L<Accessors> for more details.
+
+=back 
+
+=head2 Public Methods
+
+=head3 serialize
+
+Returns the image file as a L<MIME::Entity> object.
+
+=head3 filename
+
+If possible, returns the filename of the image file as a L<Path::Class::File>
+object.
+
+=head3 filecontent
+
+Returns the content of the image file.
+
+=head3 filehandle
+
+If possible, returns a filehandle for the image file as a L<IO::File> object.
+
+=head2 Accessors
+
+=head3 id
+
+ID of the file. If no id is provided the lowercase filename without the 
+extension will be used as the ID.
+
+The ID is needed to reference the image in the e-mail body: 
+ 
+ <img src="cid:invitation_location"/>
+
+=head3 mimetype
+
+Mime type of the image. Valid types are
+
+=over
+
+=item * image/gif
+
+=item * image/jpeg
+
+=item * image/png
+
+=back
+
+If not provided the mime type is determined by analyzing the filename 
+extension and file content.
+
+=head3 file
+
+Image. Can be a 
+
+=over
+
+=item * Path (or a Path::Class::File object)
+
+=item * Filehandle (or a IO::File object)
+
+=item * ScalarRef containing the image data
+
+=back
+
+=head1 AUTHOR
+
+    Maroš Kollár
+    CPAN ID: MAROS
+    maros [at] k-1.com
+    http://www.k-1.com
+
+=cut
 
 1;
 

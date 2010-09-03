@@ -238,10 +238,31 @@ Mail::Builder::List - Helper module for handling various lists
   
   # Create a list that accepts Mail::Builder::Address objects
   my $list = Mail::Builder::List->new('Mail::Builder::Address');
+  
+  # Add aMail::Builder::Address object
   $list->add($address_object);
-  $list->add($another_address_object);
+  
+  # Add an email (Unrecognized values will be passed to the constructor of 
+  # the type class - Mail::Builder::Address)
+  $list->add('sasha.nein@psychonauts.org');
+  
+  # Add one more email (Unrecognized values will be passed to the constructor of 
+  # the type class - Mail::Builder::Address)
+  $list->add({ email => 'raz.aquato@psychonauts.org', name => 'Razputin'} );
+  
+  # Remove email from list
+  $list->remove('raz.aquato@psychonauts.org'); 
+  
+  # Remove first element in list
+  $list->remove(1);
+  
+  # Reset list
   $list->reset;
-  $list->add($email,$name);
+  
+  # Add email
+  $list->add('milla.vodello@psychonauts.org','Milla Vodello');
+  
+  # Serialize email list
   print $list->join(',');
 
 =head1 DESCRIPTION
@@ -255,7 +276,12 @@ lists). The class contains convinient array/list handling functions.
 
 =head3 new 
 
- my $list = Mail::Builder::List->new(CLASSNAME);
+ my $list = Mail::Builder::List->new(Class name);
+ OR
+ my $list = Mail::Builder::List->new({
+     type   => Class name,
+     [ list => ArrayRef, ]
+ });
 
 This constructor takes the class name of the objects it should hold. It is 
 only possible to add objects of the given type. It is not possible to change
@@ -263,7 +289,7 @@ the assigned type later.
 
 =head3 convert 
 
- my $list = Mail::Builder::List->convert(ARRAYREF);
+ my $list = Mail::Builder::List->convert(ArrayRef);
 
 Constructor that converts an array reference into a Mail::Builder::List 
 object. The list type is defined by the first element of the array.
@@ -276,12 +302,12 @@ Returns the number of items in the list.
 
 =head3 add
 
- $obj->add(OBJECT);
- or
- $obj->add(SCALAR VALUE/S)
+ $obj->add(Object);
+ OR
+ $obj->add(Anything)
 
 Pushes a new item into the list. The methods either accepts an object or 
-scalar values. Scalar values will be passed to the C<new> method in the
+any values. Values will be passed to the C<new> method in the
 list type class.
 
 =head3 push
@@ -290,10 +316,12 @@ Synonym for L<add>
 
 =head3 remove
 
- $obj->remove(OBJECT)
- or
- $obj->remove(SCALAR VALUE)
- or
+ $obj->remove(Object)
+ OR
+ $obj->remove(Index)
+ OR
+ $obj->remove(Anything)
+ OR
  $obj->remove()
 
 Removes the given element from the list. If no parameter is passed to the 
@@ -305,21 +333,21 @@ Removes all elements from the list, leaving an empty list.
 
 =head3 item
 
- my $list_item = $obj->item(INDEX)
+ my $list_item = $obj->item(Index)
 
 Returns the list item with the given index.
 
 =head3 join
 
- my $list = $obj->join(STRING)
+ my $list = $obj->join(String)
 
 Serializes all items in the list and joins them using the given string.
 
 =head3 has
 
- $obj->has(OBJECT)
+ $obj->has(Object)
  or
- $obj->has(SCALAR VALUE)
+ $obj->has(Anything)
 
 Returns true if the given object is in the list. You can either pass an
 object or scalar value. Uses the L<compare> method from the list type class.
