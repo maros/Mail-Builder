@@ -2,11 +2,12 @@
 package Mail::Builder::Role::TypeConstraints;
 # ============================================================================
 
-our $VERSION = $Mail::Builder::VERSION;
-
 use strict;
 use warnings;
+
 use Moose::Util::TypeConstraints;
+
+our $VERSION = $Mail::Builder::VERSION;
 
 # Simple types
 

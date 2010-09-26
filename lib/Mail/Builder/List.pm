@@ -33,6 +33,7 @@ sub _check_list {
             croak("'$value' is not a '$type'");
         }
     }
+    return;
 }
 
 around 'list' => sub {

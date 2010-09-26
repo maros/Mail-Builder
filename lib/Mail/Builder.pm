@@ -2,11 +2,12 @@
 package Mail::Builder;
 # ============================================================================
 
+use Moose;
+
 use version;
 our $AUTHORITY = 'cpan:MAROS';
 our $VERSION = version->new("2.00");
 
-use Moose;
 use Mail::Builder::Role::TypeConstraints;
 
 use Carp;
@@ -151,6 +152,7 @@ sub _set_raw {
     my ($self,$key,$value) = @_;
     my $attr = __PACKAGE__->meta->get_attribute($key);
     $attr->set_raw_value($self,$value);
+    return;
 }
 
 sub _generate_plaintext {
@@ -170,11 +172,13 @@ sub _generate_plaintext {
         $self->_set_raw('plaintext',$plaintext);
         $self->_plaintext_autotext(1);
     }
+    return;
 }
 
 sub _set_autotext_plaintext {
     my ($self,$plaintext) = @_;
     $self->_plaintext_autotext(0);
+    return;
 }
 
 sub _convert_text {
@@ -289,7 +293,8 @@ sub _get_boundary {
 }
 
 sub charset {
-    warn('DEPRECATED: The charset accessor has been removed.')
+    warn('DEPRECATED: The charset accessor has been removed.');
+    return;
 }
 
 sub purge_cache {

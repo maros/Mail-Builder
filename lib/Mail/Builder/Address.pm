@@ -166,12 +166,6 @@ sub compare {
     }
 }
 
-=head3 empty
-
-Deletes the current address/name values. Leaves an empy object
-
-=cut
-
 sub empty {
     croak('DEPRECATED')
 }

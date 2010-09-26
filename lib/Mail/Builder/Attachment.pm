@@ -175,8 +175,6 @@ The constructor can be called in multiple ways
 
 See L<Accessors> for more details.
 
-=back 
-
 =head2 Public Methods
 
 =head3 serialize
