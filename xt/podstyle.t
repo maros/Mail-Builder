@@ -10,12 +10,11 @@ plan skip_all => 'set TEST_AUTHOR to enable this test' unless $ENV{TEST_AUTHOR};
 
 my @files;
 foreach (all_pod_files()) {
-    next if /Schema\//;
-    next if /\.pl$/;
+    next if /(Attachment|Image|Role)\//;
     push @files,$_;
 }
 
-my @required_heads=qw(NAME SYNOPSIS DESCRIPTION METHODS AUTHOR LICENSE COPYRIGHT);
+my @required_heads=qw(NAME SYNOPSIS DESCRIPTION METHODS AUTHOR);
 
 plan tests => scalar @files * scalar @required_heads;
 
