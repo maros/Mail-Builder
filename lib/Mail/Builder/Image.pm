@@ -151,7 +151,7 @@ Mail::Builder::Image - Class for handling inline images
   
 =head1 DESCRIPTION
 
-This class handles imline images that should be displayed in html e-mail
+This class handles inline images that should be displayed in html e-mail
 messages.
 
 =head1 METHODS
@@ -165,12 +165,12 @@ The constructor can be called in multiple ways
  Mail::Builder::Image->new({
      file       => Path | Path::Class::File | IO::File | FH | ScalarRef,
      [ id       => Image id, ]
-     [ mimetype => Image mimetype, ]
+     [ mimetype => MIME type, ]
  })
  OR
  Mail::Builder::Image->new(
     Path | Path::Class::File | IO::File | FH | ScalarRef
-    [, Image id [, Mime type ]]
+    [, Image id [, MIME type ]]
  )
 
 See L<Accessors> for more details.
@@ -237,20 +237,6 @@ Image. Can be a
 =item * ScalarRef containing the image data
 
 =back
-
-=head1 AUTHOR
-
-    Maroš Kollár
-    CPAN ID: MAROS
-    maros [at] k-1.com
-    http://www.k-1.com
-
-=cut
-
-1;
-
-__END__
-=pod
 
 =head1 AUTHOR
 

@@ -343,11 +343,11 @@ Returns the list item with the given index.
 
 Serializes all items in the list and joins them using the given string.
 
-=head3 has
+=head3 contains
 
- $obj->has(Object)
+ $obj->contains(Object)
  or
- $obj->has(Anything)
+ $obj->contains(Anything)
 
 Returns true if the given object is in the list. You can either pass an
 object or scalar value. Uses the L<compare> method from the list type class.

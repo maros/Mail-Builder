@@ -129,49 +129,101 @@ sub serialize {
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
+1;
+
 =encoding utf8
 
 =head1 NAME
 
-Mail::Builder::Attachment - Abstract class for handling attachments
+Mail::Builder::Attachment - Class for handling e-mail attachments
 
 =head1 SYNOPSIS
 
-This is an abstract class. Please Use L<Mail::Builder::Attachment::Data> or
-L<Mail::Builder::Attachment::Path>.
+  use Mail::Builder::Attachment;
+  
+  my $attachment1 = Mail::Builder::Attachment->new({
+      file  => 'path/to/attachment.pdf',
+      name  => 'LoveLetter.txt.vbs',
+  });
+  
+  my $attachment2 = Mail::Builder::Attachment->new($fh);
+  
+  my $attachment_entity = $attachment1->serialize;
   
 =head1 DESCRIPTION
 
-This is a simple module for handling attachments with Mail::Builder.
+This class handles e-mail attachments for Mail::Builder.
 
 =head1 METHODS
 
-=head2 Constructor
+=head2 Constructor 
 
 =head3 new
 
-Shortcut to the constructor from L<Mail::Builder::Attachment::File>.
+The constructor can be called in multiple ways
 
-=cut
+ Mail::Builder::Attachment->new({
+     file       => Path | Path::Class::File | IO::File | FH | ScalarRef,
+     [ name     => Attachment filename, ]
+     [ mimetype => MIME type, ]
+ })
+ OR
+ Mail::Builder::Image->new(
+    Path | Path::Class::File | IO::File | FH | ScalarRef
+    [, Attachment filename [, MIME type ]]
+ )
+
+See L<Accessors> for more details.
+
+=back 
+
+=head2 Public Methods
+
+=head3 serialize
+
+Returns the attachment as a L<MIME::Entity> object.
+
+=head3 filename
+
+If possible, returns the filename of the attachment file as a 
+L<Path::Class::File> object.
+
+=head3 filecontent
+
+Returns the content of the attachment file.
+
+=head3 filehandle
+
+If possible, returns a filehandle for the attachment file as a 
+L<IO::File> object.
 
 =head2 Accessors
 
 =head3 name
 
-Accessor which takes/returns the name of the file as displayed in the e-mail
-message.
+Name of the attachment as used in the e-mail message. If no name is provided 
+the current filename will be used.
 
-=head3 mime
+=head3 mimetype
 
-Accessor which takes/returns the mime type of the file. 
+Mime type of the attachment. Valid types are
 
-=cut
+If not provided the mime type is determined by analyzing the filename 
+extension.
 
+=head3 file
 
-1;
+Attachment file. Can be a 
 
-__END__
+=over
 
+=item * Path (or a Path::Class::File object)
+
+=item * Filehandle (or a IO::File object)
+
+=item * ScalarRef containing the attachment data
+
+=back
 
 =head1 AUTHOR
 
@@ -181,4 +233,3 @@ __END__
     http://www.k-1.com
 
 =cut
-
