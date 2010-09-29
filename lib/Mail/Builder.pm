@@ -971,8 +971,11 @@ Furthermore these modules are being used for various tasks:
 =over 
 
 =item * L<Email::Valid> for validating e-mail addresses
+
 =item * L<Email::MessageID> for generating unique message IDs
+
 =item * L<HTML::TreeBuilder> for parsing html and generating plaintext
+
 =item * L<MIME::Types> for guessing attachment mime types
 
 =back

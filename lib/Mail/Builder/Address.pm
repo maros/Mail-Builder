@@ -44,13 +44,15 @@ Mail::Builder::Address - Module for handling e-mail addresses
   # Now correct type in the display name and address
   $mail->name('Guybrush Threepwood');
   $mail->email('verymightypirate@meele-island.mq');
+  $mail->comment('Mighty Pirate (TM)');
+  
   # Serialize
   print $mail->serialize;
   
   # Use the address as a recipient for  Mail::Builder object
-  $mb->to($mail); # This removes all other recipients 
+  $mb->to($mail); # Removes all other recipients 
   OR
-  $mb->to->add($mail);
+  $mb->to->add($mail); # Adds one more recipient (without removing the existing ones)
 
 =head1 DESCRIPTION
 
@@ -63,7 +65,13 @@ and an optional display name.
 
 =head3 new
 
- Mail::Builder::Address->new(EMAIL[,DISPLAY NAME]);
+ Mail::Builder::Address->new(EMAIL[,DISPLAY NAME[,COMMENT]]);
+ OR
+ Mail::Builder::Address->new({
+     email      => EMAIL,
+     [ name     => DISPLAY NAME, ]
+     [ comment  => COMMENT, ]
+ })
 
 Simple constructor
 
@@ -182,15 +190,15 @@ __PACKAGE__->meta->make_immutable;
 
 Display name
 
-=cut
-
-    
 =head3 email
 
 E-mail address. Will be checked with L<Email::Valid>
 
+Required
 
+=head3 comment
 
+Comment
 
 =head1 AUTHOR
 
