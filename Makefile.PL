@@ -26,12 +26,11 @@ requires        'HTML::TreeBuilder'     => '3.00';
 requires        'Text::Table'           => 0;
 requires        'Encode'                => 0;
 
+build_requires  'Test::Most'            => 0;
+
 author_requires 'Test::Pod'             => '1.14';
 author_requires 'Test::Pod::Coverage'   => '1.04';
 author_requires 'Test::Perl::Critic'    => 0;
-author_requires 'Module::Install::ReadmeMarkdownFromPod'=> 0;
-author_requires 'Module::Install::ReadmeFromPod'        => 0;
-
 author_requires 'Module::Install::ReadmeMarkdownFromPod'=> 0;
 author_requires 'Module::Install::ReadmeFromPod'        => 0;
 
