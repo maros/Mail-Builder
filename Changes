@@ -1,6 +1,6 @@
 Revision history for Perl module Mail::Builder
 
-2.00 Mon Sep 26 2010
+2.00 Wed Sep 29 2010
     - IMPROVED
         - Ported to Moose
         - Email::MessageID is generated each time 'build_message' is called
