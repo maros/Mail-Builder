@@ -1,6 +1,0 @@
-TODO list for Perl module Mail::Builder
-
-- Create inline images from data in memory (just like Attachment)
-- Provide more output methods for built email messages
-
-
