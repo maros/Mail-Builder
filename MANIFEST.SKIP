@@ -1,5 +1,6 @@
 # Avoid version control files.
 \bRCS\b
+\binc\b
 \bCVS\b
 ,v$
 \B\.svn\b
@@ -7,6 +8,7 @@
 \B.git$
 \B.swp$
 \B.git\b
+\B.gitignore$
 
 # Avoid Makemaker generated and utility files.
 \bMakefile$

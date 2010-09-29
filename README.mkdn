@@ -8,13 +8,14 @@ and inline images
   use Mail::Builder;
   
 
-  my $mail = Mail::Builder->new();
+  my $mail = Mail::Builder->new({
+      subject   => 'Party at Sam\'s place'
+  });
   
 
   $mail->from('mightypirate@meele-island.mq','Guybrush Threepwood');
   $mail->to->add('manuel.calavera@dod.mx','Manuel Calavera');
   $mail->cc->add('glotis@dod.mx');
-  $mail->subject('Party at Sam\'s place');
   $mail->htmltext('<h1>Party invitation</h1> ... ');
   $mail->attachment->add('direction_samandmax.pdf');
 
@@ -30,35 +31,35 @@ and inline images
 
 This module helps you to build correct e-mails with attachments, inline 
 images, multiple recipients, ... without having to worry about the underlying
-MIME stuff and encoding issues. Mail::Builder relies heavily on the 
-[MIME::Entity](http://search.cpan.org/search?mode=module&query=MIME::Entity) module from the [MIME::Tools](http://search.cpan.org/search?mode=module&query=MIME::Tools) distribution. 
+MIME and encoding issues. Mail::Builder relies heavily on the [MIME::Entity](http://search.cpan.org/perldoc?MIME::Entity) 
+module from the [MIME::Tools](http://search.cpan.org/perldoc?MIME::Tools) distribution. 
 
 The module will create the correct MIME bodies, headers and containers 
 (multipart/mixed, multipart/related, multipart/alternative) depending on if
 you use attachments, HTML text and inline images.
 
 Furthermore it will encode non-ascii header data and autogenerate plaintext
-messages (if you don't provide it yourself or disable the
-[autotext](http://search.cpan.org/search?mode=module&query=autotext) option) from html content.
+messages (if you don't provide it yourself or disable the [autotext](http://search.cpan.org/perldoc?autotext) option) 
+from html content.
 
 Addresses, attachments and inline images are handled as objects by helper
 classes:
 
-- * [Mail::Builder::Address](http://search.cpan.org/search?mode=module&query=Mail::Builder::Address)
+- * [Mail::Builder::Address](http://search.cpan.org/perldoc?Mail::Builder::Address)
 
 Stores an e-mail address and a display name.
 
-- * Attachments: [Mail::Builder::Attachment::File](http://search.cpan.org/search?mode=module&query=Mail::Builder::Attachment::File) and [Mail::Builder::Attachment::Data](http://search.cpan.org/search?mode=module&query=Mail::Builder::Attachment::Data)
+- * Attachments: [Mail::Builder::Attachment](http://search.cpan.org/perldoc?Mail::Builder::Attachment) 
 
-This classes manage attachments which can be created either from files in the
-filesystem or from data in memory.
+This class manages attachments which can be created either from files in the
+filesystem, filehandles or from data in memory.
 
-- * Inline images:[Mail::Builder::Image](http://search.cpan.org/search?mode=module&query=Mail::Builder::Image)
+- * Inline images:[Mail::Builder::Image](http://search.cpan.org/perldoc?Mail::Builder::Image)
 
 The Mail::Builder::Image class manages images that should be displayed in the 
 html e-mail body. (<img src="cid:imageid" />)
 
-- * [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List)
+- * [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List)
 
 Helper class for handling list of varoius items (recipient lists, attachment
 lists, image lists)
@@ -69,14 +70,14 @@ lists, image lists)
 
 ### new
 
-This is a simple constructor. It does not expect any parameters.
+This is a simple constructor. It accepts all defined acccessors as a HashRef.
 
 ## Public methods 
 
 ### stringify
 
 Returns the e-mail message as a string. This string can be passed to modules
-like [Email::Send](http://search.cpan.org/search?mode=module&query=Email::Send).
+like [Email::Send](http://search.cpan.org/perldoc?Email::Send).
 
 This method is just a shortcut to `$mb->build_message->stringify`
 
@@ -92,14 +93,21 @@ This method is just a shortcut to `$mb->build_message->stringify`
  # Stringify the entire message:
  print $entity->stringify; 
 
-Returns the e-mail message as a [MIME::Entity](http://search.cpan.org/search?mode=module&query=MIME::Entity) object. You can mess around 
+Returns the e-mail message as a [MIME::Entity](http://search.cpan.org/perldoc?MIME::Entity) object. You can mess around 
 with the object, change parts, ... as you wish. 
 
 Every time you call build_message the MIME::Entity object will be created, 
 which can take some time if you are sending bulk e-mails. In 
-order to increase the processing speed Mail::Builder::Attachment and
-Mail::Builder::Image entities will be cached and only rebuilt if something 
+order to increase the processing speed [Mail::Builder::Attachment](http://search.cpan.org/perldoc?Mail::Builder::Attachment) and
+[Mail::Builder::Image](http://search.cpan.org/perldoc?Mail::Builder::Image) entities will be cached and only rebuilt if something
 has changed.
+
+Each call to this method also chages the [messageid](http://search.cpan.org/perldoc?messageid).
+
+### purge_cache
+
+Emptys the attachment and image cache and removes the plaintext text if it has
+been autogenerated from html text. Also deletes the Message ID.
 
 ## Accessors 
 
@@ -108,18 +116,37 @@ has changed.
 These accessors set/return the from, sender and reply address as well as the
 returnpath for bounced messages.
 
- $obj->from(EMAIL[,NAME])
+ $obj->from(EMAIL[,NAME[,COMMENT]])
  OR
  $obj->from(Mail::Builder::Address)
+ OR
+ $obj->from(Email::Address)
+ OR
+ $obj->from({
+     email      => EMAIL,
+     [name      => NAME,]
+     [comment   => COMMENT,]
+ });
+ 
 
 This accessor always returns a Mail::Builder::Address object. 
 
-To change the attribute value you can either supply a [Mail::Builder::Address](http://search.cpan.org/search?mode=module&query=Mail::Builder::Address) 
-object or scalar parameters which will be passed to 
-`Mail::Builder::Address->new`. (email address, and an optional display
-name)
+To change the attribute value you can either supply
 
-### charset (DEPRECATED)
+- * a [Mail::Builder::Address](http://search.cpan.org/perldoc?Mail::Builder::Address) object
+
+- * an [Email::Address](http://search.cpan.org/perldoc?Email::Address) object
+
+- * a list containing an e-mail address and optionally name and comment
+
+- * a HashRef that will be passed to the [Mail::Builder::Address](http://search.cpan.org/perldoc?Mail::Builder::Address)
+constructor (Keys: email, name and comment)
+
+The presence of a value can be checked with the `has_from`, `has_reply`,
+`has_reply` and `has_sender` methods.
+
+Values can be cleared with the `clear_from`, `clear_reply`,
+`clear_reply` and `clear_sender` methods.
 
 ### to, cc, bcc
 
@@ -127,45 +154,67 @@ name)
  OR
  $obj->to(Mail::Builder::Address)
  OR
- $obj->to(EMAIL[,NAME])
+ $obj->to(Email::Address)
+ OR
+ $obj->to(EMAIL[,NAME[,COMMENT]])
+ OR
+ $obj->to({
+     email      => EMAIL,
+     [name      => NAME,]
+     [comment   => COMMENT,]
+ })
+ OR
+ $obj->to([ 
+    Mail::Builder::Address | Email::Address | HashRef | EMAIL
+ ])
 
-This accessor always returns a [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) object containing
-[Mail::Builder::Address](http://search.cpan.org/search?mode=module&query=Mail::Builder::Address) objects. 
+This accessor always returns a [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) object containing
+[Mail::Builder::Address](http://search.cpan.org/perldoc?Mail::Builder::Address) objects. 
 
 To alter the values you can either
 
-- * Manipulate the [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) object (add, remove, ...)
+- * Manipulate the [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) object (add, remove, ...)
 
-- * Supply a [Mail::Builder::Address](http://search.cpan.org/search?mode=module&query=Mail::Builder::Address) object. This will reset the current
+- * Supply a [Mail::Builder::Address](http://search.cpan.org/perldoc?Mail::Builder::Address) object. This will reset the current
 list and add the object to the list.
 
-- * Supply a [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) object. The list object replaces the 
+- * Supply a [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) object. The list object replaces the 
 old one if the list types match
 
-- * Scalar values will be passed to `Mail::Builder::Address->new`. 
-The returned object will be added to the object list.
+- * Scalar and HashRef values will be passed to 
+`Mail::Builder::Address->new`. The returned object will be added to the 
+object list.
 
-The [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) package provides some basic methods for 
+- * Supply a [Email::Address](http://search.cpan.org/perldoc?Email::Address) object. This will reset the current
+list, generate a [Mail::Builder::Address](http://search.cpan.org/perldoc?Mail::Builder::Address) object and add it to the list. 
+
+The [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) package provides some basic methods for 
 manipulating the list of recipients. e.g.
 
- $obj->to->add(EMAIL[,NAME])
+ $obj->to->add(EMAIL[,NAME[,COMMENT]])
  OR
  $obj->to->add(Mail::Builder::Address)
+ OR
+ $obj->to->add(Email::Address)
 
 ### language
 
-e-mail text language
+e-mail text language. Additionally the `has_language` and `clear_language`
+methods can be used to check respectively clear the value.
 
 ### messageid
 
-Message ID of the e-mail. Read only and available only after the 
-`build_message` or `stingify` methods have been called.
+Message ID of the e-mail as a  [Email::MessageID](http://search.cpan.org/perldoc?Email::MessageID) object. Read only and 
+available only after the `build_message` or `stingify` methods have been 
+called. Each call to `build_message` or `stingify` changes the message id.
 
 ### organization
  
 
 Accessor for the name of the sender's organisation. This header field is not
-part of the RFC 4021, however supported by many mailer applications.
+part of the RFC 4021, however supported by many mailer applications. 
+Additionally the `has_organization` and `clear_organization` methods can be 
+used to check or clear the value.
 
 ### priority
 
@@ -177,7 +226,8 @@ e-mail subject accessor. Must be specified.
 
 ### htmltext
 
-HTML mail body accessor.
+HTML mail body accessor. Additionally the `has_htmltext` and 
+`clear_htmltext` methods can be used to check or clear the value.
 
 ### mailer
 
@@ -185,13 +235,16 @@ Mailer name.
 
 ### plaintext
 
-Plaintext mail body accessor. This text will be autogenerated from htmltext
-if not provided by the user and the `autotext` option is not turned off. 
-Simple formating (e.g. <strong>, <em>) will be converted to pseudo formating.
+Plaintext mail body accessor. The `clear_plaintext` and `has_plaintext`
+methods can be used to check or clear the value.
+
+This text will be autogenerated from htmltext if not provided by the user 
+and the `autotext` option is not turned off. Simple formating (e.g. <strong>, 
+<em>) will be converted to pseudo formating.
 
 If you want to disable the autogeneration of plaintext parts set the 
-[autotext](http://search.cpan.org/search?mode=module&query=autotext) accessor to a false value. However be aware that most spam 
-enginges rate e-mail messages without a plaintext part as spam.
+[autotext](http://search.cpan.org/perldoc?autotext) accessor to a false value. However be aware that most spam 
+enginges mark html e-mail messages without a plaintext part as spam.
 
 The following html tags will be transformed to simple markup:
 
@@ -234,7 +287,11 @@ All list items will be indented with a tab and prefixed with a start
 
 - * TABLE, TR, TD, TH
 
-Tables are converted into text using [Text::Table](http://search.cpan.org/search?mode=module&query=Text::Table).
+Tables are converted into text using [Text::Table](http://search.cpan.org/perldoc?Text::Table).
+
+### autotext
+
+Enables the autogeneration of plaintext parts from HTML. Default TRUE.
 
 ### attachment
 
@@ -242,22 +299,39 @@ Tables are converted into text using [Text::Table](http://search.cpan.org/search
  OR
  $obj->attachment(Mail::Builder::Attachment)
  OR
- $obj->attachment(PATH[,NAME,MIME])
+ $obj->attachment(PATH | Path::Class::File | FH | IO::File | SCALARREF)
+ OR
+ $obj->attachment({
+     file       => PATH | Path::Class::File | FH | IO::File | SCALARREF,
+     [name      => NAME,]
+     [mimetype  => MIME,]
+ })
+ OR
+ $obj->attachment([
+    HashRef | Mail::Builder::Attachment | PATH | Path::Class::File | FH | IO::File | SCALARREF
+ ]);
  
 
 This accessor always returns a Mail::Builder::List object. If you supply
-a [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) the list will be replaced.
+a [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) the list will be replaced.
 
-If you pass a Mail::Builder::Attachment object or a scalar path (with an
-optional name an mime type) the current list will be reset and the new 
+If you pass a Mail::Builder::Attachment object, a filehandle, an IO::File 
+object, a [Path::Class::File](http://search.cpan.org/perldoc?Path::Class::File) object, a path or a scalar reference
+or a scalar path the current list will be reset and the new 
 attachment will be added.
 
-The [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) package provides some basic methods for 
+The [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) package provides some basic methods for 
 manipulating the list of attachments.
 
 If you want to append an additional attachment to the list use
 
- $obj->attachment->add(PATH[,NAME,MIME])
+ $obj->attachment->add(PATH | Path::Class::File | FH | IO::File | ScalarRef)
+ OR
+ $obj->attachment->add({
+     file       => PATH | Path::Class::File | FH | IO::File | ScalarRef,
+     [name      => NAME,]
+     [mimetype  => MIME,]
+ })
  OR
  $obj->attachment->add(Mail::Builder::Attachment)
 
@@ -267,21 +341,33 @@ If you want to append an additional attachment to the list use
  OR
  $obj->image(Mail::Builder::Image)
  OR
- $obj->image(PATH[,ID])
+ $obj->image(PATH | Path::Class::File | FH | IO::File | ScalarRef)
+ OR
+ $obj->attachment({
+     file       => PATH | Path::Class::File | FH | IO::File | ScalarRef,
+     [id        => ID,]
+     [mimetype  => MIME,]
+ })
+ OR
+ $obj->attachment([
+    HashRef | Mail::Builder::Image | PATH | Path::Class::File | FH | IO::File | ScalarRef
+ ]);
+ 
+
  
 
 This accessor always returns a Mail::Builder::List object. If you supply
-a [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) the list will be replaced.
+a [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) the list will be replaced.
 
 If you pass a Mail::Builder::Image object or a scalar path (with an
 optional id) the current list will be reset and the new image will be added. 
 
-The [Mail::Builder::List](http://search.cpan.org/search?mode=module&query=Mail::Builder::List) package provides some basic methods for 
+The [Mail::Builder::List](http://search.cpan.org/perldoc?Mail::Builder::List) package provides some basic methods for 
 manipulating the list of inline images.
 
 If you want to append an additional attachment to the list use
 
- $obj->image->add(PATH[,ID])
+ $obj->image->add(PATH | Path::Class::File | FH | IO::File | ScalarRef)
  OR
  $obj->image->add(Mail::Builder::Image)
 
@@ -297,8 +383,7 @@ Only jpg, gif and png images may be added as inline images.
 
 If you want to send multiple e-mail messages from one Mail::Builder object
 (e.g. a solicited mailing to multiple recipients) you have to pay special
-attention, or else you might end up with mixed contents and growing 
-recipients lists.
+attention, or else you might end up with growing recipients lists.
 
  # Example for a mass mailing
  foreach my $recipient (@recipients) {
@@ -308,11 +393,6 @@ recipients lists.
 
      # Alternatively you could use $mb->to($recipient); which has the
      # same effect as the two previous commands. Same applies to 'cc' and 'bcc'
-     
-
-     $mb->plaintext(undef);
-     # Reset plaintext, otherwise it will not be autogenerated from htmltext
-     # after the first run
      
 
      $mb->htmltext(qq[<h1>Hello $recipient!</h1> Text, yadda yadda! ]);
@@ -332,15 +412,19 @@ From 1.10 on Mail::Builder only supports utf-8 charsets for mails. Supporting
 multiple encodings turned out to be error prone and not necessary since all
 modern mail clients support utf-8.
 
+Starting with Mail::Builder 2.0 the Mail::Builder::Attachment::* and
+Mail::Builder::Image::* classes have been deprecated. Use the base classes 
+Mail::Builder::Attachment and Mail::Builder::Image instead.
+
 # CAVEATS 
 
 Watch out when sending Mail::Builder generated mails with 
-[Email::Send::SMTP](http://search.cpan.org/search?mode=module&query=Email::Send::SMTP): The 'Return-Path' headers are ignored by the MTA 
-since [Email::Send::SMTP](http://search.cpan.org/search?mode=module&query=Email::Send::SMTP) uses the 'From' header for SMTP handshake. Postfix
+[Email::Send::SMTP](http://search.cpan.org/perldoc?Email::Send::SMTP): The 'Return-Path' headers are ignored by the MTA 
+since [Email::Send::SMTP](http://search.cpan.org/perldoc?Email::Send::SMTP) uses the 'From' header for SMTP handshake. Postfix
 (any maybe some other MTAs) overwrites the 'Return-Path' field in the data
 with the e-mail used in the handshake ('From'). The behaviour of 
-[Email::Send::SMTP](http://search.cpan.org/search?mode=module&query=Email::Send::SMTP) may however be modified by replacing the 
-`get_env_sender` and `get_env_recipients` methods. See [Email::Send::SMTP](http://search.cpan.org/search?mode=module&query=Email::Send::SMTP)
+[Email::Send::SMTP](http://search.cpan.org/perldoc?Email::Send::SMTP) may however be modified by replacing the 
+`get_env_sender` and `get_env_recipients` methods. See [Email::Send::SMTP](http://search.cpan.org/perldoc?Email::Send::SMTP)
 for more details.
 
 # SUPPORT
@@ -367,7 +451,7 @@ Domm (<http://search.cpan.org/~domm/>).
 
 # COPYRIGHT
 
-Mail::Builder is Copyright (c) 2007,2008 Maroš Kollár.
+Mail::Builder is Copyright (c) 2007-2010 Maroš Kollár.
 
 This program is free software; you can redistribute it and/or modify it under 
 the same terms as Perl itself as long it is not used for sending 
@@ -380,12 +464,11 @@ LICENSE file included with this module.
 
 # SEE ALSO
 
-The [Mime::Entity](http://search.cpan.org/search?mode=module&query=Mime::Entity) module in the [Mime::Tools](http://search.cpan.org/search?mode=module&query=Mime::Tools) distribution.
+The [Mime::Entity](http://search.cpan.org/perldoc?Mime::Entity) module in the [Mime::Tools](http://search.cpan.org/perldoc?Mime::Tools) distribution.
 
-Furthermore these modules are bing used for various tasks:
+Furthermore these modules are being used for various tasks:
 
-- * [Email::Valid](http://search.cpan.org/search?mode=module&query=Email::Valid) for validating e-mail addresses
-=item * [HTML::TreeBuilder](http://search.cpan.org/search?mode=module&query=HTML::TreeBuilder) for parsing html and generating plaintext
-=item * [MIME::Types](http://search.cpan.org/search?mode=module&query=MIME::Types) for guessing attachment mime types
-=item * [Email::MessageID](http://search.cpan.org/search?mode=module&query=Email::MessageID) for generating unique message IDs
-=item * [Encode](http://search.cpan.org/search?mode=module&query=Encode) for encoding issues
+- * [Email::Valid](http://search.cpan.org/perldoc?Email::Valid) for validating e-mail addresses
+=item * [Email::MessageID](http://search.cpan.org/perldoc?Email::MessageID) for generating unique message IDs
+=item * [HTML::TreeBuilder](http://search.cpan.org/perldoc?HTML::TreeBuilder) for parsing html and generating plaintext
+=item * [MIME::Types](http://search.cpan.org/perldoc?MIME::Types) for guessing attachment mime types

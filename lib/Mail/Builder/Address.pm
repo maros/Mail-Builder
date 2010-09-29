@@ -1,14 +1,34 @@
-# ================================================================
+# ============================================================================
 package Mail::Builder::Address;
-# ================================================================
-use strict;
-use warnings;
+# ============================================================================
+
+use Moose;
+use Mail::Builder::Role::TypeConstraints;
 
 use Carp;
 use Encode qw/encode decode/; 
+
 use Email::Valid;
 
 our $VERSION = $Mail::Builder::VERSION;
+
+has 'email' => (
+    is              => 'rw',
+    isa             => 'Mail::Builder::Type::EmailAddress',
+    required        => 1,
+);
+
+has 'name' => (
+    is              => 'rw',
+    isa             => 'Str',
+    predicate       => 'has_name',
+);
+
+has 'comment' => (
+    is              => 'rw',
+    isa             => 'Str',
+    predicate       => 'has_comment',
+);
 
 =encoding utf8
 
@@ -49,17 +69,48 @@ Simple constructor
 
 =cut
 
-sub new {
+
+around BUILDARGS => sub {
+    my $orig = shift;
     my $class = shift;
-    my $obj = bless {
-        email   => undef,
-        name    => undef,
-    },$class;
+    my @args = @_;
     
-    $obj->email(shift);
-    $obj->name(shift) if (@_);
+    my $args_length = scalar @args;
+    my %params;
     
-    return $obj;
+    if ($args_length == 1) {
+        if (blessed $args[0] && $args[0]->isa('Email::Address')) {
+            $params{email} = $args[0]->address;
+            $params{name} = $args[0]->phrase;
+            $params{comment} = $args[0]->comment;
+        } elsif (ref $args[0] eq 'HASH') {
+            return $class->$orig($args[0]);
+        } else {
+            $params{email} = $args[0];
+        }
+    } elsif ($args_length == 2
+        && $args[0] ne 'email') {
+        $params{email} = $args[0];
+        $params{name} = $args[1];
+    } elsif ($args_length == 3) {
+        $params{email} = $args[0];
+        $params{name} = $args[1];
+        $params{comment} = $args[2];
+    } else {
+        return $class->$orig(@args);
+    }
+    
+    delete $params{name}
+        unless defined $params{name};
+    delete $params{comment}
+        unless defined $params{comment};
+    
+    return $class->$orig(\%params);
+};
+
+sub address {
+    my $self = shift;
+    return $self->email(@_);
 }
 
 =head2 Public Methods
@@ -71,15 +122,19 @@ Prints the address as required for creating the e-mail header.
 =cut
 
 sub serialize {
-    my $obj = shift;
+    my ($self) = @_;
     
-    return undef 
-        unless $obj->{email};
-        
-    return $obj->{email}
-        unless $obj->{'name'};
-          
-    return '"'.encode('MIME-Header', $obj->{'name'}).'" <'.$obj->{email}.'>';
+    return $self->email
+        unless $self->has_name;
+    
+    my $name = $self->name;
+    $name =~ s/"/\\"/g;
+    
+    my $return = sprintf '"%s" <%s>',encode('MIME-Header', $name),$self->email;
+    $return .= ' '.$self->comment
+        if $self->has_comment;
+    
+    return $return;
 }
 
 =head3 compare
@@ -98,31 +153,28 @@ scalar value representing the e-mail address.
 =cut
 
 sub compare {
-    my $obj = shift;
-    my $compare = shift;
+    my ($self,$compare) = @_;
     
-    return 0 unless ($compare);
+    return 0 
+        unless (defined $compare);
     
-    if (ref($compare)) {
+    if (blessed($compare)) {
         return 0 unless $compare->isa(__PACKAGE__);
-        return ($compare->{email} eq $obj->{email}) ? 1:0;
+        return (uc($self->email) eq uc($compare->email)) ? 1:0;
     } else {
-        return ($compare eq $obj->{email}) ? 1:0;  
+        return ( uc($compare) eq uc($self->{email}) ) ? 1:0;
     }
 }
 
-=head3 empty
-
-Deletes the current address/name values. Leaves an empy object
-
-=cut
-
 sub empty {
-    my $obj = shift;
-    undef $obj->{'name'};
-    undef $obj->{'email'};
+    croak('DEPRECATED')
 }
 
+no Moose;
+__PACKAGE__->meta->make_immutable;
+
+
+1;
 
 =head2 Accessors
 
@@ -132,37 +184,12 @@ Display name
 
 =cut
 
-sub name {
-    my $obj = shift;
-    if(@_) {
-        $obj->{'name'} = shift;
-        return unless $obj->{'name'};
-        $obj->{'name'} =~ s/\\/\\\\/g;
-        $obj->{'name'} =~ s/"/\\"/g;
-    }
-    return $obj->{'name'};
-}
     
 =head3 email
 
 E-mail address. Will be checked with L<Email::Valid>
 
-=cut
 
-sub email {
-    my $obj = shift;
-    if(@_) {
-        my $email_address = shift;
-        croak(q[e-mail address missing]) unless ($email_address);
-        croak(q[e-mail address is not valid]) unless (Email::Valid->address($email_address));
-        $obj->{'email'} = $email_address;
-    }
-    return $obj->{'email'};
-}
-
-1;
-
-__END__
 
 
 =head1 AUTHOR
