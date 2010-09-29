@@ -1,6 +1,6 @@
 Revision history for Perl module Mail::Builder
 
-2.00 Wed Sep 29 2010
+2.00,2.01 Wed Sep 29 2010
     - IMPROVED
         - Ported to Moose
         - Email::MessageID is generated each time 'build_message' is called
@@ -19,7 +19,12 @@ Revision history for Perl module Mail::Builder
         - Depreated Mail::Builder::Attachment::Data
         - Renamed 'has' method in Mail::Builder::List to 'contains'
 
-1.13 Sat Mar 6 2010
+1.16 Sat Mar 13 2010
+    - CORRECTED
+        - Fixed test failiures on some hosts
+        - Fixed bug on perl 5.8
+
+1.13,1.14,1.15 Sat Mar 6 2010
     - IMPROVED
         - Make Mail::Builder::Image an abstract class; 
         - Add Mail::Builder::Image::Data and Mail::Builder::Image::File classes
