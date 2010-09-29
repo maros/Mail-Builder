@@ -15,7 +15,9 @@ subtype 'Mail::Builder::Type::Content'
     => as 'ScalarRef';
 
 subtype 'Mail::Builder::Type::File'
-    => as class_type('Path::Class::File');
+    => as class_type('Path::Class::File')
+    => where { -f $_ && -r _ }
+    => message { "Could not open file '$_'" };
 
 subtype 'Mail::Builder::Type::Fh'
     => as class_type('IO::File');
