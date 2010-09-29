@@ -45,4 +45,4 @@
 #   Mac OSX SMB mount metadata files
 \B\._
 
-Mail-Builder-*.tar.gz
+Mail-Builder-\d\.\d+\.tar\.gz

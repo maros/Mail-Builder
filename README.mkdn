@@ -469,6 +469,9 @@ The [Mime::Entity](http://search.cpan.org/perldoc?Mime::Entity) module in the [M
 Furthermore these modules are being used for various tasks:
 
 - * [Email::Valid](http://search.cpan.org/perldoc?Email::Valid) for validating e-mail addresses
-=item * [Email::MessageID](http://search.cpan.org/perldoc?Email::MessageID) for generating unique message IDs
-=item * [HTML::TreeBuilder](http://search.cpan.org/perldoc?HTML::TreeBuilder) for parsing html and generating plaintext
-=item * [MIME::Types](http://search.cpan.org/perldoc?MIME::Types) for guessing attachment mime types
+
+- * [Email::MessageID](http://search.cpan.org/perldoc?Email::MessageID) for generating unique message IDs
+
+- * [HTML::TreeBuilder](http://search.cpan.org/perldoc?HTML::TreeBuilder) for parsing html and generating plaintext
+
+- * [MIME::Types](http://search.cpan.org/perldoc?MIME::Types) for guessing attachment mime types

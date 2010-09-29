@@ -425,8 +425,11 @@ SEE ALSO
 
     Furthermore these modules are being used for various tasks:
 
-    *   Email::Valid for validating e-mail addresses =item *
-        Email::MessageID for generating unique message IDs =item *
-        HTML::TreeBuilder for parsing html and generating plaintext =item *
-        MIME::Types for guessing attachment mime types
+    *   Email::Valid for validating e-mail addresses
+
+    *   Email::MessageID for generating unique message IDs
+
+    *   HTML::TreeBuilder for parsing html and generating plaintext
+
+    *   MIME::Types for guessing attachment mime types
 
