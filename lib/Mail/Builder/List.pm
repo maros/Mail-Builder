@@ -187,10 +187,11 @@ sub add {
 sub item {
     my ($self,$index) = @_;
     
-    $index //= 0;
+    $index = 0
+        unless defined $index && $index =~ m/^\d+$/;
     
     return 
-        unless ($index =~ /^\d+$/ 
+        unless ($index =~ m/^\d+$/ 
         && defined $self->list->[$index]);
     
     return $self->list->[$index];
