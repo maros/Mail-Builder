@@ -22,6 +22,7 @@ requires        'Email::MessageID'      => 0;
 requires        'Moose'                 => '0.94';
 requires        'version'               => 0;
 
+requires        'Path::Class'           => 0;
 requires        'HTML::TreeBuilder'     => '3.00';
 requires        'Text::Table'           => 0;
 requires        'Encode'                => 0;

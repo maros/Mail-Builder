@@ -6,6 +6,7 @@ use strict;
 use warnings;
 
 use Moose::Util::TypeConstraints;
+use Path::Class::File;
 
 our $VERSION = $Mail::Builder::VERSION;
 
