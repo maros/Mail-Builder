@@ -10,6 +10,11 @@ use Path::Class::File;
 
 our $VERSION = $Mail::Builder::VERSION;
 
+eval {
+    Class::MOP::load_class('Net::Domain::TLD');
+};
+our $TLDCHECK = ($@) ? 0:1;
+
 # Simple types
 
 subtype 'Mail::Builder::Type::Content'
@@ -37,10 +42,10 @@ coerce 'Mail::Builder::Type::File'
 
 subtype 'Mail::Builder::Type::EmailAddress'
     => as 'Str'
-    => where { 
+    => where {
         Email::Valid->address( 
             -address => $_,
-            -tldcheck => 1 
+            -tldcheck => $TLDCHECK 
         );
     }
     => message { "'$_' is not a valid e-mail address" };
