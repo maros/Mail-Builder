@@ -1,5 +1,10 @@
 Revision history for Perl module Mail::Builder
 
+2.03 Tue Oct 5 2010
+    - CORRECTED
+        - Fix windows test failiures
+        - Fix test failiures due to missing Net::Domain::TLD
+
 2.02 Fri Oct 1 2010
     - CORRECTED
         - Add missing dependeny
