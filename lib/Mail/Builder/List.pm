@@ -20,6 +20,11 @@ has 'list' => (
     isa         => 'ArrayRef[Object]',
     default     => sub { return [] },
     trigger     => \&_check_list,
+    traits      => ['Array'],
+    handles     => {
+        length      => 'count',
+        #all         => 'elements',
+    },
 );
 
 sub _check_list {
@@ -95,12 +100,6 @@ sub convert {
     );
 }
 
-sub length {
-    my ($self) = @_;
-    my $list = $self->list;
-    return scalar @$list;
-}
-
 sub join {
     my ($self,$join_string) = @_;
     
@@ -135,7 +134,6 @@ sub reset {
 
 sub push {
     my ($self) = @_;
-    
     return $self->add(@_);
 }
 
@@ -188,7 +186,8 @@ sub item {
     my ($self,$index) = @_;
     
     $index = 0
-        unless defined $index && $index =~ m/^\d+$/;
+        unless defined $index 
+        && $index =~ m/^\d+$/;
     
     return 
         unless ($index =~ m/^\d+$/ 
