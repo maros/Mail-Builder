@@ -10,7 +10,7 @@ use Carp;
 our $VERSION = $Mail::Builder::VERSION;
 
 before BUILDARGS => sub{
-    carp '<Mail::Builder::Attachment::Data> is deprecated, use <Mail::Builder::Attachment> instead';
+    carp '<Mail::Builder::Attachment::File> is deprecated, use <Mail::Builder::Attachment> instead';
 };
 
 no Moose;
