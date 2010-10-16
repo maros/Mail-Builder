@@ -1,5 +1,14 @@
 Revision history for Perl module Mail::Builder
 
+2.04 Sat Oct 16 2010
+    - CORRECTED
+        - Fix windows test failiures (again)
+        - Fix test failiures due to low Email::MessageID version
+        - Fix documentation typos
+    - IMPROVED
+        - Better examples
+        - Use Moose native traits where possible
+
 2.03 Tue Oct 5 2010
     - CORRECTED
         - Fix windows test failiures
