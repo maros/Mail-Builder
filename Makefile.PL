@@ -17,7 +17,7 @@ requires        'MIME::Tools'           => '5.4';
 requires        'MIME::Types'           => 0;
 requires        'Email::Valid'          => 0;
 requires        'Email::Address'        => 0;
-requires        'Email::MessageID'      => 0;
+requires        'Email::MessageID'      => '1.400';
 
 requires        'Moose'                 => '0.94';
 requires        'version'               => 0;
