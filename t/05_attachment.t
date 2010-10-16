@@ -27,11 +27,11 @@ is($attachment2->filecontent,'This is a test file for the attachment test!','Con
 is($attachment3->filecontent,'This is a test file for the attachment test!','Content ok');
 is($attachment4->filecontent,'File content','Content ok');
 
-like($attachment1->filename,qr't[\///]testfile.txt','Filename ok');
-like($attachment2->filename,qr't[\///]testfile.txt','Filename ok');
+like($attachment1->filename,qr't[\\\/]testfile\.txt$','Filename ok');
+like($attachment2->filename,qr't[\\\/]testfile\.txt$','Filename ok');
 is($attachment3->filename,undef,'Filename missing ok');
 is($attachment4->filename,undef,'Filename missing ok');
-like($attachment5->filename,qr't[\///]testfile.pdf','Filename ok');
+like($attachment5->filename,qr't[\\\/]testfile\.pdf$','Filename ok');
 
 isa_ok($attachment1->filename,'Path::Class::File');
 isa_ok($attachment2->filename,'Path::Class::File');

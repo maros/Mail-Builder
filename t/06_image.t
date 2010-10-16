@@ -20,10 +20,10 @@ isa_ok ($image2, 'Mail::Builder::Image');
 isa_ok ($image3, 'Mail::Builder::Image');
 isa_ok ($image4, 'Mail::Builder::Image');
 
-like($image1->filename,qr't[\///]testfile.gif','Filename ok');
-like($image2->filename,qr't[\///]testfile.gif','Filename ok');
+like($image1->filename,qr't[\\\/]testfile\.gif$','Filename ok');
+like($image2->filename,qr't[\\\/]testfile\.gif$','Filename ok');
 is($image3->filename,undef,'Filename missing ok');
-like($image4->filename,qr't[\///]testfile.gif','Filename missing ok');
+like($image4->filename,qr't[\\\/]testfile\.gif$','Filename missing ok');
 
 isa_ok($image1->filename,'Path::Class::File');
 isa_ok($image2->filename,'Path::Class::File');
