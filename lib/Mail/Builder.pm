@@ -508,15 +508,19 @@ and inline images
   use Mail::Builder;
   
   my $mail = Mail::Builder->new({
-      subject   => 'Party at Sam\'s place'
+      subject   => 'Party at Sam\'s place',
+      from      => 'mightypirate@meele-island.mq',
+      htmltext  => '<h1>Party invitation</h1> ... ',
+      attachment=> '/path/to/direction_samandmax.pdf',
   });
   
-  $mail->from('mightypirate@meele-island.mq','Guybrush Threepwood');
-  $mail->to->add('manuel.calavera@dod.mx','Manuel Calavera');
-  $mail->cc->add('glotis@dod.mx');
-  $mail->htmltext('<h1>Party invitation</h1> ... ');
-  $mail->attachment->add('direction_samandmax.pdf');
-
+  # Alter from name
+  $mail->from->name('Guybrush Threepwood');
+  # Set recipent
+  $mail->to('manuel.calavera@dod.mx','Manuel Calavera');
+  # Add one more recipient
+  $mail->to->add('glotis@dod.mx');
+  
   # Send it with your favourite module (e.g. Email::Send)
   my $mailer = Email::Send->new({mailer => 'Sendmail'})->send($mail->stringify);
   
@@ -571,7 +575,8 @@ attachment lists and image lists)
 
 =head3 new
 
-This is a simple constructor. It accepts all defined acccessors as a HashRef.
+This is a simple constructor. It accepts all defined acccessors as a Hash orr 
+HashRef.
 
 =head2 Public methods 
 
@@ -945,13 +950,6 @@ your report as I make changes.
     CPAN ID: MAROS
     maros [at] k-1.com
     http://www.k-1.com
-
-=head1 ACKNOWLEDGEMENTS 
-
-This module was written for my old employer the Centre for Social Innovation
-L<http://www.zsi.at> and is currently advanced by Revdev 
-L<http://www.revdev.at>, a nice litte software company I run with Koki and 
-Domm (L<http://search.cpan.org/~domm/>).
 
 =head1 COPYRIGHT
 
