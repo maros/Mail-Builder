@@ -102,6 +102,7 @@ foreach my $field (qw(from reply returnpath sender)) {
     has $field => (
         is              => 'rw',
         isa             => 'Mail::Builder::Type::Address',
+        coerce          => 1,
         predicate       => 'has_'.$field,
         clearer         => 'clear'.$field,
     );
