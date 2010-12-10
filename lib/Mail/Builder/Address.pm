@@ -93,6 +93,10 @@ around BUILDARGS => sub {
             $params{comment} = $args[0]->comment;
         } elsif (ref $args[0] eq 'HASH') {
             return $class->$orig($args[0]);
+        } elsif (ref $args[0] eq 'ARRAY') {
+            $params{email} = $args[0]->[0];
+            $params{name} = $args[0]->[1];
+            $params{comment} = $args[0]->[2];
         } else {
             $params{email} = $args[0];
         }
@@ -109,9 +113,9 @@ around BUILDARGS => sub {
     }
     
     delete $params{name}
-        unless defined $params{name};
+        unless defined $params{name} && $params{name} !~ /^\s*$/;
     delete $params{comment}
-        unless defined $params{comment};
+        unless defined $params{comment} && $params{comment} !~ /^\s*$/;
     
     return $class->$orig(\%params);
 };
