@@ -6,7 +6,7 @@ use Moose;
 
 use version;
 our $AUTHORITY = 'cpan:MAROS';
-our $VERSION = version->new("2.04");
+our $VERSION = version->new("2.05");
 
 use Mail::Builder::Role::TypeConstraints;
 

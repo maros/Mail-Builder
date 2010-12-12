@@ -35,6 +35,7 @@ t/04_list.t
 t/05_attachment.t
 t/06_image.t
 t/07_builder_integration.t
+t/08_interface.t
 t/testfile.gif
 t/testfile.pdf
 t/testfile.txt

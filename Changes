@@ -1,5 +1,9 @@
 Revision history for Perl module Mail::Builder
 
+2.05 Sun Dec 12 2010
+    - CORRECTED
+        - Fix to/cc/bcc accessors and constructor options
+
 2.04 Sat Oct 16 2010
     - CORRECTED
         - Fix windows test failiures (again)
