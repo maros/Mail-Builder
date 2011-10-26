@@ -4,9 +4,8 @@ package Mail::Builder;
 
 use Moose;
 
-use version;
+our $VERSION = "2.06";
 our $AUTHORITY = 'cpan:MAROS';
-our $VERSION = version->new("2.05");
 
 use Mail::Builder::TypeConstraints;
 

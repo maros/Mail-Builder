@@ -18,9 +18,9 @@ requires        'MIME::Types'           => 0;
 requires        'Email::Valid'          => 0;
 requires        'Email::Address'        => 0;
 requires        'Email::MessageID'      => '1.400';
+requires        'Email::Date::Format'   => 0;
 
 requires        'Moose'                 => '0.94';
-requires        'version'               => 0;
 
 requires        'Path::Class'           => 0;
 requires        'HTML::TreeBuilder'     => '3.00';
@@ -34,6 +34,7 @@ author_requires 'Test::Pod::Coverage'   => '1.04';
 author_requires 'Test::Perl::Critic'    => 0;
 author_requires 'Module::Install::ReadmeMarkdownFromPod'=> 0;
 author_requires 'Module::Install::ReadmeFromPod'        => 0;
+
 
 repository 'git://github.com/maros/Mail-Builder.git';
 
