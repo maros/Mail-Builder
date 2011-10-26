@@ -8,7 +8,7 @@ use version;
 our $AUTHORITY = 'cpan:MAROS';
 our $VERSION = version->new("2.05");
 
-use Mail::Builder::Role::TypeConstraints;
+use Mail::Builder::TypeConstraints;
 
 use Carp;
 

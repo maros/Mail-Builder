@@ -1,5 +1,5 @@
 # ============================================================================
-package Mail::Builder::Role::TypeConstraints;
+package Mail::Builder::TypeConstraints;
 # ============================================================================
 
 use strict;
@@ -14,9 +14,42 @@ our $VERSION = $Mail::Builder::VERSION;
 eval {
     Class::MOP::load_class('Net::Domain::TLD');
 };
+
 our $TLDCHECK = ($@) ? 0:1;
+our $TIMEPART_RE = qr/[0-5]?\d/;
 
 # Simple types
+
+subtype 'Mail::Builder::Type::Date'
+    => as 'Str'
+    => where { m/^
+        ( Sun | Mon | Tue | Wed | Thu | Fri | Sat )
+        ,
+        \s
+        ( 3[01] | [12] \d | 0? [1-9] )
+        \s
+        ( Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec )
+        \s
+        \d{4}
+        \s
+        ( 2[0-3] | 1\d | 0?\d )
+        :
+        $TIMEPART_RE
+        :
+        $TIMEPART_RE
+        \s
+        [+-]\d{4}
+    $/xi };
+
+subtype 'Mail::Builder::Type::DateTime'
+    => as Object 
+    => where { $_->isa('DateTime') };
+
+coerce 'Mail::Builder::Type::Date'
+    => from 'Mail::Builder::Type::DateTime'
+    => via { 
+        return $_->clone->set_locale('en')->format_cldr("ccc, dd MMM yyyy hh:mm:ss ZZZ")
+    };
 
 subtype 'Mail::Builder::Type::Content'
     => as 'ScalarRef';

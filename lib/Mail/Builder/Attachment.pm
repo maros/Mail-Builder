@@ -4,7 +4,7 @@ package Mail::Builder::Attachment;
 
 use Moose;
 with qw(Mail::Builder::Role::File);
-use Mail::Builder::Role::TypeConstraints;
+use Mail::Builder::TypeConstraints;
 
 use MIME::Types;
 use Carp;

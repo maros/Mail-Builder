@@ -4,7 +4,7 @@ package Mail::Builder::Image;
 
 use Moose;
 with qw(Mail::Builder::Role::File);
-use Mail::Builder::Role::TypeConstraints;
+use Mail::Builder::TypeConstraints;
 
 use Carp;
 

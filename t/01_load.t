@@ -15,5 +15,5 @@ use_ok( 'Mail::Builder::Attachment::File' );
 use_ok( 'Mail::Builder::Attachment::Data' ); 
 use_ok( 'Mail::Builder::Address' ); 
 use_ok( 'Mail::Builder::Role::File' );
-use_ok( 'Mail::Builder::Role::TypeConstraints' );
+use_ok( 'Mail::Builder::TypeConstraints' );
  

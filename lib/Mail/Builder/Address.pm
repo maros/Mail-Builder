@@ -3,7 +3,7 @@ package Mail::Builder::Address;
 # ============================================================================
 
 use Moose;
-use Mail::Builder::Role::TypeConstraints;
+use Mail::Builder::TypeConstraints;
 
 use Carp;
 use Encode qw/encode decode/; 
