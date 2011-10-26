@@ -2,7 +2,7 @@
 
 # t/02_basic.t - generate basic email
 
-use Test::Most tests => 15 + 1;
+use Test::Most tests => 16 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;
@@ -36,6 +36,7 @@ my $mime = $mailbuilder->build_message();
 isa_ok($mime,'MIME::Entity');
 
 isa_ok($mime->head,'MIME::Head');
+like($mime->head->get('Date'),qr/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat),\s\d/,'Date ok');
 is($mime->head->get('To'),'to@test.com'."\n",'Recipient in MIME object ok');
 is($mime->head->get('From'),'"tester" <from@test.com>'."\n",'From in MIME object ok');
 is($mime->head->get('X-Priority'),'3'."\n",'Priority in MIME object ok');

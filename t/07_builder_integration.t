@@ -2,7 +2,7 @@
 
 # t/07_builder_integration.t - integration tests
 
-use Test::Most tests => 64 + 1;
+use Test::Most tests => 66 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;
@@ -58,6 +58,9 @@ lives_ok {
     
     ok($object->subject('subject'),'Set subject ok');
     is($object->subject,'subject','Subject ok');
+    
+    my $test_date = 'Wed, 26 Oct 2011 14:52:53 +0200';
+    ok($object->date($test_date),'Set date ok');
     
     throws_ok {
         $object->build_message();
@@ -117,6 +120,7 @@ lives_ok {
     like($object->{'plaintext'},qr/Test21\s{8}Test23/,'Plaintext paragraph ok');
     
     isa_ok($mime1->head,'MIME::Head');
+    is($mime1->head->get('Date'),$test_date."\n",'Date header ok');
     is($mime1->head->get('To'),'recipient1@test.com'."\n",'Recipient header ok');
     is($mime1->head->get('Cc'),'cc1@test.com,cc2@test.com'."\n",'CC header ok');
     is($mime1->head->get('Sender'),'"boss" <sender@test.com>'."\n",'Sender header ok');

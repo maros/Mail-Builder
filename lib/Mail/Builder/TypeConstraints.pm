@@ -43,7 +43,12 @@ subtype 'Mail::Builder::Type::Date'
 
 subtype 'Mail::Builder::Type::DateTime'
     => as Object 
-    => where { $_->isa('DateTime') };
+    => where { $_->isa('DateTime') }
+    => as Int 
+    => where { 
+        require Email::Date::Format;
+        Email::Date::Format::email_date($_);
+    };
 
 coerce 'Mail::Builder::Type::Date'
     => from 'Mail::Builder::Type::DateTime'
