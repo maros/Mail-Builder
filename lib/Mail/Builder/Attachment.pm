@@ -204,7 +204,7 @@ the current filename will be used.
 
 =head3 mimetype
 
-Mime type of the attachment. Valid types are
+Mime type of the attachment.
 
 If not provided the mime type is determined by analyzing the filename 
 extension.
@@ -217,7 +217,7 @@ Attachment file. Can be a
 
 =item * Path (or a Path::Class::File object)
 
-=item * Filehandle (or a IO::File object)
+=item * Filehandle (or an IO::File object)
 
 =item * ScalarRef containing the attachment data
 

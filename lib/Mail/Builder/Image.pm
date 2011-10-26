@@ -230,7 +230,7 @@ Image. Can be a
 
 =item * Path (or a Path::Class::File object)
 
-=item * Filehandle (or a IO::File object)
+=item * Filehandle (or an IO::File object)
 
 =item * ScalarRef containing the image data
 
