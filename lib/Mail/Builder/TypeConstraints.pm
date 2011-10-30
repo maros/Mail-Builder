@@ -14,8 +14,10 @@ our $VERSION = $Mail::Builder::VERSION;
 eval {
     Class::MOP::load_class('Net::Domain::TLD');
 };
+our %EMAILVALID = (
+    'tldcheck'     => ($@ ? 0:1),
+);
 
-our $TLDCHECK = ($@) ? 0:1;
 our $TIMEPART_RE = qr/[0-5]?\d/;
 
 # Simple types
@@ -82,9 +84,14 @@ coerce 'Mail::Builder::Type::File'
 subtype 'Mail::Builder::Type::EmailAddress'
     => as 'Str'
     => where {
-        Email::Valid->address( 
+        my %params;
+        foreach my $param (qw(rfc822 local_rules fqdn mxcheck tldcheck)) {
+            $params{'-'.$param} = $EMAILVALID{$param}
+                if defined $EMAILVALID{$param};
+        }
+        Email::Valid->address(
+            %params,
             -address => $_,
-            -tldcheck => $TLDCHECK 
         );
     }
     => message { "'$_' is not a valid e-mail address" };

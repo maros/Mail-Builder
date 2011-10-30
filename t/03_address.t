@@ -2,12 +2,13 @@
 
 # t/03_address.t - check module for address handling
 
-use Test::Most tests => 22 + 1;
+use Test::Most tests => 28 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;
+use Email::Address;
 
-my ($address1,$address2,$address3,$address4);
+my ($address1,$address2,$address3,$address4,$address5,$address6);
 
 # Address 1
 ok($address1 = Mail::Builder::Address->new('test@test.com'),'Create simple object');
@@ -40,3 +41,17 @@ is ($address4->email, 'test@test.com','Check email address');
 
 # Broken Address 1
 throws_ok { Mail::Builder::Address->new( email => 'messed.up.@-address.comx' ) } qr/is not a valid e-mail address/,'Exception ok';
+
+# Local Address 1
+no warnings 'once';
+$Mail::Builder::TypeConstraints::EMAILVALID{fqdn} = 0;
+$Mail::Builder::TypeConstraints::EMAILVALID{tldcheck} = 0;
+ok($address5 = Mail::Builder::Address->new( email => 'test@localhost' ),'Create local address');
+isa_ok ($address5, 'Mail::Builder::Address');
+is ($address5->email, 'test@localhost','Check email address');
+
+# From Email::Address 1
+my $email_address = Email::Address->new('Justin Testing', 'test@test.com');
+ok($address6 = Mail::Builder::Address->new($email_address ),'Create address from Email::Address');
+isa_ok ($address6, 'Mail::Builder::Address');
+is ($address6->email, 'test@test.com','Check email address');

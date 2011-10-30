@@ -72,6 +72,9 @@ and an optional display name.
      [ name     => DISPLAY NAME, ]
      [ comment  => COMMENT, ]
  })
+ OR 
+ my $email = Email::Address->parse(...);
+ Mail::Builder::Address->new($email);
 
 Simple constructor
 
@@ -197,6 +200,13 @@ Display name
 =head3 email
 
 E-mail address. Will be checked with L<Email::Valid>
+L<Email::Valid> options may be changed by setting the appropriate values
+in the %Mail::Builder::TypeConstraints::EMAILVALID hash:
+
+Eg. if you want to disable the check for valid TLDs you can set the 'tldcheck'
+option (without dashes 'tldcheck' and not '-tldcheck'):
+
+ $Mail::Builder::TypeConstraints{tldcheck} = 0;
 
 Required
 
