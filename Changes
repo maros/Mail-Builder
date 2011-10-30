@@ -1,5 +1,9 @@
 Revision history for Perl module Mail::Builder
 
+2.07 Sun Oct 30 2011
+    - IMPROVED
+        - Make Email::Valid validation customizable (RT72020 by Mark S Davis)
+
 2.06 Wed Oct 26 2011
     - IMPROVED
         - Rename M::B::Role::TypeConstraints -> M::B::TypeConstraints
