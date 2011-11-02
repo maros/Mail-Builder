@@ -676,7 +676,7 @@ in the %Mail::Builder::TypeConstraints::EMAILVALID hash.
 Eg. if you want to disable the check for valid TLDs you can set the 'tldcheck'
 option (without dashes 'tldcheck' and not '-tldcheck'):
 
- $Mail::Builder::TypeConstraints{tldcheck} = 0;
+ $Mail::Builder::TypeConstraints::EMAILVALID{tldcheck} = 0;
 
 =head3 to, cc, bcc
 
