@@ -31,6 +31,7 @@ build_requires  'Test::Most'            => 0;
 author_requires 'Test::Pod'             => '1.14';
 author_requires 'Test::Pod::Coverage'   => '1.04';
 author_requires 'Test::Perl::Critic'    => 0;
+author_requires 'Test::NoWarnings'      => 0;
 author_requires 'Module::Install::ReadmeFromPod'        => 0;
 
 
