@@ -10,12 +10,9 @@ use Moose::Util::TypeConstraints;
 use Path::Class::File;
 
 our $VERSION = $Mail::Builder::VERSION;
-
-eval {
-    Class::MOP::load_class('Net::Domain::TLD');
-};
+our $TLDCHECK = Class::Load::try_load_class('Net::Domain::TLD'),
 our %EMAILVALID = (
-    'tldcheck'     => ($@ ? 0:1),
+    'tldcheck'     => $TLDCHECK,
 );
 
 our $TIMEPART_RE = qr/[0-5]?\d/;

@@ -168,7 +168,7 @@ sub _generate_plaintext {
     
     if ($self->autotext
         && ($self->_plaintext_autotext == 1 || ! $self->has_plaintext)) {
-        Class::MOP::load_class('HTML::TreeBuilder');
+        Class::Load::load_class('HTML::TreeBuilder');
         
         my $html_tree = HTML::TreeBuilder->new_from_content($self->htmltext);
         # Only use the body
@@ -417,7 +417,7 @@ sub _build_html {
 
 sub _build_date {
     my ($self) = @_;
-    Class::MOP::load_class('Email::Date::Format');
+    Class::Load::load_class('Email::Date::Format');
     Email::Date::Format::email_date();
 }
 
