@@ -7,6 +7,8 @@ use Moose::Role;
 use Path::Class qw();
 use IO::File qw();
 
+our $VERSION = $Mail::Builder::VERSION;
+
 has 'file' => (
     is          => 'rw',
     isa         => 'Mail::Builder::Type::Content | Mail::Builder::Type::File | Mail::Builder::Type::Fh',
