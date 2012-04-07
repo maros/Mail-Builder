@@ -8,7 +8,6 @@ my $from = 'lib/Mail/Builder.pm';
 name            'Mail-Builder';
 all_from        $from;
 readme_from     $from;
-readme_markdown_from $from;
 
 perl_version    '5.008';
 
@@ -32,7 +31,6 @@ build_requires  'Test::Most'            => 0;
 author_requires 'Test::Pod'             => '1.14';
 author_requires 'Test::Pod::Coverage'   => '1.04';
 author_requires 'Test::Perl::Critic'    => 0;
-author_requires 'Module::Install::ReadmeMarkdownFromPod'=> 0;
 author_requires 'Module::Install::ReadmeFromPod'        => 0;
 
 
