@@ -20,6 +20,7 @@ requires        'Email::MessageID'      => '1.400';
 requires        'Email::Date::Format'   => 0;
 
 requires        'Moose'                 => '0.94';
+requires        'namespace::autoclean'  => 0;
 
 requires        'Path::Class'           => 0;
 requires        'HTML::TreeBuilder'     => '3.00';

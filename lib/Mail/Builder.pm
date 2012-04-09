@@ -2,10 +2,12 @@
 package Mail::Builder;
 # ============================================================================
 
-use Moose;
 
 our $VERSION = "2.07";
 our $AUTHORITY = 'cpan:MAROS';
+
+use namespace::autoclean;
+use Moose;
 
 use Mail::Builder::TypeConstraints;
 
@@ -508,7 +510,6 @@ sub stringify {
     return $obj->build_message->stringify;
 }
 
-no Moose;
 __PACKAGE__->meta->make_immutable;
 
 =encoding utf8

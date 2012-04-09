@@ -2,6 +2,7 @@
 package Mail::Builder::Address;
 # ============================================================================
 
+use namespace::autoclean;
 use Moose;
 use Mail::Builder::TypeConstraints;
 
@@ -185,9 +186,7 @@ sub empty {
     croak('DEPRECATED')
 }
 
-no Moose;
 __PACKAGE__->meta->make_immutable;
-
 
 1;
 

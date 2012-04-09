@@ -5,8 +5,10 @@ package Mail::Builder::TypeConstraints;
 use strict;
 use warnings;
 
-use Scalar::Util qw(blessed);
+use namespace::autoclean;
 use Moose::Util::TypeConstraints;
+
+use Scalar::Util qw(blessed);
 use Path::Class::File;
 
 our $VERSION = $Mail::Builder::VERSION;
@@ -212,7 +214,5 @@ coerce 'Mail::Builder::Type::ImageList'
         }
         return Mail::Builder::List->new( type => 'Mail::Builder::Image', list => $result ) 
     };
-
-no Moose::Util::TypeConstraints;
 
 1;

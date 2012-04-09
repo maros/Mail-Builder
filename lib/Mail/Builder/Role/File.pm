@@ -2,6 +2,7 @@
 package Mail::Builder::Role::File;
 # ============================================================================
 
+use namespace::autoclean;
 use Moose::Role;
 
 use Path::Class qw();
@@ -125,7 +126,5 @@ sub compare {
     
     return ($filecontent_self eq $filecontent_compare ? 1:0);
 }
-
-no Moose::Role;
 
 1;

@@ -2,6 +2,7 @@
 package Mail::Builder::Image;
 # ============================================================================
 
+use namespace::autoclean;
 use Moose;
 with qw(Mail::Builder::Role::File);
 use Mail::Builder::TypeConstraints;
@@ -125,7 +126,6 @@ sub serialize {
     return $entity;
 }
 
-no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
