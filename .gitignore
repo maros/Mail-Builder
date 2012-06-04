@@ -3,7 +3,8 @@ _build
 Makefile
 inc
 Makefile
-META.yml
+META.*
+MYMETA.*
 pm_to_blib
 .project
 .settings
