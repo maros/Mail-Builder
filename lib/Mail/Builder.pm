@@ -2,12 +2,11 @@
 package Mail::Builder;
 # ============================================================================
 
+use namespace::autoclean;
+use Moose;
 
 our $VERSION = "2.07";
 our $AUTHORITY = 'cpan:MAROS';
-
-use namespace::autoclean;
-use Moose;
 
 use Mail::Builder::TypeConstraints;
 
@@ -420,7 +419,7 @@ sub _build_html {
 sub _build_date {
     my ($self) = @_;
     Class::Load::load_class('Email::Date::Format');
-    Email::Date::Format::email_date();
+    return Email::Date::Format::email_date();
 }
 
 

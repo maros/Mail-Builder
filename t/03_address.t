@@ -43,7 +43,6 @@ is ($address4->email, 'test@test.com','Check email address');
 throws_ok { Mail::Builder::Address->new( email => 'messed.up.@-address.comx' ) } qr/is not a valid e-mail address/,'Exception ok';
 
 # Local Address 1
-no warnings 'once';
 $Mail::Builder::TypeConstraints::EMAILVALID{fqdn} = 0;
 $Mail::Builder::TypeConstraints::EMAILVALID{tldcheck} = 0;
 ok($address5 = Mail::Builder::Address->new( email => 'test@localhost' ),'Create local address');
