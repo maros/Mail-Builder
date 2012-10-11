@@ -80,7 +80,7 @@ lives_ok {
     </ol>
     <em>This is an <span>italic</span> text</em>
     
-    <p><a href="http://revdev.at">Visit us</a></p>
+    <p><a href="http://k-1.com">Visit me</a></p>
     
     <img src="cid:revdev" alt="revdev logo"/>
     
@@ -113,7 +113,7 @@ lives_ok {
     like($object->{'plaintext'},qr/\t1\. Item/,'Plaintext item ok');
     like($object->{'plaintext'},qr/_This is an italic text_/,'Plaintext italic ok');
     like($object->{'plaintext'},qr/\*This is a bold text\*/,'Plaintext bold ok');
-    like($object->{'plaintext'},qr/\[http:\/\/revdev\.at Visit us\]/,'Plaintext link ok');
+    like($object->{'plaintext'},qr/\[http:\/\/k-1\.com Visit me\]/,'Plaintext link ok');
     like($object->{'plaintext'},qr/\[revdev logo\]/,'Plaintext image ok');
     
     like($object->{'plaintext'},qr/Test1\s\sTest2\s\sTest3/,'Plaintext paragraph ok');
