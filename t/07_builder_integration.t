@@ -166,7 +166,7 @@ lives_ok {
     is($mime3->head->get('From'),'"me" <from2@test.com>'."\n",'From ok');
     is($mime3->head->get('Sender'),'"me2" <from3@test.com>'."\n",'From ok');
     is($mime3->parts,2,'No. of mime parts ok');
-    is($mime3->parts(0)->mime_type,'application/pdf','Mime type ok');
-    is($mime3->parts(1)->mime_type,'text/plain','Mime type ok');
+    is($mime3->parts(0)->mime_type,'text/plain','Mime type ok');
+    is($mime3->parts(1)->mime_type,'application/pdf','Mime type ok');
     
 } 'Object 2 ok';

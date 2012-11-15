@@ -492,10 +492,10 @@ sub build_message {
             Boundary    => $self->_get_boundary(),
             Encoding    => 'binary',
         );
+        $mime_entity->add_part($self->_build_text(Top => 0));
         foreach my $attachment ($self->attachment->list()) {
             $mime_entity->add_part($attachment->serialize());
         }
-        $mime_entity->add_part($self->_build_text(Top => 0));
         # ... without attachments
     } else {
         $mime_entity = $self->_build_text(%email_header);
