@@ -1,5 +1,12 @@
 Revision history for Perl module Mail::Builder
 
+2.08 ? Nov ? 2012
+    - IMPROVED
+        - Swap attachment and text position (suggested by Mike Tonks)
+        - Dist housekeeping (Module::Install version, plugins
+        - Use Class::Load instead of Class::MOP to load classes
+        - Use namespace::autoclean
+
 2.07 Sun Oct 30 2011
     - IMPROVED
         - Make Email::Valid validation customizable (RT72020 by Mark S Davis)
