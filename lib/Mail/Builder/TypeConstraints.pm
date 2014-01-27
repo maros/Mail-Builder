@@ -97,7 +97,7 @@ subtype 'Mail::Builder::Type::EmailAddress'
 
 subtype 'Mail::Builder::Type::Class'
     => as 'Str'
-    => where { m/^Mail::Builder::(.+)$/ && Class::MOP::is_class_loaded($_) }
+    => where { m/^Mail::Builder::(.+)$/ && Class::Load::is_class_loaded($_) }
     => message { "'$_' is not a  Mail::Builder::* class" };
 
 subtype 'Mail::Builder::Type::Priority'
