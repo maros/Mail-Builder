@@ -1,6 +1,10 @@
 Revision history for Perl module Mail::Builder
 
-2.08 ? Nov ? 2012
+2.09 Tue Jan 28 2013
+    - CORRECTED
+        - Fix deprecation warning with latest Moose
+
+2.08 Sat Nov 17 2012
     - IMPROVED
         - Swap attachment and text position (suggested by Mike Tonks)
         - Dist housekeeping (Module::Install version, plugins

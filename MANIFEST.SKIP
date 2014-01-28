@@ -46,6 +46,5 @@
 \B\._
 
 t/cover*
-coverage*
 
 Mail-Builder-\d\.\d+\.tar\.gz
