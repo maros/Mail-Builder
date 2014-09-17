@@ -18,9 +18,9 @@ is($mailbuilder->from->email,'from@test.com','Has correct email address');
 $mailbuilder->from->name('tester');
 
 # Test basic accessor
-is($mailbuilder->has_organization,'','Has no organization');
+ok(!$mailbuilder->has_organization,'Has no organization');
 ok($mailbuilder->organization('organization'),'Set organization');
-is($mailbuilder->has_organization,1,'Has organization');
+ok($mailbuilder->has_organization,'Has organization');
 is($mailbuilder->organization,'organization','Has correct organization');
 
 # Test recipient address
