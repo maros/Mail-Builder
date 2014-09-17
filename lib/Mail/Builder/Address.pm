@@ -147,7 +147,7 @@ sub serialize {
     $name =~ s/"/\\"/g;
     
     my $return = sprintf '"%s" <%s>',encode('MIME-Header', $name),$self->email;
-    $return .= ' '.$self->comment
+    $return .= ' '.encode('MIME-Header',$self->comment)
         if $self->has_comment;
     
     return $return;
