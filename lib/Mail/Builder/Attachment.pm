@@ -113,7 +113,7 @@ sub serialize {
         $value = $$file;
     }
     
-    my $entity = build MIME::Entity(
+    my $entity = MIME::Entity->build(
         Disposition     => 'attachment',
         Type            => $self->mimetype,
         Top             => 0,

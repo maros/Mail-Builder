@@ -349,7 +349,7 @@ sub _build_text {
         && $self->has_plaintext) {
         
         # Build multipart/alternative envelope for HTML and plaintext
-        $mime_part = build MIME::Entity(
+        $mime_part = MIME::Entity->build(
             %mime_params,
             Type        => q[multipart/alternative],
             Boundary    => $self->_get_boundary(),
@@ -357,7 +357,7 @@ sub _build_text {
         );
         
         # Add the plaintext entity first
-        $mime_part->add_part(build MIME::Entity (
+        $mime_part->add_part(MIME::Entity->build(
             Top         => 0,
             Type        => qq[text/plain; charset="utf-8"],
             Data        => $self->plaintext,
@@ -368,7 +368,7 @@ sub _build_text {
         $mime_part->add_part($self->_build_html(Top => 0));
     # We only have plaintext
     } else {
-        $mime_part = build MIME::Entity (
+        $mime_part = MIME::Entity->build(
             %mime_params,
             Type        => qq[text/plain; charset="utf-8"],
             Data        => $self->plaintext,
@@ -387,14 +387,14 @@ sub _build_html {
     # We have inline images
     if ($self->image->length) {
         # So we need a multipart/related envelope first
-        $mime_part = build MIME::Entity(
+        $mime_part = MIME::Entity->build(
             %mime_params,
             Type        => q[multipart/related],
             Boundary    => $self->_get_boundary(),
             Encoding    => 'binary',
         );
         # Add the html body
-        $mime_part->add_part(build MIME::Entity (
+        $mime_part->add_part(MIME::Entity->build(
             Top         => 0,
             Type        => qq[text/html; charset="utf-8"],
             Data        => $self->htmltext,
@@ -406,7 +406,7 @@ sub _build_html {
         }
     # We don't have any inline images
     } else {
-        $mime_part = build MIME::Entity (
+        $mime_part = MIME::Entity->build(
             %mime_params,
             Type        => qq[text/html; charset="utf-8"],
             Data        => $self->htmltext,
@@ -486,7 +486,7 @@ sub build_message {
     
     # ... with attachments
     if ($self->attachment->length()) {
-        $mime_entity = build MIME::Entity(
+        $mime_entity = MIME::Entity->build(
             %email_header,
             Type        => 'multipart/mixed',
             Boundary    => $self->_get_boundary(),
