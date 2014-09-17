@@ -197,32 +197,6 @@ sub item {
     return $self->list->[$index];
 }
 
-#sub convert {
-#    my $class = shift;
-#    my $list_data = shift; 
-#    croak(qq[Tried to convert an invalid value into a Mail::Builder::List object: Must be an array reference])
-#        unless (ref $list_data eq 'ARRAY');
-#    croak(qq[Tried to convert an empty list into a Mail::Builder::List object: List must hold at least one element])
-#        unless (scalar @$list_data);
-#    
-#    my $list_type = ref $list_data->[0];
-#    
-#    croak(qq[Uanble to determine list type: List must hold objects])
-#        unless ($list_type);
-#    
-#    foreach my $list_item (@{$list_data}) {
-#        croak(qq[Tried to create a Mail::Builder::List object with mixed objects: Must be only of one type]) 
-#            unless ref $list_item && $list_item->isa($list_type);
-#    }
-#    
-#    my $obj = $class->new($list_type);
-#    
-#    foreach my $item (@$list_data) {
-#        $obj->add($item);
-#    }
-#    return $obj;
-#}
-
 __PACKAGE__->meta->make_immutable;
 
 1;
