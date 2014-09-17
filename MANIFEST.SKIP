@@ -48,3 +48,5 @@
 t/cover*
 
 Mail-Builder-\d\.\d+\.tar\.gz
+
+MYMETA.*
