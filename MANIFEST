@@ -20,6 +20,7 @@ lib/Mail/Builder/Image/File.pm
 lib/Mail/Builder/List.pm
 lib/Mail/Builder/Role/File.pm
 lib/Mail/Builder/TypeConstraints.pm
+lib/Mail/Builder/Utils.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files

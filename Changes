@@ -1,5 +1,12 @@
 Revision history for Perl module Mail::Builder
 
+2.10 Sat Apr 2 2016
+    - IMPROVED
+        - Do not use indirect object notation
+        - Fix typos in POD
+    - CORRECTED
+        - Fix text failures on perl 5.23 related to Encode changes
+
 2.09 Tue Jan 28 2013
     - CORRECTED
         - Fix deprecation warning with latest Moose
