@@ -117,7 +117,7 @@ sub serialize {
         Disposition     => 'attachment',
         Type            => $self->mimetype,
         Top             => 0,
-        Filename        => encode('MIME-Header', $self->name),
+        Filename        => Mail::Builder::Utils::encode_mime($self->name),
         Encoding        => 'base64',
         $accessor       => $value,
     );

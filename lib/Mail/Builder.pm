@@ -9,10 +9,10 @@ our $VERSION = "2.09";
 our $AUTHORITY = 'cpan:MAROS';
 
 use Mail::Builder::TypeConstraints;
+use Mail::Builder::Utils;
 
 use Carp;
 
-use Encode qw(encode decode); 
 use MIME::Entity;
 
 use Email::MessageID;
@@ -446,10 +446,10 @@ sub build_message {
         'Cc'            => $self->cc->join(','),
         'Bcc'           => $self->bcc->join(','),
         'Date'          => $self->date,
-        'Subject'       => encode('MIME-Header',$self->subject),
+        'Subject'       => Mail::Builder::Utils::encode_mime($self->subject),
         'Message-ID'    => $messageid->in_brackets(),
         'X-Priority'    => $self->priority,
-        'X-Mailer'      => encode('MIME-Header', $self->mailer),
+        'X-Mailer'      => Mail::Builder::Utils::encode_mime($self->mailer),
     );
     
     # Set reply address
@@ -478,7 +478,7 @@ sub build_message {
     
     # Set organizsation
     if ($self->has_organization) {
-        $email_header{'Organization'} = encode('MIME-Header', $self->organization);
+        $email_header{'Organization'} = Mail::Builder::Utils::encode_mime($self->organization);
     }
     
     # Build e-mail entity ...
