@@ -43,17 +43,17 @@ subtype 'Mail::Builder::Type::Date'
     $/xi };
 
 subtype 'Mail::Builder::Type::DateTime'
-    => as Object 
+    => as Object
     => where { $_->isa('DateTime') }
-    => as Int 
-    => where { 
+    => as Int
+    => where {
         require Email::Date::Format;
         Email::Date::Format::email_date($_);
     };
 
 coerce 'Mail::Builder::Type::Date'
     => from 'Mail::Builder::Type::DateTime'
-    => via { 
+    => via {
         return $_->clone->set_locale('en')->format_cldr("ccc, dd MMM yyyy hh:mm:ss ZZZ")
     };
 
@@ -67,16 +67,16 @@ subtype 'Mail::Builder::Type::File'
 
 subtype 'Mail::Builder::Type::Fh'
     => as class_type('IO::File');
-    
+
 coerce 'Mail::Builder::Type::Fh'
     => from 'GlobRef'
-    => via { 
-        return bless($_,'IO::File'); 
+    => via {
+        return bless($_,'IO::File');
     };
 
 coerce 'Mail::Builder::Type::File'
     => from 'Str'
-    => via { 
+    => via {
         return Path::Class::File->new($_)
     };
 
@@ -135,13 +135,13 @@ coerce 'Mail::Builder::Type::AddressList'
     => from 'HashRef'
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [ Mail::Builder::Address->new($_) ] ) }
     => from class_type('Email::Address')
-    => via { 
+    => via {
         return Mail::Builder::List->new( type => 'Mail::Builder::Address', list => [
             Mail::Builder::Address->new($_)
-        ] ) 
+        ] )
     }
     => from 'ArrayRef'
-    => via { 
+    => via {
         my $param = $_;
         my $result = [];
         foreach my $element (@$param) {
@@ -152,7 +152,7 @@ coerce 'Mail::Builder::Type::AddressList'
                 push(@{$result},Mail::Builder::Address->new($element));
             }
         }
-        return Mail::Builder::List->new( type => 'Mail::Builder::Address', list => $result ) 
+        return Mail::Builder::List->new( type => 'Mail::Builder::Address', list => $result )
     };
 
 subtype 'Mail::Builder::Type::Attachment'
@@ -169,7 +169,7 @@ coerce 'Mail::Builder::Type::AttachmentList'
     => from 'HashRef'
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => [ Mail::Builder::Attachment->new($_) ] ) }
     => from 'ArrayRef'
-    => via { 
+    => via {
         my $param = $_;
         my $result = [];
         foreach my $element (@$param) {
@@ -182,7 +182,7 @@ coerce 'Mail::Builder::Type::AttachmentList'
                 push(@{$result},Mail::Builder::Attachment->new(file => $element));
             }
         }
-        return Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => $result ) 
+        return Mail::Builder::List->new( type => 'Mail::Builder::Attachment', list => $result )
     };
 
 subtype 'Mail::Builder::Type::Image'
@@ -212,7 +212,7 @@ coerce 'Mail::Builder::Type::ImageList'
                 push(@{$result},Mail::Builder::Image->new(file => $element));
             }
         }
-        return Mail::Builder::List->new( type => 'Mail::Builder::Image', list => $result ) 
+        return Mail::Builder::List->new( type => 'Mail::Builder::Image', list => $result )
     };
 
 1;

@@ -51,7 +51,7 @@ Mail::Builder::Address - Module for handling e-mail addresses
   print $mail->serialize;
   
   # Use the address as a recipient for  Mail::Builder object
-  $mb->to($mail); # Removes all other recipients 
+  $mb->to($mail); # Removes all other recipients
   OR
   $mb->to->add($mail); # Adds one more recipient (without removing the existing ones)
 
@@ -73,7 +73,7 @@ and an optional display name.
      [ name     => DISPLAY NAME, ]
      [ comment  => COMMENT, ]
  })
- OR 
+ OR
  my $email = Email::Address->parse(...);
  Mail::Builder::Address->new($email);
 
@@ -162,11 +162,11 @@ sub serialize {
  or
  $obj->compare(E-MAIL);
 
-Checks if two address objects contain the same e-mail address. Returns true 
+Checks if two address objects contain the same e-mail address. Returns true
 or false. The compare method does not check if the address names of the
 two objects are identical.
 
-Instead of a C<Mail::Builder::Address> object you can also pass a 
+Instead of a C<Mail::Builder::Address> object you can also pass a
 scalar value representing the e-mail address.
 
 =cut
@@ -174,7 +174,7 @@ scalar value representing the e-mail address.
 sub compare {
     my ($self,$compare) = @_;
     
-    return 0 
+    return 0
         unless (defined $compare);
     
     if (blessed($compare)) {

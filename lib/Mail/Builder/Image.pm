@@ -92,7 +92,7 @@ sub _build_id {
 sub serialize {
     my ($self) = @_;
 
-    return $self->cache 
+    return $self->cache
         if ($self->has_cache);
     
     my $file = $self->file;
@@ -156,7 +156,7 @@ messages.
 
 =head1 METHODS
 
-=head2 Constructor 
+=head2 Constructor
 
 =head3 new
 
@@ -198,11 +198,11 @@ If possible, returns a filehandle for the image file as a L<IO::File> object.
 
 =head3 id
 
-ID of the file. If no id is provided the lowercase filename without the 
+ID of the file. If no id is provided the lowercase filename without the
 extension will be used as the ID.
 
-The ID is needed to reference the image in the e-mail body: 
- 
+The ID is needed to reference the image in the e-mail body:
+
  <img src="cid:invitation_location"/>
 
 =head3 mimetype
@@ -219,12 +219,12 @@ Mime type of the image. Valid types are
 
 =back
 
-If not provided the mime type is determined by analyzing the filename 
+If not provided the mime type is determined by analyzing the filename
 extension and file content.
 
 =head3 file
 
-Image. Can be a 
+Image. Can be a
 
 =over
 

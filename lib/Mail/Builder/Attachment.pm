@@ -93,7 +93,7 @@ sub _build_name {
 sub serialize {
     my ($self) = @_;
     
-    return $self->cache 
+    return $self->cache
         if ($self->has_cache);
     
     my $file = $self->file;
@@ -156,7 +156,7 @@ This class handles e-mail attachments for Mail::Builder.
 
 =head1 METHODS
 
-=head2 Constructor 
+=head2 Constructor
 
 =head3 new
 
@@ -183,7 +183,7 @@ Returns the attachment as a L<MIME::Entity> object.
 
 =head3 filename
 
-If possible, returns the filename of the attachment file as a 
+If possible, returns the filename of the attachment file as a
 L<Path::Class::File> object.
 
 =head3 filecontent
@@ -192,26 +192,26 @@ Returns the content of the attachment file.
 
 =head3 filehandle
 
-If possible, returns a filehandle for the attachment file as a 
+If possible, returns a filehandle for the attachment file as a
 L<IO::File> object.
 
 =head2 Accessors
 
 =head3 name
 
-Name of the attachment as used in the e-mail message. If no name is provided 
+Name of the attachment as used in the e-mail message. If no name is provided
 the current filename will be used.
 
 =head3 mimetype
 
 Mime type of the attachment.
 
-If not provided the mime type is determined by analyzing the filename 
+If not provided the mime type is determined by analyzing the filename
 extension.
 
 =head3 file
 
-Attachment file. Can be a 
+Attachment file. Can be a
 
 =over
 

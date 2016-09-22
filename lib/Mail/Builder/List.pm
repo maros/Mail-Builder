@@ -75,14 +75,14 @@ sub _convert_item {
     my $type = $self->type;
     
     if (blessed($_[0])) {
-        croak(qq[Invalid item added to list: Must be of $type]) 
+        croak(qq[Invalid item added to list: Must be of $type])
             unless ($_[0]->isa($type));
         return $_[0];
     } else {
         my $object = $type->new(@_);
-        croak(qq[Could not create $type object]) 
-            unless (defined $object 
-            && blessed $object 
+        croak(qq[Could not create $type object])
+            unless (defined $object
+            && blessed $object
             && $object->isa($type));
         
         return $object;
@@ -92,7 +92,7 @@ sub _convert_item {
 sub convert {
     my ($class,@elements) = @_;
     
-    my $elements_ref = (scalar @elements == 1 && ref $elements[0] eq 'ARRAY') ? 
+    my $elements_ref = (scalar @elements == 1 && ref $elements[0] eq 'ARRAY') ?
         $elements[0] : \@elements;
     
     return $class->new(
@@ -104,22 +104,22 @@ sub convert {
 sub join {
     my ($self,$join_string) = @_;
     
-    return CORE::join $join_string, 
+    return CORE::join $join_string,
         grep { $_ }
-        map { $_->serialize } 
+        map { $_->serialize }
         $self->list;
 }
 
 sub contains {
     my ($self,$compare) = @_;
     
-    return 0 
+    return 0
         unless (defined $compare);
     
     foreach my $item ($self->list) {
-        return 1 
+        return 1
             if (blessed($compare) && $item == $compare);
-        return 1 
+        return 1
             if ($item->compare($compare));
     }
     return 0;
@@ -187,11 +187,11 @@ sub item {
     my ($self,$index) = @_;
     
     $index = 0
-        unless defined $index 
+        unless defined $index
         && $index =~ m/^\d+$/;
     
     return 
-        unless ($index =~ m/^\d+$/ 
+        unless ($index =~ m/^\d+$/
         && defined $self->list->[$index]);
     
     return $self->list->[$index];
@@ -205,7 +205,7 @@ __PACKAGE__->meta->make_immutable;
 
 =head1 NAME
 
-Mail::Builder::List - Helper module for handling various lists 
+Mail::Builder::List - Helper module for handling various lists
 
 =head1 SYNOPSIS
 
@@ -217,16 +217,16 @@ Mail::Builder::List - Helper module for handling various lists
   # Add aMail::Builder::Address object
   $list->add($address_object);
   
-  # Add an email (Unrecognized values will be passed to the constructor of 
+  # Add an email (Unrecognized values will be passed to the constructor of
   # the type class - Mail::Builder::Address)
   $list->add('sasha.nein@psychonauts.org');
   
-  # Add one more email (Unrecognized values will be passed to the constructor of 
+  # Add one more email (Unrecognized values will be passed to the constructor of
   # the type class - Mail::Builder::Address)
   $list->add({ email => 'raz.aquato@psychonauts.org', name => 'Razputin'} );
   
   # Remove email from list
-  $list->remove('raz.aquato@psychonauts.org'); 
+  $list->remove('raz.aquato@psychonauts.org');
   
   # Remove first element in list
   $list->remove(1);
@@ -247,9 +247,9 @@ lists). The class contains convinient array/list handling functions.
 
 =head1 METHODS
 
-=head2 Constructor 
+=head2 Constructor
 
-=head3 new 
+=head3 new
 
  my $list = Mail::Builder::List->new(Class name);
  OR
@@ -258,20 +258,20 @@ lists). The class contains convinient array/list handling functions.
      [ list => ArrayRef, ]
  });
 
-This constructor takes the class name of the objects it should hold. It is 
+This constructor takes the class name of the objects it should hold. It is
 only possible to add objects of the given type. It is not possible to change
 the assigned type later.
 
-=head3 convert 
+=head3 convert
 
  my $list = Mail::Builder::List->convert(ArrayRef);
 
-Constructor that converts an array reference into a Mail::Builder::List 
+Constructor that converts an array reference into a Mail::Builder::List
 object. The list type is defined by the first element of the array.
 
 =head2 Public Methods
 
-=head3 length 
+=head3 length
 
 Returns the number of items in the list.
 
@@ -281,7 +281,7 @@ Returns the number of items in the list.
  OR
  $obj->add(Anything)
 
-Pushes a new item into the list. The methods either accepts an object or 
+Pushes a new item into the list. The methods either accepts an object or
 any values. Values will be passed to the C<new> method in the
 list type class.
 
@@ -299,7 +299,7 @@ Synonym for L<add>
  OR
  $obj->remove()
 
-Removes the given element from the list. If no parameter is passed to the 
+Removes the given element from the list. If no parameter is passed to the
 method the last element from the list will be removed instead.
 
 =head3 reset
@@ -331,7 +331,7 @@ object or scalar value. Uses the L<compare> method from the list type class.
 
 =head3 type
 
-Returns the class name which was initially passed to the constructor. 
+Returns the class name which was initially passed to the constructor.
 
 =head3 list
 

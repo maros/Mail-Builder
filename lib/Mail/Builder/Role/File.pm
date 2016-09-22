@@ -50,7 +50,7 @@ sub filename {
     
     my $file = $self->file;
     
-    # Return filename if we know it 
+    # Return filename if we know it
     if (blessed $file
         && $file->isa('Path::Class::File')) {
         return $file;
@@ -96,7 +96,7 @@ sub filecontent {
     
     my $filecontent = do { local $/; <$filehandle> };
     
-    if (blessed $file 
+    if (blessed $file
         && $file->isa('Path::Class::File')) {
         $filehandle->close;
     } else {
@@ -110,7 +110,7 @@ sub filecontent {
 sub compare {
     my ($self,$compare) = @_;
     
-    return 0 
+    return 0
         unless ($compare);
     
     my $filename_self = $self->filename;

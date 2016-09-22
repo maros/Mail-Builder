@@ -196,10 +196,10 @@ sub _convert_text {
     my $plain_text = q[];
     $params ||= {};
     
-    # Loop all children of the HTML element  
+    # Loop all children of the HTML element
     foreach my $html_content ($html_element->content_list) {
         # HTML element
-        if (ref($html_content) 
+        if (ref($html_content)
             && $html_content->isa('HTML::Element')) {
             my $html_tagname = $html_content->tag;
             if ($html_tagname eq 'i' || $html_tagname eq 'em') {
@@ -213,7 +213,7 @@ sub _convert_text {
             } elsif ($html_tagname eq 'br') {
                 $plain_text .= qq[\n];
             } elsif ($html_tagname eq 'ul' || $html_tagname eq 'ol') {
-                my $count_old = $params->{count};    
+                my $count_old = $params->{count};
                 $params->{count} = ($html_tagname eq 'ol') ? 1:'*';
                 $plain_text .= qq[\n].$self->_convert_text($html_content,$params).qq[\n\n];
                 if (defined $count_old) {
@@ -226,7 +226,7 @@ sub _convert_text {
             } elsif ($html_tagname eq 'table') {
                 require Text::Table; # Load Text::Table lazily
                     
-                my $table_old = $params->{table}; 
+                my $table_old = $params->{table};
                 $params->{table} = Text::Table->new();
                 $self->_convert_text($html_content,$params);
                 $params->{table}->body_rule('-','+');
@@ -237,9 +237,9 @@ sub _convert_text {
                 } else {
                     delete $params->{table};
                 }
-            } elsif ($html_tagname eq 'tr' 
-                && defined $params->{table}) { 
-                my $tablerow_old = $params->{tablerow}; 
+            } elsif ($html_tagname eq 'tr'
+                && defined $params->{table}) {
+                my $tablerow_old = $params->{tablerow};
                 $params->{tablerow} = [];
                 $self->_convert_text($html_content,$params);
                 $params->{table}->add(@{$params->{tablerow}});
@@ -249,7 +249,7 @@ sub _convert_text {
                     delete $params->{tablerow};
                 }
             } elsif (($html_tagname eq 'td' || $html_tagname eq 'th') && $params->{tablerow}) {
-                push @{$params->{tablerow}},$self->_convert_text($html_content,$params);     
+                push @{$params->{tablerow}},$self->_convert_text($html_content,$params);
                 if ($html_content->attr('colspan')) {
                     my $colspan = $html_content->attr('colspan') || 1;
                     $colspan --;
@@ -257,9 +257,9 @@ sub _convert_text {
                         for (1..$colspan);
                 }
             } elsif ($html_tagname eq 'img' && $html_content->attr('alt')) {
-                $plain_text .= '['.$html_content->attr('alt').']';  
+                $plain_text .= '['.$html_content->attr('alt').']';
             } elsif ($html_tagname eq 'a' && $html_content->attr('href')) {
-                $plain_text .= '['.$html_content->attr('href').' '.$self->_convert_text($html_content,$params).']';    
+                $plain_text .= '['.$html_content->attr('href').' '.$self->_convert_text($html_content,$params).']';
             } elsif ($html_tagname eq 'li') {
                 $plain_text .= qq[\n\t];
                 $params->{count} ||= '*';
@@ -427,13 +427,13 @@ sub _build_date {
 sub build_message {
     my ($self) = @_;
     
-    croak(q[Recipient address missing]) 
+    croak(q[Recipient address missing])
         unless ($self->to->length());
-    croak(q[From address missing]) 
+    croak(q[From address missing])
         unless ($self->has_from);
-    croak(q[e-mail subject missing]) 
+    croak(q[e-mail subject missing])
         unless ($self->has_subject);
-    croak(q[e-mail content missing]) 
+    croak(q[e-mail content missing])
         unless ($self->has_plaintext || $self->has_htmltext);
     
     my $messageid = Email::MessageID->new;
@@ -546,17 +546,17 @@ and inline images
 
 =head1 DESCRIPTION
 
-This module helps you to build correct e-mails with attachments, inline 
+This module helps you to build correct e-mails with attachments, inline
 images, multiple recipients, ... without having to worry about the underlying
-MIME and encoding issues. Mail::Builder relies heavily on the L<MIME::Entity> 
-module from the L<MIME::Tools> distribution. 
+MIME and encoding issues. Mail::Builder relies heavily on the L<MIME::Entity>
+module from the L<MIME::Tools> distribution.
 
-The module will create the correct MIME bodies, headers and containers 
+The module will create the correct MIME bodies, headers and containers
 (multipart/mixed, multipart/related, multipart/alternative) depending on if
 you use attachments, HTML text and inline images.
 
 Furthermore it will encode non-ascii header data and autogenerate plaintext
-messages (if you don't provide it yourself or disable the L<autotext> option) 
+messages (if you don't provide it yourself or disable the L<autotext> option)
 from html content.
 
 Addresses, attachments and inline images are handled as objects by helper
@@ -568,19 +568,19 @@ classes:
 
 Stores an e-mail address and a display name.
 
-=item * Attachments: L<Mail::Builder::Attachment> 
+=item * Attachments: L<Mail::Builder::Attachment>
 
 This class manages attachments which can be created either from files in the
 filesystem, filehandles or from data in memory.
 
 =item * Inline images:L<Mail::Builder::Image>
 
-The Mail::Builder::Image class manages images that should be displayed in the 
+The Mail::Builder::Image class manages images that should be displayed in the
 html e-mail body. (E<lt>img src="cid:imageid" /E<gt>)
 
 =item * L<Mail::Builder::List>
 
-Helper class for handling list of varoius items (i.e. recipient lists, 
+Helper class for handling list of varoius items (i.e. recipient lists,
 attachment lists and image lists)
 
 =back
@@ -591,10 +591,10 @@ attachment lists and image lists)
 
 =head3 new
 
-This is a simple constructor. It accepts all defined acccessors as a Hash or 
+This is a simple constructor. It accepts all defined acccessors as a Hash or
 HashRef.
 
-=head2 Public methods 
+=head2 Public methods
 
 =head3 stringify
 
@@ -611,13 +611,13 @@ This method is just a shortcut to C<$mb-E<gt>build_message-E<gt>stringify>
  $entity->print(\*STDOUT);
  
  # Stringify the entire message:
- print $entity->stringify; 
+ print $entity->stringify;
 
-Returns the e-mail message as a L<MIME::Entity> object. You can mess around 
-with the object, change parts, ... as you wish. 
+Returns the e-mail message as a L<MIME::Entity> object. You can mess around
+with the object, change parts, ... as you wish.
 
-Every time you call build_message the MIME::Entity object will be created, 
-which can take some time if you are sending bulk e-mails. In 
+Every time you call build_message the MIME::Entity object will be created,
+which can take some time if you are sending bulk e-mails. In
 order to increase the processing speed L<Mail::Builder::Attachment> and
 L<Mail::Builder::Image> entities will be cached and only rebuilt if something
 has changed.
@@ -629,7 +629,7 @@ Each call to this method also changes the C<messageid>.
 Emptys the attachment and image cache and removes the plaintext text if it has
 been autogenerated from html text. Also resets the Message ID and date header.
 
-=head2 Accessors 
+=head2 Accessors
 
 =head3 from, returnpath, reply, sender
 
@@ -647,12 +647,12 @@ returnpath for bounced messages.
      [name      => NAME,]
      [comment   => COMMENT,]
  });
- 
+
 This accessor always returns a Mail::Builder::Address object.
 
 To change the attribute value you can either supply
 
-=over 
+=over
 
 =item * a L<Mail::Builder::Address> object
 
@@ -695,12 +695,12 @@ option (without dashes 'tldcheck' and not '-tldcheck'):
      [comment   => COMMENT,]
  })
  OR
- $obj->to([ 
+ $obj->to([
     Mail::Builder::Address | Email::Address | HashRef | EMAIL
  ])
 
 This accessor always returns a L<Mail::Builder::List> object containing
-L<Mail::Builder::Address> objects. 
+L<Mail::Builder::Address> objects.
 
 To alter the values you can either
 
@@ -711,19 +711,19 @@ To alter the values you can either
 =item * Supply a L<Mail::Builder::Address> object. This will reset the current
 list and add the object to the list.
 
-=item * Supply a L<Mail::Builder::List> object. The list object replaces the 
+=item * Supply a L<Mail::Builder::List> object. The list object replaces the
 old one if the list types matches.
 
-=item * Scalar and HashRef values will be passed to 
-C<Mail::Builder::Address-E<gt>new>. The returned object will be added to the 
+=item * Scalar and HashRef values will be passed to
+C<Mail::Builder::Address-E<gt>new>. The returned object will be added to the
 object list.
 
 =item * Supply a L<Email::Address> object. This will reset the current
-list, generate a L<Mail::Builder::Address> object and add it to the list. 
+list, generate a L<Mail::Builder::Address> object and add it to the list.
 
 =back
 
-The L<Mail::Builder::List> package provides some basic methods for 
+The L<Mail::Builder::List> package provides some basic methods for
 manipulating the list of recipients. e.g.
 
  $obj->to->add(EMAIL[,NAME[,COMMENT]])
@@ -734,7 +734,7 @@ manipulating the list of recipients. e.g.
 
 =head3 date
 
-e-mail date header. Accepts/returns a RFC2822 date string. Also accepts a 
+e-mail date header. Accepts/returns a RFC2822 date string. Also accepts a
 DateTime object or epoch integer. Will be autogenerated if not provided.
 C<clear_date> can be used to reset the date accessor.
 
@@ -745,17 +745,17 @@ methods can be used to check respectively clear the value.
 
 =head3 messageid
 
-Message ID of the e-mail as a  L<Email::MessageID> object. Read only and 
-available only after the C<build_message> or C<stringify> methods have been 
+Message ID of the e-mail as a  L<Email::MessageID> object. Read only and
+available only after the C<build_message> or C<stringify> methods have been
 called. Each call to C<build_message> or C<stringify> changes the message ID.
-The C<has_messageid> and C<clear_messageid> methods can be used to check 
+The C<has_messageid> and C<clear_messageid> methods can be used to check
 respectively clear the value.
 
 =head3 organization
- 
+
 Accessor for the name of the sender's organisation. This header field is not
-part of the RFC 4021, however supported by many mailer applications. 
-Additionally the C<has_organization> and C<clear_organization> methods can be 
+part of the RFC 4021, however supported by many mailer applications.
+Additionally the C<has_organization> and C<clear_organization> methods can be
 used to check or clear the value.
 
 =head3 priority
@@ -768,7 +768,7 @@ e-mail subject accessor. Must be specified.
 
 =head3 htmltext
 
-HTML mail body accessor. Additionally the C<has_htmltext> and 
+HTML mail body accessor. Additionally the C<has_htmltext> and
 C<clear_htmltext> methods can be used to check or clear the value.
 
 =head3 mailer
@@ -780,12 +780,12 @@ Mailer name.
 Plaintext mail body accessor. The C<clear_plaintext> and C<has_plaintext>
 methods can be used to check or clear the value.
 
-This text will be autogenerated from htmltext if not provided by the user 
-and the C<autotext> option is not turned off. Simple formating (e.g. <strong>, 
+This text will be autogenerated from htmltext if not provided by the user
+and the C<autotext> option is not turned off. Simple formating (e.g. <strong>,
 <em>, ...) will be converted to pseudo formating.
 
-If you want to disable the autogeneration of plaintext parts set the 
-L<autotext> accessor to a false value. However be aware that most anti-spam 
+If you want to disable the autogeneration of plaintext parts set the
+L<autotext> accessor to a false value. However be aware that most anti-spam
 enginges tag html e-mail messages without a plaintext part as spam.
 
 The following html tags will be transformed to simple markup:
@@ -826,7 +826,7 @@ Prints the link url surrounded by brackets ([http://myurl.com text])
 
 =item * UL, OL
 
-All list items will be indented with a tab and prefixed with a start 
+All list items will be indented with a tab and prefixed with a start
 (*) or an index number.
 
 =item * TABLE, TR, TD, TH
@@ -837,7 +837,7 @@ Tables are converted into text using L<Text::Table>.
 
 =head3 autotext
 
-Enables the autogeneration of plaintext parts from HTML. 
+Enables the autogeneration of plaintext parts from HTML.
 
 Default TRUE.
 
@@ -858,16 +858,16 @@ Default TRUE.
  $obj->attachment([
     HashRef | Mail::Builder::Attachment | PATH | Path::Class::File | FH | IO::File | SCALARREF
  ]);
- 
+
 This accessor always returns a Mail::Builder::List object. If you supply
 a L<Mail::Builder::List> the list will be replaced.
 
-If you pass a Mail::Builder::Attachment object, a filehandle, an IO::File 
+If you pass a Mail::Builder::Attachment object, a filehandle, an IO::File
 object, a L<Path::Class::File> object, a path or a scalar reference
-or a scalar path the current list will be reset and the new 
+or a scalar path the current list will be reset and the new
 attachment will be added.
 
-The L<Mail::Builder::List> package provides some basic methods for 
+The L<Mail::Builder::List> package provides some basic methods for
 manipulating the list of attachments.
 
 If you want to append an additional attachment to the list use
@@ -904,9 +904,9 @@ This accessor always returns a Mail::Builder::List object. If you supply
 a L<Mail::Builder::List> the list will be replaced.
 
 If you pass a Mail::Builder::Image object or a scalar path (with an
-optional id) the current list will be reset and the new image will be added. 
+optional id) the current list will be reset and the new image will be added.
 
-The L<Mail::Builder::List> package provides some basic methods for 
+The L<Mail::Builder::List> package provides some basic methods for
 manipulating the list of inline images.
 
 If you want to append an additional attachment to the list use
@@ -915,7 +915,7 @@ If you want to append an additional attachment to the list use
  OR
  $obj->image->add(Mail::Builder::Image)
 
-You can embed the image into the html mail body code by referencing the ID. If 
+You can embed the image into the html mail body code by referencing the ID. If
 you don't provide an ID the lowercase filename without the file extension will
 be used as the ID.
 
@@ -943,36 +943,36 @@ attention, or else you might end up with growing recipients lists.
      # Plaintext is autogenerated
      my $mail = $mb->stringify();
      
-     # Send $mail ... 
+     # Send $mail ...
  }
- 
-=head1 IMPORTANT CHANGES 
- 
+
+=head1 IMPORTANT CHANGES
+
 From 1.10 on Mail::Builder only supports utf-8 charsets for mails. Supporting
 multiple encodings turned out to be error prone and not necessary since all
 modern mail clients support utf-8.
 
 Starting with Mail::Builder 2.0 the Mail::Builder::Attachment::* and
-Mail::Builder::Image::* classes have been deprecated. Use the base classes 
+Mail::Builder::Image::* classes have been deprecated. Use the base classes
 Mail::Builder::Attachment and Mail::Builder::Image instead.
 
-=head1 CAVEATS 
+=head1 CAVEATS
 
-Watch out when sending Mail::Builder generated mails with 
-L<Email::Send::SMTP>: The 'Return-Path' headers are ignored by the MTA 
+Watch out when sending Mail::Builder generated mails with
+L<Email::Send::SMTP>: The 'Return-Path' headers are ignored by the MTA
 since L<Email::Send::SMTP> uses the 'From' header for SMTP handshake. Postfix
 (any maybe some other MTAs) overwrites the 'Return-Path' field in the data
-with the e-mail used in the handshake ('From'). The behaviour of 
-L<Email::Send::SMTP> may however be modified by replacing the 
+with the e-mail used in the handshake ('From'). The behaviour of
+L<Email::Send::SMTP> may however be modified by replacing the
 C<get_env_sender> and C<get_env_recipients> methods. See L<Email::Send::SMTP>
 for more details.
 
 =head1 SUPPORT
 
-Please report any bugs or feature requests to 
+Please report any bugs or feature requests to
 C<bug-mail-builder@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/Public/Bug/Report.html?Queue=Mail::Builder>.  
-I will be notified, and then you'll automatically be notified of progress on 
+L<http://rt.cpan.org/Public/Bug/Report.html?Queue=Mail::Builder>.
+I will be notified, and then you'll automatically be notified of progress on
 your report as I make changes.
 
 =head1 AUTHOR
@@ -986,9 +986,9 @@ your report as I make changes.
 
 Mail::Builder is Copyright (c) 2007-2010 Maroš Kollár.
 
-This program is free software; you can redistribute it and/or modify it under 
-the same terms as Perl itself as long it is not used for sending 
-unsolicited mail (SPAM): 
+This program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself as long it is not used for sending
+unsolicited mail (SPAM):
 
  "Thou shalt not send SPAM with this module."
 
@@ -1004,7 +1004,7 @@ it with L<Email::Sender::Simple>
 
 Furthermore these modules are being used for various tasks:
 
-=over 
+=over
 
 =item * L<Email::Valid> for validating e-mail addresses
 
