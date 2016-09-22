@@ -14,6 +14,7 @@ use Mail::Builder::Utils;
 use Carp;
 
 use MIME::Entity;
+use Class::Load;
 
 use Email::MessageID;
 use Email::Address;
