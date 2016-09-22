@@ -146,7 +146,10 @@ sub serialize {
     my $name = $self->name;
     $name =~ s/"/\\"/g;
     
-    my $return = sprintf '"%s" <%s>',Mail::Builder::Utils::encode_mime($name),$self->email;
+    my $encoded = Mail::Builder::Utils::encode_mime($name);
+    $encoded = qq["$encoded"]
+        unless $encoded =~ /=\?/;
+    my $return = sprintf '%s <%s>',$encoded,$self->email;
     $return .= ' '.Mail::Builder::Utils::encode_mime($self->comment)
         if $self->has_comment;
     

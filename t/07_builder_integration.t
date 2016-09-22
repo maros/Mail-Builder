@@ -158,7 +158,7 @@ lives_ok {
     isa_ok($mime3,'MIME::Entity');
     isa_ok($mime3->head,'MIME::Head');
     
-    is($mime3->head->get('To'),'"=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?=" <recipient2@test.com>'."\n",'To header encoding ok');
+    is($mime3->head->get('To'),'=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?= <recipient2@test.com>'."\n",'To header encoding ok');
     is($mime3->head->get('Reply-To'),'"Test3" <recipient3@test.com>'."\n",'Reply header encoding ok');
     is($mime3->head->get('Bcc'),'"Test4" <recipient4@test.com>'."\n",'Bcc header encoding ok');
     
