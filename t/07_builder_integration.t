@@ -2,7 +2,7 @@
 
 # t/07_builder_integration.t - integration tests
 
-use Test::Most tests => 66 + 1;
+use Test::Most tests => 67 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;
@@ -141,6 +141,7 @@ lives_ok {
     my $email_address2 = Email::Address->new('Test4','recipient4@test.com');
     
     $object2->to->add('recipient2@test.com','nice üft-8 nämé');
+    $object2->cc->add('recipient5@test.com','very long name that exceeds the 75 character limit of an encoded word üft-8 nämé');
     $object2->bcc($email_address2);
     $object2->from('from2@test.com','me');
     $object2->sender({ email => 'from3@test.com', name => 'me2'});
@@ -161,7 +162,7 @@ lives_ok {
     is($mime3->head->get('To'),'=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?= <recipient2@test.com>'."\n",'To header encoding ok');
     is($mime3->head->get('Reply-To'),'"Test3" <recipient3@test.com>'."\n",'Reply header encoding ok');
     is($mime3->head->get('Bcc'),'"Test4" <recipient4@test.com>'."\n",'Bcc header encoding ok');
-    
+    is($mime3->head->get('Cc'),'=?UTF-8?B?dmVyeSBsb25nIG5hbWUgdGhhdCBleGNlZWRzIHRoZSA3NSBjaGFyYWN0ZXIgbGk=?= =?UTF-8?B?bWl0IG9mIGFuIGVuY29kZWQgd29yZCDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?= <recipient5@test.com>'."\n",'Cc header encoding ok');
     is($mime3->head->get('Subject'),'Testmail'."\n",'Subject ok');
     is($mime3->head->get('From'),'"me" <from2@test.com>'."\n",'From ok');
     is($mime3->head->get('Sender'),'"me2" <from3@test.com>'."\n",'From ok');
