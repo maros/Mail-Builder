@@ -1018,4 +1018,4 @@ Furthermore these modules are being used for various tasks:
 
 =cut
 
-"Thou shalt not send SPAM with this module";
+1;

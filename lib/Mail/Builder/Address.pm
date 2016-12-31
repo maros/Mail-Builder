@@ -123,7 +123,7 @@ around BUILDARGS => sub {
     return $class->$orig(\%params);
 };
 
-sub address {
+sub address { ## no critic(RequireArgUnpacking)
     my $self = shift;
     return $self->email(@_);
 }

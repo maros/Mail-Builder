@@ -66,7 +66,7 @@ around BUILDARGS => sub {
 
 __PACKAGE__->meta->make_immutable;
 
-sub _convert_item {
+sub _convert_item { ## no critic(RequireArgUnpacking)
     my ($self) = shift;
 
     croak(qq[Params missing])
@@ -101,7 +101,7 @@ sub convert {
     );
 }
 
-sub join {
+sub join { ## no critic(ProhibitBuiltinHomonyms)
     my ($self,$join_string) = @_;
 
     return CORE::join $join_string,
@@ -125,15 +125,14 @@ sub contains {
     return 0;
 }
 
-sub reset {
+sub reset { ## no critic(ProhibitBuiltinHomonyms)
     my ($self) = @_;
 
     $self->list([]);
-
     return 1;
 }
 
-sub push {
+sub push { ## no critic(RequireArgUnpacking,ProhibitBuiltinHomonyms)
     my ($self) = @_;
     return $self->add(@_);
 }
@@ -170,7 +169,7 @@ sub remove {
     return;
 }
 
-sub add {
+sub add { ## no critic(RequireArgUnpacking)
     my ($self) = shift;
 
     my $item = $self->_convert_item(@_);
