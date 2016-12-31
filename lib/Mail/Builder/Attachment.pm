@@ -51,55 +51,55 @@ around BUILDARGS => sub {
 
 sub _build_mimetype {
     my ($self) = @_;
-    
+
     my $filename = $self->filename;
     my $filetype;
-    
+
     if (defined $filename
         && lc($filename->basename) =~ /\.([0-9a-z]{1,4})$/)  {
         my $mimetype = MIME::Types->new->mimeTypeOf($1);
         $filetype = $mimetype->type
             if defined $mimetype;
     }
-    
+
     unless (defined $filetype) {
         my $filecontent = $self->filecontent;
         $filetype = $self->_check_magic_string($filecontent);
     }
-    
+
     $filetype ||= 'application/octet-stream';
-    
+
     return $filetype;
 }
 
 sub _build_name {
     my ($self) = @_;
-    
+
     my $filename = $self->filename;
     my $name;
-    
+
     if (defined $filename) {
         $name = $filename->basename;
     }
-    
+
     unless (defined $name
         && $name !~ m/^\s*$/) {
         croak('Could not determine the attachment name automatically');
     }
-    
+
     return $name;
 }
 
 sub serialize {
     my ($self) = @_;
-    
+
     return $self->cache
         if ($self->has_cache);
-    
+
     my $file = $self->file;
     my $accessor;
     my $value;
-    
+
     if (blessed $file) {
         if ($file->isa('IO::File')) {
             $accessor = 'Data';
@@ -112,7 +112,7 @@ sub serialize {
         $accessor = 'Data';
         $value = $$file;
     }
-    
+
     my $entity = MIME::Entity->build(
         Disposition     => 'attachment',
         Type            => $self->mimetype,
@@ -121,9 +121,9 @@ sub serialize {
         Encoding        => 'base64',
         $accessor       => $value,
     );
-    
+
     $self->cache($entity);
-    
+
     return $entity;
 }
 
@@ -149,7 +149,7 @@ Mail::Builder::Attachment - Class for handling e-mail attachments
   my $attachment2 = Mail::Builder::Attachment->new($fh);
   
   my $attachment_entity = $attachment1->serialize;
-  
+
 =head1 DESCRIPTION
 
 This class handles e-mail attachments for Mail::Builder.

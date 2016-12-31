@@ -199,7 +199,7 @@ coerce 'Mail::Builder::Type::ImageList'
     => from 'HashRef'
     => via { Mail::Builder::List->new( type => 'Mail::Builder::Image', list => [ Mail::Builder::Image->new($_) ] ) }
     => from 'ArrayRef'
-    => via { 
+    => via {
         my $param = $_;
         my $result = [];
         foreach my $element (@$param) {

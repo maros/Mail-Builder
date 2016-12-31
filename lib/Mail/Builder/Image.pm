@@ -48,10 +48,10 @@ around BUILDARGS => sub {
 
 sub _build_mimetype {
     my ($self) = @_;
-    
+
     my $filename = $self->filename;
     my $filetype;
-    
+
     if (defined $filename
         && $filename->basename =~ m/\.(PNG|JPE?G|GIF)$/i) {
         $filetype = 'image/'.lc($1);
@@ -61,31 +61,31 @@ sub _build_mimetype {
         my $filecontent = $self->filecontent;
         $filetype = $self->_check_magic_string($filecontent);
     }
-    
+
     unless (defined $filetype) {
         croak('Could not determine the file type automatically and/or invalid file type (only image/png, image/jpeg an image/gif allowed)');
     }
-    
+
     return $filetype;
 }
 
 sub _build_id {
     my ($self) = @_;
-    
+
     my $filename = $self->filename;
     my $id;
-    
+
     if (defined $filename) {
         $id = $filename->basename;
         $id =~ s/[.-]/_/g;
         $id =~ s/(.+)\.(JPE?G|GIF|PNG)$/$1/i;
     }
-    
+
     unless (defined $id
         && $id !~ m/^\s*$/) {
         croak('Could not determine the image id automatically');
     }
-    
+
     return $id;
 }
 
@@ -94,11 +94,11 @@ sub serialize {
 
     return $self->cache
         if ($self->has_cache);
-    
+
     my $file = $self->file;
     my $accessor;
     my $value;
-    
+
     if (blessed $file) {
         if ($file->isa('IO::File')) {
             $accessor = 'Data';
@@ -111,7 +111,7 @@ sub serialize {
         $accessor = 'Data';
         $value = $file;
     }
-    
+
     my $entity = MIME::Entity->build(
         Disposition     => 'inline',
         Type            => $self->mimetype,
@@ -120,9 +120,9 @@ sub serialize {
         Encoding        => 'base64',
         $accessor       => $value,
     );
-    
+
     $self->cache($entity);
-    
+
     return $entity;
 }
 
@@ -148,7 +148,7 @@ Mail::Builder::Image - Class for handling inline images
   my $image2 = Mail::Builder::Image->new($fh);
   
   my $image1_entity = $image1->serialize;
-  
+
 =head1 DESCRIPTION
 
 This class handles inline images that should be displayed in html e-mail

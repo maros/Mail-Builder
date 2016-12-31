@@ -143,7 +143,7 @@ has 'image' => (
 
 sub _address_accessor {
     my ($method,$self,@params) = @_;
-    
+
     if (scalar @params) {
         if (scalar @params == 1
             && blessed($params[0])
@@ -167,11 +167,11 @@ sub _set_raw {
 sub _generate_plaintext {
     my ($self,$htmltext) = @_;
     $htmltext ||= $self->htmltext;
-    
+
     if ($self->autotext
         && ($self->_plaintext_autotext == 1 || ! $self->has_plaintext)) {
         Class::Load::load_class('HTML::TreeBuilder');
-        
+
         my $html_tree = HTML::TreeBuilder->new_from_content($self->htmltext);
         # Only use the body
         my $html_body = $html_tree->find('body');
@@ -195,7 +195,7 @@ sub _convert_text {
 
     my $plain_text = q[];
     $params ||= {};
-    
+
     # Loop all children of the HTML element
     foreach my $html_content ($html_element->content_list) {
         # HTML element
@@ -225,7 +225,7 @@ sub _convert_text {
                 $plain_text .= $self->_convert_text($html_content,$params).qq[\n\n];
             } elsif ($html_tagname eq 'table') {
                 require Text::Table; # Load Text::Table lazily
-                    
+
                 my $table_old = $params->{table};
                 $params->{table} = Text::Table->new();
                 $self->_convert_text($html_content,$params);
@@ -291,7 +291,7 @@ sub _convert_text {
             $plain_text .= $html_content;
         }
     }
-    
+
     return $plain_text;
 }
 
@@ -308,15 +308,15 @@ sub charset {
 
 sub purge_cache {
     my ($self) = @_;
-    
+
     $self->clear_messageid;
     $self->clear_date;
-    
+
     # Remove plaintext if it has been derived form htmltext
     if ($self->_plaintext_autotext) {
         $self->clear_plaintext;
     }
-    
+
     # Empty attachment images
     foreach my $list (qw(attachment image)) {
         foreach my $element ($self->$list->list) {
@@ -328,27 +328,27 @@ sub purge_cache {
 
 sub _build_text {
     my ($self,%mime_params) = @_;
-    
+
     # Build plaintext message from HTML
     if ($self->has_htmltext
         && ! $self->has_plaintext
         && $self->autotext) {
         # Parse HTML tree. Load HTML::TreeBuilder lazily
         require HTML::TreeBuilder;
-        
+
         my $html_tree = HTML::TreeBuilder->new_from_content($self->html_text);
         # Only use the body
         my $html_body = $html_tree->find('body');
         # And now convert all elements
         $self->plaintext(_convert_text($html_body));
     }
-    
+
     my $mime_part;
-    
+
     # We have HTML and plaintext
     if ($self->has_htmltext
         && $self->has_plaintext) {
-        
+
         # Build multipart/alternative envelope for HTML and plaintext
         $mime_part = MIME::Entity->build(
             %mime_params,
@@ -356,7 +356,7 @@ sub _build_text {
             Boundary    => $self->_get_boundary(),
             Encoding    => 'binary',
         );
-        
+
         # Add the plaintext entity first
         $mime_part->add_part(MIME::Entity->build(
             Top         => 0,
@@ -364,7 +364,7 @@ sub _build_text {
             Data        => $self->plaintext,
             Encoding    => 'quoted-printable',
         ));
-        
+
         # Add the html entity (the last entity is prefered in multipart/alternative context)
         $mime_part->add_part($self->_build_html(Top => 0));
     # We only have plaintext
@@ -376,15 +376,15 @@ sub _build_text {
             Encoding    => 'quoted-printable',
         );
     }
-    
+
     return $mime_part;
 }
 
 sub _build_html {
     my ($self,%mime_params) = @_;
-    
+
     my $mime_part;
-    
+
     # We have inline images
     if ($self->image->length) {
         # So we need a multipart/related envelope first
@@ -413,7 +413,7 @@ sub _build_html {
             Data        => $self->htmltext,
             Encoding    => 'quoted-printable',
         );
-    }   
+    }
     return $mime_part;
 }
 
@@ -426,7 +426,7 @@ sub _build_date {
 
 sub build_message {
     my ($self) = @_;
-    
+
     croak(q[Recipient address missing])
         unless ($self->to->length());
     croak(q[From address missing])
@@ -435,10 +435,10 @@ sub build_message {
         unless ($self->has_subject);
     croak(q[e-mail content missing])
         unless ($self->has_plaintext || $self->has_htmltext);
-    
+
     my $messageid = Email::MessageID->new;
     $self->_set_raw('messageid',$messageid);
-    
+
     # Set header fields
     my %email_header = (
         'Top'           => 1,
@@ -452,22 +452,22 @@ sub build_message {
         'X-Priority'    => $self->priority,
         'X-Mailer'      => Mail::Builder::Utils::encode_mime($self->mailer),
     );
-    
+
     # Set reply address
     if ($self->has_reply) {
         $email_header{'Reply-To'} = $self->reply->serialize;
     }
-    
+
     # Set sender address
     if ($self->has_sender) {
         $email_header{'Sender'} = $self->sender->serialize;
     }
-    
+
     # Set language
     if ($self->has_language) {
         $email_header{'Content-language'} = $self->language;
     }
-    
+
     # Set return path
     if ($self->has_returnpath) {
         $email_header{'Return-Path'} = $self->returnpath->address();
@@ -475,16 +475,16 @@ sub build_message {
         $email_header{'Return-Path'} = $self->reply->address();
     } else {
         $email_header{'Return-Path'} = $self->from->address();
-    } 
-    
+    }
+
     # Set organizsation
     if ($self->has_organization) {
         $email_header{'Organization'} = Mail::Builder::Utils::encode_mime($self->organization);
     }
-    
+
     # Build e-mail entity ...
     my $mime_entity;
-    
+
     # ... with attachments
     if ($self->attachment->length()) {
         $mime_entity = MIME::Entity->build(
@@ -501,7 +501,7 @@ sub build_message {
     } else {
         $mime_entity = $self->_build_text(%email_header);
     }
-    
+
     return $mime_entity;
 }
 

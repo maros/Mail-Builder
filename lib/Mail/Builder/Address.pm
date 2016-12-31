@@ -8,7 +8,6 @@ use Mail::Builder::TypeConstraints;
 
 use Carp;
 
-
 use Email::Valid;
 
 our $VERSION = $Mail::Builder::VERSION;
@@ -86,10 +85,10 @@ around BUILDARGS => sub {
     my $orig = shift;
     my $class = shift;
     my @args = @_;
-    
+
     my $args_length = scalar @args;
     my %params;
-    
+
     if ($args_length == 1) {
         if (blessed $args[0] && $args[0]->isa('Email::Address')) {
             $params{email} = $args[0]->address;
@@ -115,12 +114,12 @@ around BUILDARGS => sub {
     } else {
         return $class->$orig(@args);
     }
-    
+
     delete $params{name}
         unless defined $params{name} && $params{name} !~ /^\s*$/;
     delete $params{comment}
         unless defined $params{comment} && $params{comment} !~ /^\s*$/;
-    
+
     return $class->$orig(\%params);
 };
 
@@ -139,20 +138,20 @@ Prints the address as required for creating the e-mail header.
 
 sub serialize {
     my ($self) = @_;
-    
+
     return $self->email
         unless $self->has_name;
-    
+
     my $name = $self->name;
     $name =~ s/"/\\"/g;
-    
+
     my $encoded = Mail::Builder::Utils::encode_mime($name);
     $encoded = qq["$encoded"]
         unless $encoded =~ /=\?/;
     my $return = sprintf '%s <%s>',$encoded,$self->email;
     $return .= ' '.Mail::Builder::Utils::encode_mime($self->comment)
         if $self->has_comment;
-    
+
     return $return;
 }
 
@@ -173,10 +172,10 @@ scalar value representing the e-mail address.
 
 sub compare {
     my ($self,$compare) = @_;
-    
+
     return 0
         unless (defined $compare);
-    
+
     if (blessed($compare)) {
         return 0 unless $compare->isa(__PACKAGE__);
         return (uc($self->email) eq uc($compare->email)) ? 1:0;

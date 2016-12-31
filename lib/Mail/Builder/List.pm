@@ -30,9 +30,9 @@ has 'list' => (
 
 sub _check_list {
     my ($self,$value) = @_;
-    
+
     my $type = $self->type;
-    
+
     foreach my $element (@$value) {
         unless (blessed $element
             && $element->isa($type)) {
@@ -45,9 +45,9 @@ sub _check_list {
 around 'list' => sub {
     my $orig = shift;
     my $self = shift;
-    
+
     my $result = $self->$orig(@_);
-    
+
     return wantarray ? @{$result} : $result;
 };
 
@@ -68,12 +68,12 @@ __PACKAGE__->meta->make_immutable;
 
 sub _convert_item {
     my ($self) = shift;
-    
+
     croak(qq[Params missing])
         unless scalar @_;
-    
+
     my $type = $self->type;
-    
+
     if (blessed($_[0])) {
         croak(qq[Invalid item added to list: Must be of $type])
             unless ($_[0]->isa($type));
@@ -84,17 +84,17 @@ sub _convert_item {
             unless (defined $object
             && blessed $object
             && $object->isa($type));
-        
+
         return $object;
     }
 }
 
 sub convert {
     my ($class,@elements) = @_;
-    
+
     my $elements_ref = (scalar @elements == 1 && ref $elements[0] eq 'ARRAY') ?
         $elements[0] : \@elements;
-    
+
     return $class->new(
         type    => ref($elements_ref->[0]),
         list    => $elements_ref,
@@ -103,7 +103,7 @@ sub convert {
 
 sub join {
     my ($self,$join_string) = @_;
-    
+
     return CORE::join $join_string,
         grep { $_ }
         map { $_->serialize }
@@ -112,10 +112,10 @@ sub join {
 
 sub contains {
     my ($self,$compare) = @_;
-    
+
     return 0
         unless (defined $compare);
-    
+
     foreach my $item ($self->list) {
         return 1
             if (blessed($compare) && $item == $compare);
@@ -127,9 +127,9 @@ sub contains {
 
 sub reset {
     my ($self) = @_;
-    
+
     $self->list([]);
-    
+
     return 1;
 }
 
@@ -140,9 +140,9 @@ sub push {
 
 sub remove {
     my ($self,$remove) = @_;
-    
+
     my $list = $self->list;
-    
+
     # No params: take last param
     unless (defined $remove) {
         return pop @{$list};
@@ -162,7 +162,7 @@ sub remove {
             $index ++;
         }
         $self->list($new_list);
-        
+
         # Return old value
         return $remove
             if defined $remove;
@@ -172,28 +172,28 @@ sub remove {
 
 sub add {
     my ($self) = shift;
-    
+
     my $item = $self->_convert_item(@_);
-    
+
     unless ($self->contains($item)) {
         CORE::push(@{$self->list}, $item);
     }
-    
+
     return $item;
 }
 
 
 sub item {
     my ($self,$index) = @_;
-    
+
     $index = 0
         unless defined $index
         && $index =~ m/^\d+$/;
-    
-    return 
+
+    return
         unless ($index =~ m/^\d+$/
         && defined $self->list->[$index]);
-    
+
     return $self->list->[$index];
 }
 

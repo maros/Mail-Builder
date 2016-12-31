@@ -37,7 +37,7 @@ sub _build_magic_string {
 
 sub _check_magic_string {
     my ($self,$string) = @_;
-    
+
     foreach my $type (keys %MAGIC_STRINGS) {
         return $type
             if substr($string,0,(length $MAGIC_STRINGS{$type})) eq $MAGIC_STRINGS{$type};
@@ -47,26 +47,26 @@ sub _check_magic_string {
 
 sub filename {
     my ($self) = @_;
-    
+
     my $file = $self->file;
-    
+
     # Return filename if we know it
     if (blessed $file
         && $file->isa('Path::Class::File')) {
         return $file;
     }
-    
+
     # We don't know the filename
     return;
 }
 
 sub filehandle {
     my ($self) = @_;
-    
+
     my $file = $self->file;
-    
+
     my $file_handle;
-    
+
     # Open Path::Class::File
     if (blessed $file
         && $file->isa('Path::Class::File')) {
@@ -79,51 +79,51 @@ sub filehandle {
     } else {
         return;
     }
-    
+
     $file_handle->binmode();
     return $file_handle;
 }
 
 sub filecontent {
     my ($self) = @_;
-    
+
     my $file = $self->file;
-    
+
     return $$file
         if ref $file eq 'SCALAR';
-    
+
     my $filehandle = $self->filehandle;
-    
+
     my $filecontent = do { local $/; <$filehandle> };
-    
+
     if (blessed $file
         && $file->isa('Path::Class::File')) {
         $filehandle->close;
     } else {
         $filehandle->seek(0,0);
     }
-    
+
     return $filecontent;
 }
 
 
 sub compare {
     my ($self,$compare) = @_;
-    
+
     return 0
         unless ($compare);
-    
+
     my $filename_self = $self->filename;
     my $filename_compare = $compare->filename;
-    
+
     if (defined $filename_self
         && defined $filename_compare) {
         return ($filename_self eq $filename_compare ? 1:0);
     }
-    
+
     my $filecontent_self = $self->filecontent;
     my $filecontent_compare = $compare->filecontent;
-    
+
     return ($filecontent_self eq $filecontent_compare ? 1:0);
 }
 

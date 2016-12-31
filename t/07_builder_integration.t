@@ -12,7 +12,7 @@ my ($mime1,$mime2,$mime3);
 
 lives_ok {
     my $object = Mail::Builder->new();
-    
+
     isa_ok ($object, 'Mail::Builder');
     ok($object->returnpath('return@test.com'),'Set returnpath ok');
     isa_ok($object->returnpath,'Mail::Builder::Address');
@@ -20,16 +20,16 @@ lives_ok {
     is($object->organization,'organization','Organization ok');
     ok($object->language('de'),'Set language ok');
     is($object->language,'de','Language ok');
-    
+
     my $replyaddress = Mail::Builder::Address->new('reply@test.com','Reply name');
     ok($object->reply($replyaddress),'Set reply address ok');
     isa_ok($object->reply(),'Mail::Builder::Address');
     ok($object->priority('5'),'Set priority ok');
-    
+
     throws_ok {
         $object->build_message();
     } qr/Recipient address/,'Recipient address missing';
-    
+
     ok($object->to('recipient1@test.com'),'Set recipient ok');
     isa_ok($object->to(),'Mail::Builder::List');
     is($object->to->length,1,'One recipient');
@@ -45,7 +45,7 @@ lives_ok {
     throws_ok {
         $object->build_message();
     } qr/From address missing/,'Sender missing';
-    
+
     ok($object->from('from@test.com'),'Set sender ok');
     ok($object->sender('sender@test.com'),'Set sender ok');
     isa_ok($object->from,'Mail::Builder::Address');
@@ -55,19 +55,19 @@ lives_ok {
     throws_ok {
         $object->build_message();
     } qr/e-mail subject missing/,'Subject missing';
-    
+
     ok($object->subject('subject'),'Set subject ok');
     is($object->subject,'subject','Subject ok');
-    
+
     my $test_date = 'Wed, 26 Oct 2011 14:52:53 +0200';
     ok($object->date($test_date),'Set date ok');
-    
+
     throws_ok {
         $object->build_message();
     } qr/e-mail content/,'Content missing';
-    
+
     ok($object->htmltext(qq[<html><head></head><body><h1>Headline</h1>
-    
+
     <p>
     <ul>
         <li>Bullet</li>
@@ -79,11 +79,11 @@ lives_ok {
         <li>Item</li>
     </ol>
     <em>This is an <span>italic</span> text</em>
-    
+
     <p><a href="http://k-1.com">Visit me</a></p>
-    
+
     <img src="cid:revdev" alt="revdev logo"/>
-    
+
     <table>
       <tr>
         <td>Test1</td>
@@ -100,14 +100,14 @@ lives_ok {
         <td>Test33</td>
       </tr>
     </table>
-    
+
     </p>
     </body>
     </html>
     ]),'Set HTML Text');
-    
+
     $mime1 = $object->build_message();
-    
+
     isa_ok($mime1,'MIME::Entity');
     like($object->{'plaintext'},qr/\t* Bullet/,'Plaintext bullet ok');
     like($object->{'plaintext'},qr/\t1\. Item/,'Plaintext item ok');
@@ -115,10 +115,10 @@ lives_ok {
     like($object->{'plaintext'},qr/\*This is a bold text\*/,'Plaintext bold ok');
     like($object->{'plaintext'},qr/\[http:\/\/k-1\.com Visit me\]/,'Plaintext link ok');
     like($object->{'plaintext'},qr/\[revdev logo\]/,'Plaintext image ok');
-    
+
     like($object->{'plaintext'},qr/Test1\s\sTest2\s\sTest3/,'Plaintext paragraph ok');
     like($object->{'plaintext'},qr/Test21\s{8}Test23/,'Plaintext paragraph ok');
-    
+
     isa_ok($mime1->head,'MIME::Head');
     is($mime1->head->get('Date'),$test_date."\n",'Date header ok');
     is($mime1->head->get('To'),'recipient1@test.com'."\n",'Recipient header ok');
@@ -127,38 +127,38 @@ lives_ok {
     is($mime1->head->get('X-Priority'),'5'."\n",'Priority header ok');
     is($mime1->head->get('Subject'),'subject'."\n",'Subject header ok');
     is($mime1->parts,2,'No. of mime parts ok');
-    
+
     $mime2 = $object->stringify();
-    
+
     like($mime2,qr/Content-Type: text\/html; charset="utf-8"/,'Stringified message ok');
     like($mime2,qr/------_=_NextPart_000\d_/,'Stringified message ok');
 } 'Object 1 ok';
 
 lives_ok {
     my $object2 = Mail::Builder->new();
-    
+
     my $email_address1 = Email::Address->new('Test3','recipient3@test.com');
     my $email_address2 = Email::Address->new('Test4','recipient4@test.com');
-    
+
     $object2->to->add('recipient2@test.com','nice üft-8 nämé');
     $object2->cc->add('recipient5@test.com','very long name that exceeds the 75 character limit of an encoded word üft-8 nämé');
     $object2->bcc($email_address2);
     $object2->from('from2@test.com','me');
     $object2->sender({ email => 'from3@test.com', name => 'me2'});
     $object2->reply($email_address1);
-    
+
     $object2->subject('Testmail');
     $object2->plaintext('Text');
     $object2->language('de');
     $object2->attachment->add(qq[t/testfile.pdf],q[test.pdf]);
-    
+
     is($object2->attachment->length,1,'Attachment length ok');
-    
+
     $mime3 = $object2->build_message();
-    
+
     isa_ok($mime3,'MIME::Entity');
     isa_ok($mime3->head,'MIME::Head');
-    
+
     is($mime3->head->get('To'),'=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?= <recipient2@test.com>'."\n",'To header encoding ok');
     is($mime3->head->get('Reply-To'),'"Test3" <recipient3@test.com>'."\n",'Reply header encoding ok');
     is($mime3->head->get('Bcc'),'"Test4" <recipient4@test.com>'."\n",'Bcc header encoding ok');
@@ -169,5 +169,5 @@ lives_ok {
     is($mime3->parts,2,'No. of mime parts ok');
     is($mime3->parts(0)->mime_type,'text/plain','Mime type ok');
     is($mime3->parts(1)->mime_type,'application/pdf','Mime type ok');
-    
+
 } 'Object 2 ok';
