@@ -2,7 +2,7 @@
 
 # t/03_address.t - check module for address handling
 
-use Test::Most tests => 28 + 1;
+use Test::Most tests => 29 + 1;
 use Test::NoWarnings;
 
 use Mail::Builder;
@@ -41,6 +41,9 @@ is ($address4->email, 'test@test.com','Check email address');
 
 # Broken Address 1
 throws_ok { Mail::Builder::Address->new( email => 'messed.up.@-address.comx' ) } qr/is not a valid e-mail address/,'Exception ok';
+
+# Broken Address 2
+throws_ok { Mail::Builder::Address->new( email => 'valid+except @space.com' ) } qr/is not a valid e-mail address/,'Exception ok';
 
 # Local Address 1
 $Mail::Builder::TypeConstraints::EMAILVALID{fqdn} = 0;

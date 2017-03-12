@@ -88,10 +88,10 @@ subtype 'Mail::Builder::Type::EmailAddress'
             $params{'-'.$param} = $EMAILVALID{$param}
                 if defined $EMAILVALID{$param};
         }
-        Email::Valid->address(
+        lc $_ eq lc (Email::Valid->address(
             %params,
             -address => $_,
-        );
+        ) // '');
     }
     => message { "'$_' is not a valid e-mail address" };
 
