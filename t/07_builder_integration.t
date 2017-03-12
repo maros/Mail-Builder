@@ -7,6 +7,7 @@ use Test::NoWarnings;
 
 use Mail::Builder;
 use Email::Address;
+use utf8;
 
 my ($mime1,$mime2,$mime3);
 
@@ -159,10 +160,10 @@ lives_ok {
     isa_ok($mime3,'MIME::Entity');
     isa_ok($mime3->head,'MIME::Head');
 
-    is($mime3->head->get('To'),'=?UTF-8?B?bmljZSDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?= <recipient2@test.com>'."\n",'To header encoding ok');
+    is($mime3->head->get('To'),'=?UTF-8?B?bmljZSDDvGZ0LTggbsOkbcOp?= <recipient2@test.com>'."\n",'To header encoding ok');
     is($mime3->head->get('Reply-To'),'"Test3" <recipient3@test.com>'."\n",'Reply header encoding ok');
     is($mime3->head->get('Bcc'),'"Test4" <recipient4@test.com>'."\n",'Bcc header encoding ok');
-    is($mime3->head->get('Cc'),'=?UTF-8?B?dmVyeSBsb25nIG5hbWUgdGhhdCBleGNlZWRzIHRoZSA3NSBjaGFyYWN0ZXIgbGk=?= =?UTF-8?B?bWl0IG9mIGFuIGVuY29kZWQgd29yZCDDg8K8ZnQtOCBuw4PCpG3Dg8Kp?= <recipient5@test.com>'."\n",'Cc header encoding ok');
+    like($mime3->head->get('Cc'),qr/^=\?UTF-8\?B\?dmVyeSBsb25nIG5hbWUgdGhhdCBleGNlZWRzIHRoZSA3NSBjaGFyYWN0ZXIg\?=\s*=\?UTF-8\?B\?bGltaXQgb2YgYW4gZW5jb2RlZCB3b3JkIMO8ZnQtOCBuw6Rtw6k=\?=\s*<recipient5\@test\.com>\s*$/,'Cc header encoding ok');
     is($mime3->head->get('Subject'),'Testmail'."\n",'Subject ok');
     is($mime3->head->get('From'),'"me" <from2@test.com>'."\n",'From ok');
     is($mime3->head->get('Sender'),'"me2" <from3@test.com>'."\n",'From ok');
