@@ -1,5 +1,10 @@
 Revision history for Perl module Mail::Builder
 
+2.12 Mon Mar 13 2017
+    - CORRECTED
+        - Fix text failures with Encode 2.87 #118885 (fixed by Kivanc Yazan)
+        - Improve Email::Valid validation (fixed by Kivanc Yazan)
+
 2.11 Tue Sep 22 2016
     - CORRECTED
         - Load Class::Load (required when using old Moose versions)
